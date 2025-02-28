@@ -141,3 +141,139 @@ export default function VerseCard({ verse }: VerseCardProps) {
     </>
   );
 }
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight } from "lucide-react";
+import { useState } from "react";
+
+interface VerseCardProps {
+  slok: string;
+  translation: string;
+  transliteration: string;
+  chapter: number;
+  verse: number;
+  compact?: boolean;
+}
+
+export default function VerseCard({ 
+  slok, 
+  translation, 
+  transliteration, 
+  chapter, 
+  verse,
+  compact = false
+}: VerseCardProps) {
+  const [open, setOpen] = useState(false);
+  
+  const slokPreview = compact ? `${slok.substring(0, 80)}${slok.length > 80 ? '...' : ''}` : slok;
+  const translationPreview = compact ? 
+    `${translation.substring(0, 100)}${translation.length > 100 ? '...' : ''}` : 
+    translation;
+  
+  return (
+    <>
+      <Card className="overflow-hidden transition-all duration-300 hover:shadow-md hover:border-primary/20">
+        <CardContent className={compact ? "p-4" : "p-6"}>
+          <div className="flex justify-between items-start mb-3">
+            <Badge variant="outline" className="mb-2">
+              {chapter}:{verse}
+            </Badge>
+            {compact && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-primary" 
+                onClick={() => setOpen(true)}
+              >
+                <span className="sr-only">Read more</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          
+          <div className="space-y-3">
+            <p className="font-playfair italic text-sm md:text-base">{slokPreview}</p>
+            
+            {!compact && (
+              <p className="text-xs text-muted-foreground">{transliteration}</p>
+            )}
+            
+            <p className="text-sm md:text-base">{translationPreview}</p>
+            
+            {!compact && (
+              <div className="flex justify-end pt-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-primary" 
+                  onClick={() => setOpen(true)}
+                >
+                  Read full verse <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>Chapter {chapter}, Verse {verse}</span>
+              <Badge variant="outline">BG {chapter}.{verse}</Badge>
+            </DialogTitle>
+            <DialogDescription>
+              Bhagavad Gita
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 my-4">
+            <div className="p-4 bg-primary/5 rounded-lg">
+              <h3 className="font-playfair text-lg mb-2">Sanskrit Verse</h3>
+              <p className="font-playfair italic leading-relaxed">{slok}</p>
+            </div>
+            
+            <div className="p-4 border border-border rounded-lg">
+              <h3 className="font-medium text-lg mb-2">Transliteration</h3>
+              <p className="leading-relaxed text-muted-foreground">{transliteration}</p>
+            </div>
+            
+            <div>
+              <h3 className="font-medium text-lg mb-2">Translation</h3>
+              <p className="leading-relaxed">{translation}</p>
+            </div>
+          </div>
+          
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            {chapter > 1 || verse > 1 ? (
+              <Button variant="outline" size="sm">
+                Previous Verse
+              </Button>
+            ) : null}
+            
+            <span className="flex-1"></span>
+            
+            <Button variant="outline" size="sm">
+              Copy Reference
+            </Button>
+            
+            <Button>
+              Next Verse
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
