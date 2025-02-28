@@ -44,7 +44,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       </div>
 
       {verses.map((verse, index) => (
-        <Card key={`${verse.chapter}-${verse.verse}`}>
+        <Card key={`${verse.chapter}-${verse.verse}-${index}`}>
           <CardHeader>
             <CardTitle className="font-playfair text-xl">
               Chapter {verse.chapter}, Verse {verse.verse}

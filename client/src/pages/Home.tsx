@@ -6,22 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 
+interface VerseResponse {
+  slok: string;
+  transliteration: string;
+  tej: {
+    ht: string;
+    et: string;
+  };
+  chapter: number;
+  verse: number;
+}
+
 export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
-  const { data: verses, isLoading, error } = useQuery({
+  const { data: verses, isLoading, error } = useQuery<VerseResponse[]>({
     queryKey: ['/api/mood', selectedMood],
     enabled: !!selectedMood
   });
 
-  console.log('Selected mood:', selectedMood);
-  console.log('Verses data:', verses);
-  console.log('Loading state:', isLoading);
-  console.log('Error:', error);
-
   return (
     <div className="container px-4 py-12 sm:px-8">
-      {/* Hero Section */}
       <div className="mx-auto max-w-3xl text-center">
         <h1 className="font-playfair text-4xl font-bold md:text-5xl lg:text-6xl">
           Find Peace in Ancient Wisdom
@@ -32,7 +37,6 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Mood Selection */}
       <div className="mt-12">
         <h2 className="mb-8 text-center font-playfair text-2xl font-semibold">
           How are you feeling today?
@@ -40,7 +44,6 @@ export default function Home() {
         <MoodSelector onSelect={setSelectedMood} selectedMood={selectedMood} />
       </div>
 
-      {/* Verse Display */}
       <div className="mt-12">
         {error ? (
           <div className="text-center text-red-500">
@@ -67,7 +70,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* Call to Action */}
       {!selectedMood && (
         <div className="mt-16 text-center">
           <p className="text-lg text-muted-foreground">
