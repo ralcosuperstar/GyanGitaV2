@@ -3,7 +3,7 @@ import { Link } from "wouter";
 export default function Footer() {
   return (
     <footer className="border-t bg-background">
-      <div className="container px-4 py-8 sm:px-8">
+      <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div>
             <h3 className="font-playfair text-lg font-semibold">Contact</h3>
@@ -20,7 +20,7 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="font-playfair text-lg font-semibold">Quick Links</h3>
             <ul className="mt-4 space-y-2">
@@ -41,7 +41,7 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="font-playfair text-lg font-semibold">Credits</h3>
             <p className="mt-4 text-sm">
@@ -57,7 +57,7 @@ export default function Footer() {
             </p>
           </div>
         </div>
-        
+
         <div className="mt-8 border-t pt-8 text-center">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} GyanGita. All rights reserved.
