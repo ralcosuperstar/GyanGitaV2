@@ -21,7 +21,43 @@ async function fetchVerse(chapter: string, verse: string) {
   }
 }
 
+async function fetchChapters() {
+  try {
+    const response = await fetch('https://vedicscriptures.github.io/chapters');
+    if (!response.ok) {
+      throw new Error('Failed to fetch chapters');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching chapters:', error);
+    throw error;
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Chapter and verse routes
+  app.get('/api/chapters', async (_req, res) => {
+    try {
+      const chapters = await fetchChapters();
+      res.json(chapters);
+    } catch (error) {
+      console.error('Error fetching chapters:', error);
+      res.status(500).json({ error: 'Failed to fetch chapters' });
+    }
+  });
+
+  app.get('/api/verse/:chapter/:verse', async (req, res) => {
+    try {
+      const { chapter, verse } = req.params;
+      const data = await fetchVerse(chapter, verse);
+      res.json(data);
+    } catch (error) {
+      console.error('Error fetching verse:', error);
+      res.status(500).json({ error: 'Failed to fetch verse' });
+    }
+  });
+
+  // Mood-based routes
   app.get('/api/mood/:mood', async (req, res) => {
     try {
       const { mood } = req.params;
