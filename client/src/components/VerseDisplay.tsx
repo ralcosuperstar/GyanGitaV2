@@ -22,25 +22,42 @@ interface VerseDisplayProps {
 export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
   const selectedMoodData = moods.find(m => m.id === selectedMood);
 
+  if (!selectedMood) return null;
+
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
+        {[1, 2, 3].map((i) => (
+          <Card key={i}>
+            <CardHeader>
+              <Skeleton className="h-8 w-1/3" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Skeleton className="h-20" />
+              <Skeleton className="h-16" />
+              <Skeleton className="h-16" />
+            </CardContent>
+          </Card>
+        ))}
       </div>
     );
   }
 
-  if (!verses || !selectedMoodData) return null;
+  if (!verses?.length) {
+    return (
+      <div className="text-center text-muted-foreground">
+        No verses found for the selected mood. Please try another mood.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="font-playfair text-2xl font-semibold mb-2">
-          {selectedMoodData.icon} Verses for {selectedMoodData.label}
+          {selectedMoodData?.icon} Verses for {selectedMoodData?.label}
         </h2>
-        <p className="text-muted-foreground">{selectedMoodData.description}</p>
+        <p className="text-muted-foreground">{selectedMoodData?.description}</p>
       </div>
 
       {verses.map((verse, index) => (
