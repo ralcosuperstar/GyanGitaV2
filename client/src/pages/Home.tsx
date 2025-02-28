@@ -9,10 +9,15 @@ import { Link } from "wouter";
 export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
-  const { data: verses, isLoading } = useQuery({
+  const { data: verses, isLoading, error } = useQuery({
     queryKey: ['/api/mood', selectedMood],
     enabled: !!selectedMood
   });
+
+  console.log('Selected mood:', selectedMood);
+  console.log('Verses data:', verses);
+  console.log('Loading state:', isLoading);
+  console.log('Error:', error);
 
   return (
     <div className="container px-4 py-12 sm:px-8">
@@ -37,7 +42,13 @@ export default function Home() {
 
       {/* Verse Display */}
       <div className="mt-12">
-        <VerseDisplay verses={verses} selectedMood={selectedMood} isLoading={isLoading} />
+        {error ? (
+          <div className="text-center text-red-500">
+            Error loading verses. Please try again.
+          </div>
+        ) : (
+          <VerseDisplay verses={verses} selectedMood={selectedMood} isLoading={isLoading} />
+        )}
 
         {selectedMood && (
           <div className="mt-8 flex justify-center space-x-4">
