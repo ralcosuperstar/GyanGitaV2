@@ -62,7 +62,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
       {/* Stats Section */}
       <div className="border-b bg-gradient-to-r from-primary/10 to-primary/5">
-        <div className="container px-4 py-8 sm:px-8">
+        <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-8">
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             <div className="text-center transform hover:scale-105 transition-transform">
               <p className="text-4xl font-bold text-primary">18</p>
@@ -85,7 +85,7 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <div className="container px-4 py-20 sm:px-8">
+      <div className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="font-playfair text-5xl font-bold md:text-6xl lg:text-7xl">
             <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
@@ -182,7 +182,7 @@ export default function Home() {
 
       {/* Mood Selection Section */}
       <div id="mood-section" className="bg-gradient-to-b from-muted/50 to-background py-20">
-        <div className="container px-4 sm:px-8">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-8">
           <h2 className="mb-12 text-center font-playfair text-4xl font-semibold">
             How are you feeling today?
           </h2>
@@ -191,7 +191,7 @@ export default function Home() {
       </div>
 
       {/* Verses Display Section */}
-      <div ref={versesSectionRef} className="container px-4 py-20 sm:px-8">
+      <div ref={versesSectionRef} className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
         {error ? (
           <div className="text-center text-red-500">
             Error loading verses. Please try again.
