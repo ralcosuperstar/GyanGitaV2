@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply bg-gray-100 text-gray-900;
+}
+
+h2 {
+    @apply text-2xl font-bold text-orange-600;
+}
+
+/* Verse Display */
+#verse-display {
+    @apply mt-8 space-y-6;
+}
+
+.verse-card {
+    @apply bg-white p-5 rounded-lg shadow-md text-center border border-gray-200;
+}
+
+.verse-card h3 {
+    @apply text-lg font-semibold text-orange-700;
+}
+
+.verse-card p {
+    @apply mt-2 text-gray-700;
+}
+
+/* Modal */
+#verseModal {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center overflow-auto;
+}
+
+.modal-content {
+    @apply bg-white p-6 rounded-lg max-w-lg w-full shadow-lg max-h-screen overflow-y-auto;
+}
+
+.modal-header {
+    @apply text-2xl font-bold text-orange-600;
+}
+
+.modal-body {
+    @apply mt-3 text-lg;
+}
+
+.modal-footer {
+    @apply mt-4;
+}
+
+.modal-close {
+    @apply px-4 py-2 bg-red-500 text-white rounded-lg;
+}
+
+/* Button Styles */
+button {
+    @apply px-4 py-2 rounded-md transition-all;
+}
+
+button:hover {
+    @apply opacity-80;
+}
+
+.btn-orange {
+    @apply bg-orange-500 text-white;
+}
+
+.btn-orange:hover {
+    @apply bg-orange-600;
+}
