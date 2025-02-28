@@ -9,49 +9,91 @@ export const moods: Mood[] = [
   {
     id: "anger",
     label: "Anger",
-    description: "Find peace and control through divine wisdom",
+    description: "Verses to help control and overcome anger",
     icon: "😠"
   },
   {
     id: "peaceful",
     label: "Seeking Peace",
-    description: "Discover inner tranquility and calmness",
+    description: "Verses for finding inner peace and tranquility",
     icon: "😌"
   },
   {
     id: "depression",
     label: "Depression",
-    description: "Find solace and hope in spiritual wisdom",
+    description: "Verses offering solace and hope during difficult times",
     icon: "😞"
   },
   {
     id: "confusion",
     label: "Confusion",
-    description: "Gain clarity and direction through divine guidance",
+    description: "Verses providing clarity and direction",
     icon: "😕"
   },
   {
     id: "fear",
     label: "Fear",
-    description: "Overcome anxiety with spiritual strength",
+    description: "Verses for overcoming fear and anxiety",
     icon: "😨"
   },
   {
     id: "greed",
     label: "Greed",
-    description: "Learn to transcend material attachments",
+    description: "Verses about overcoming material attachment",
     icon: "🤑"
   },
   {
     id: "demotivated",
     label: "Demotivated",
-    description: "Find inspiration in sacred wisdom",
+    description: "Verses for inspiration and motivation",
     icon: "😩"
   },
   {
     id: "temptation",
     label: "Temptation",
-    description: "Master your senses and desires",
+    description: "Verses about controlling senses and desires",
     icon: "😈"
+  },
+  {
+    id: "forgetfulness",
+    label: "Forgetfulness",
+    description: "Verses about mindfulness and remembrance",
+    icon: "🤔"
+  },
+  {
+    id: "losing_hope",
+    label: "Losing Hope",
+    description: "Verses offering encouragement and assurance",
+    icon: "😔"
+  },
+  {
+    id: "lust",
+    label: "Lust",
+    description: "Verses about transcending physical desires",
+    icon: "💖"
+  },
+  {
+    id: "uncontrolled_mind",
+    label: "Uncontrolled Mind",
+    description: "Verses about mental discipline and control",
+    icon: "🧠"
+  },
+  {
+    id: "envy",
+    label: "Dealing with Envy",
+    description: "Verses about overcoming jealousy",
+    icon: "😤"
+  },
+  {
+    id: "discriminated",
+    label: "Discriminated",
+    description: "Verses about equality and universal vision",
+    icon: "🤝"
+  },
+  {
+    id: "forgiveness",
+    label: "Practicing Forgiveness",
+    description: "Verses about forgiveness and compassion",
+    icon: "🙏"
   }
 ];
