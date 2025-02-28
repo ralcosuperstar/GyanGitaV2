@@ -9,6 +9,15 @@ interface VerseResponse {
     ht: string;
     et: string;
   };
+  siva?: {
+    et: string;
+  };
+  purohit?: {
+    et: string;
+  };
+  chinmay?: {
+    hc: string;
+  };
   chapter: number;
   verse: number;
 }
@@ -70,7 +79,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
           <CardContent className="space-y-4">
             <div>
               <h3 className="font-semibold mb-2">Sanskrit Verse</h3>
-              <p className="text-lg italic">{verse.slok}</p>
+              <p className="text-lg italic font-sanskrit">{verse.slok}</p>
             </div>
 
             <div>
@@ -79,12 +88,41 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
             </div>
 
             <div>
-              <h3 className="font-semibold mb-2">Translation</h3>
-              <div className="space-y-2">
-                <p>{verse.tej.ht}</p>
-                <p className="text-muted-foreground">{verse.tej.et}</p>
+              <h3 className="font-semibold mb-2">Translations</h3>
+              <div className="space-y-4">
+                {verse.tej && (
+                  <div className="bg-muted/50 p-4 rounded-lg">
+                    <p className="font-medium text-primary mb-2">Swami Tejomayananda</p>
+                    <p>{verse.tej.ht}</p>
+                    <p className="text-muted-foreground mt-2">{verse.tej.et}</p>
+                  </div>
+                )}
+
+                {verse.siva?.et && (
+                  <div className="bg-muted/50 p-4 rounded-lg">
+                    <p className="font-medium text-primary mb-2">Swami Sivananda</p>
+                    <p>{verse.siva.et}</p>
+                  </div>
+                )}
+
+                {verse.purohit?.et && (
+                  <div className="bg-muted/50 p-4 rounded-lg">
+                    <p className="font-medium text-primary mb-2">Shri Purohit Swami</p>
+                    <p>{verse.purohit.et}</p>
+                  </div>
+                )}
               </div>
             </div>
+
+            {verse.chinmay?.hc && (
+              <div>
+                <h3 className="font-semibold mb-2">Commentary</h3>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="font-medium text-primary mb-2">Swami Chinmayananda</p>
+                  <p>{verse.chinmay.hc}</p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}

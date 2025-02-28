@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import MoodSelector from "@/components/MoodSelector";
 import VerseDisplay from "@/components/VerseDisplay";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 
 interface VerseResponse {
@@ -12,6 +11,15 @@ interface VerseResponse {
   tej: {
     ht: string;
     et: string;
+  };
+  siva?: {
+    et: string;
+  };
+  purohit?: {
+    et: string;
+  };
+  chinmay?: {
+    hc: string;
   };
   chapter: number;
   verse: number;
@@ -53,7 +61,7 @@ export default function Home() {
           <VerseDisplay verses={verses} selectedMood={selectedMood} isLoading={isLoading} />
         )}
 
-        {selectedMood && (
+        {selectedMood && verses?.length > 0 && (
           <div className="mt-8 flex justify-center space-x-4">
             <Button
               variant="outline"
