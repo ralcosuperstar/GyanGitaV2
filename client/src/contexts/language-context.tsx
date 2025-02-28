@@ -22,6 +22,7 @@ const translations = {
     'search.placeholder': 'Type chapter number, verse number, or keywords...',
     'search.loading': 'Searching',
     'search.no_results': 'No results found',
+    'search.start_typing': 'Start typing to search verses...',
 
     // Home page
     'home.title': 'Divine Wisdom for Modern Life\'s Challenges',
@@ -31,6 +32,7 @@ const translations = {
     'home.mood.title': 'How are you feeling today?',
     'home.mood.change': 'Choose Another Mood',
     'home.explore': 'Explore More Verses',
+    'home.share.text': 'Discover divine wisdom from Bhagavad Gita for your daily challenges at GyanGita! 🕉️\n\nFind spiritual guidance tailored to your emotional state.',
 
     // Stats
     'stats.chapters': 'Sacred Chapters',
@@ -103,6 +105,7 @@ const translations = {
     'search.placeholder': 'अध्याय संख्या, श्लोक संख्या, या कीवर्ड टाइप करें...',
     'search.loading': 'खोज रहे हैं',
     'search.no_results': 'कोई परिणाम नहीं मिला',
+    'search.start_typing': 'श्लोक खोजने के लिए टाइप करें...',
 
     // Home page
     'home.title': 'आधुनिक जीवन की चुनौतियों के लिए दैवीय ज्ञान',
@@ -112,6 +115,7 @@ const translations = {
     'home.mood.title': 'आज आप कैसा महसूस कर रहे हैं?',
     'home.mood.change': 'दूसरा भाव चुनें',
     'home.explore': 'और श्लोक खोजें',
+    'home.share.text': 'ज्ञानगीता पर अपनी दैनिक चुनौतियों के लिए भगवद गीता का दिव्य ज्ञान खोजें! 🕉️\n\nअपनी भावनात्मक स्थिति के अनुरूप आध्यात्मिक मार्गदर्शन प्राप्त करें।',
 
     // Stats
     'stats.chapters': 'पवित्र अध्याय',
