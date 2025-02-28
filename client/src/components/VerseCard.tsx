@@ -63,7 +63,7 @@ export default function VerseCard({ verse }: VerseCardProps) {
       </Card>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-3xl h-[80vh]">
+        <DialogContent className="max-w-3xl h-[90vh] sm:h-[80vh]">
           <DialogHeader>
             <DialogTitle className="font-playfair text-2xl">
               Chapter {verse.chapter}, Verse {verse.verse}
@@ -77,7 +77,7 @@ export default function VerseCard({ verse }: VerseCardProps) {
               <TabsTrigger value="commentary">Commentary</TabsTrigger>
             </TabsList>
 
-            <ScrollArea className="h-[calc(100%-3rem)] mt-4">
+            <ScrollArea className="h-[calc(100%-8rem)] mt-4">
               <TabsContent value="verse" className="space-y-6">
                 <div>
                   <h3 className="font-semibold mb-2 text-primary">Sanskrit</h3>
