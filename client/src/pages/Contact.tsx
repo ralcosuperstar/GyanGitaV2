@@ -4,9 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MessageSquare } from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
 
 export default function Contact() {
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,18 +24,18 @@ export default function Contact() {
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="font-playfair text-4xl font-bold md:text-5xl mb-4">
             <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-              Contact Us
+              {t('contact.title')}
             </span>
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Have questions or feedback? We'd love to hear from you.
+            {t('contact.subtitle')}
           </p>
         </div>
 
         <div className="mt-12 grid gap-8 md:grid-cols-2">
           <Card className="transform hover:scale-105 transition-all">
             <CardContent className="p-8">
-              <h2 className="font-playfair text-2xl font-semibold mb-6">Get in Touch</h2>
+              <h2 className="font-playfair text-2xl font-semibold mb-6">{t('contact.get_in_touch')}</h2>
               <div className="space-y-6">
                 <div className="flex items-center gap-4 group">
                   <div className="rounded-full bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors">
@@ -62,7 +64,7 @@ export default function Contact() {
                     <MessageSquare className="h-6 w-6 text-primary" />
                   </div>
                   <p className="text-lg text-muted-foreground">
-                    Response within 24 hours
+                    {t('contact.response_time')}
                   </p>
                 </div>
               </div>
@@ -74,10 +76,10 @@ export default function Contact() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Name
+                    {t('contact.form.name')}
                   </label>
                   <Input 
-                    placeholder="Your name" 
+                    placeholder={t('contact.form.name')}
                     required 
                     className="h-12"
                   />
@@ -85,11 +87,11 @@ export default function Contact() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Email
+                    {t('contact.form.email')}
                   </label>
                   <Input 
                     type="email" 
-                    placeholder="your@email.com" 
+                    placeholder={t('contact.form.email')}
                     required 
                     className="h-12"
                   />
@@ -97,17 +99,17 @@ export default function Contact() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Message
+                    {t('contact.form.message')}
                   </label>
                   <Textarea 
-                    placeholder="Your message..."
+                    placeholder={t('contact.form.message')}
                     className="min-h-[150px] resize-none"
                     required
                   />
                 </div>
 
                 <Button type="submit" size="lg" className="w-full h-12">
-                  Send Message
+                  {t('contact.form.submit')}
                 </Button>
               </form>
             </CardContent>

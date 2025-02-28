@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,6 +49,7 @@ export default function Browse() {
   const [viewMode, setViewMode] = useState<"search" | "grid">("search");
   const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
   const [showVerseModal, setShowVerseModal] = useState(false);
+  const { t } = useLanguage();
 
   const { data: chapters, isLoading: isLoadingChapters } = useQuery<Chapter[]>({
     queryKey: ['/api/chapters'],
@@ -78,19 +80,19 @@ export default function Browse() {
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             <div className="text-center transform hover:scale-105 transition-transform">
               <p className="text-4xl font-bold text-primary">18</p>
-              <p className="text-sm text-muted-foreground">Sacred Chapters</p>
+              <p className="text-sm text-muted-foreground">{t('stats.chapters')}</p>
             </div>
             <div className="text-center transform hover:scale-105 transition-transform">
               <p className="text-4xl font-bold text-primary">700</p>
-              <p className="text-sm text-muted-foreground">Divine Verses</p>
+              <p className="text-sm text-muted-foreground">{t('stats.verses')}</p>
             </div>
             <div className="text-center transform hover:scale-105 transition-transform">
               <p className="text-4xl font-bold text-primary">5+</p>
-              <p className="text-sm text-muted-foreground">Translations</p>
+              <p className="text-sm text-muted-foreground">{t('stats.translations')}</p>
             </div>
             <div className="text-center transform hover:scale-105 transition-transform">
               <p className="text-4xl font-bold text-primary">2500+</p>
-              <p className="text-sm text-muted-foreground">Years of Wisdom</p>
+              <p className="text-sm text-muted-foreground">{t('stats.years')}</p>
             </div>
           </div>
         </div>
@@ -100,11 +102,11 @@ export default function Browse() {
         <div className="text-center mb-12">
           <h1 className="font-playfair text-4xl font-bold md:text-5xl mb-4">
             <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-              Explore Sacred Verses
+              {t('browse.title')}
             </span>
           </h1>
           <p className="text-lg text-muted-foreground">
-            Delve into the timeless wisdom of the Bhagavad Gita, verse by verse
+            {t('browse.subtitle')}
           </p>
         </div>
 
@@ -115,7 +117,7 @@ export default function Browse() {
             className="gap-2"
           >
             <Book className="w-4 h-4" />
-            Search Verses
+            {t('browse.search.title')}
           </Button>
           <Button
             variant={viewMode === "grid" ? "default" : "outline"}
@@ -123,7 +125,7 @@ export default function Browse() {
             className="gap-2"
           >
             <Grid className="w-4 h-4" />
-            Browse Chapters
+            {t('browse.chapters.title')}
           </Button>
         </div>
 
@@ -131,7 +133,9 @@ export default function Browse() {
           <div className="mx-auto max-w-3xl">
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium mb-2">Select Chapter</label>
+                <label className="block text-sm font-medium mb-2">
+                  {t('browse.select.chapter')}
+                </label>
                 {isLoadingChapters ? (
                   <Skeleton className="h-10 w-full" />
                 ) : (
@@ -140,7 +144,7 @@ export default function Browse() {
                     onValueChange={setSelectedChapter}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Choose a chapter" />
+                      <SelectValue placeholder={t('browse.select.chapter')} />
                     </SelectTrigger>
                     <SelectContent>
                       {chapters?.map((chapter) => (
@@ -150,7 +154,7 @@ export default function Browse() {
                         >
                           Chapter {chapter.chapter_number}: {chapter.name}
                           <span className="block text-sm text-muted-foreground">
-                            {chapter.verses_count} verses
+                            {chapter.verses_count} {t('browse.verses')}
                           </span>
                         </SelectItem>
                       ))}
@@ -160,11 +164,13 @@ export default function Browse() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Enter Verse Number</label>
+                <label className="block text-sm font-medium mb-2">
+                  {t('browse.select.verse')}
+                </label>
                 <Input
                   type="number"
                   min="1"
-                  placeholder="Enter verse number"
+                  placeholder={t('browse.select.verse')}
                   value={selectedVerse}
                   onChange={(e) => setSelectedVerse(e.target.value)}
                 />
@@ -193,7 +199,9 @@ export default function Browse() {
                     <CardContent>
                       <h3 className="font-medium text-lg mb-2">{chapter.name}</h3>
                       <p className="text-muted-foreground mb-4">{chapter.name_meaning}</p>
-                      <p className="text-sm text-primary">{chapter.verses_count} Verses</p>
+                      <p className="text-sm text-primary">
+                        {chapter.verses_count} {t('browse.verses')}
+                      </p>
                     </CardContent>
                   </Card>
                 ))}
@@ -205,7 +213,7 @@ export default function Browse() {
                   className="mb-8"
                   onClick={() => setSelectedGridChapter(null)}
                 >
-                  ← Back to Chapters
+                  {t('browse.back')}
                 </Button>
 
                 <div className="grid gap-4 grid-cols-6 sm:grid-cols-8 md:grid-cols-10">
