@@ -31,6 +31,8 @@ interface VerseDisplayProps {
 export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
   const selectedMoodData = moods.find(m => m.id === selectedMood);
 
+  console.log('VerseDisplay props:', { verses, selectedMood, isLoading });
+
   if (!selectedMood) return null;
 
   if (isLoading) {
@@ -70,31 +72,33 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       </div>
 
       {verses.map((verse, index) => (
-        <Card key={`${verse.chapter}-${verse.verse}-${index}`}>
-          <CardHeader>
-            <CardTitle className="font-playfair text-xl">
-              Chapter {verse.chapter}, Verse {verse.verse}
+        <Card key={`${verse.chapter}-${verse.verse}-${index}`} className="overflow-hidden">
+          <CardHeader className="bg-primary/5">
+            <CardTitle className="font-playfair text-xl flex items-center justify-between">
+              <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6 pt-6">
             <div>
-              <h3 className="font-semibold mb-2">Sanskrit Verse</h3>
-              <p className="text-lg italic font-sanskrit">{verse.slok}</p>
+              <h3 className="font-semibold mb-2 text-primary">Sanskrit Verse</h3>
+              <p className="text-lg font-sanskrit bg-muted/50 p-4 rounded-lg">{verse.slok}</p>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-2">Transliteration</h3>
-              <p className="text-lg">{verse.transliteration}</p>
+              <h3 className="font-semibold mb-2 text-primary">Transliteration</h3>
+              <p className="text-lg bg-muted/50 p-4 rounded-lg">{verse.transliteration}</p>
             </div>
 
             <div>
-              <h3 className="font-semibold mb-2">Translations</h3>
+              <h3 className="font-semibold mb-2 text-primary">Translations</h3>
               <div className="space-y-4">
                 {verse.tej && (
                   <div className="bg-muted/50 p-4 rounded-lg">
                     <p className="font-medium text-primary mb-2">Swami Tejomayananda</p>
                     <p>{verse.tej.ht}</p>
-                    <p className="text-muted-foreground mt-2">{verse.tej.et}</p>
+                    {verse.tej.et && (
+                      <p className="text-muted-foreground mt-2">{verse.tej.et}</p>
+                    )}
                   </div>
                 )}
 
@@ -116,7 +120,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
             {verse.chinmay?.hc && (
               <div>
-                <h3 className="font-semibold mb-2">Commentary</h3>
+                <h3 className="font-semibold mb-2 text-primary">Commentary</h3>
                 <div className="bg-muted/50 p-4 rounded-lg">
                   <p className="font-medium text-primary mb-2">Swami Chinmayananda</p>
                   <p>{verse.chinmay.hc}</p>

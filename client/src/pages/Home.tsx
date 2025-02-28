@@ -30,6 +30,16 @@ export default function Home() {
 
   const { data: verses, isLoading, error } = useQuery<VerseResponse[]>({
     queryKey: ['/api/mood', selectedMood],
+    queryFn: async () => {
+      if (!selectedMood) return null;
+      const response = await fetch(`/api/mood/${selectedMood}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch verses');
+      }
+      const data = await response.json();
+      console.log('Fetched verses:', data);
+      return data;
+    },
     enabled: !!selectedMood
   });
 
@@ -58,7 +68,7 @@ export default function Home() {
             Error loading verses. Please try again.
           </div>
         ) : (
-          <VerseDisplay verses={verses} selectedMood={selectedMood} isLoading={isLoading} />
+          <VerseDisplay verses={verses || null} selectedMood={selectedMood} isLoading={isLoading} />
         )}
 
         {selectedMood && verses?.length > 0 && (
