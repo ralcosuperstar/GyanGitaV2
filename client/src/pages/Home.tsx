@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import MoodSelector from "@/components/MoodSelector";
 import VerseDisplay from "@/components/VerseDisplay";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ interface VerseResponse {
 export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const versesSectionRef = useRef<HTMLDivElement>(null);
+  const [, setLocation] = useLocation();
 
   const { data: verses, isLoading, error } = useQuery<VerseResponse[]>({
     queryKey: ['/api/mood', selectedMood],
@@ -43,7 +45,6 @@ export default function Home() {
     enabled: !!selectedMood
   });
 
-  // Auto-scroll effect when verses are loaded
   useEffect(() => {
     if (verses && verses.length > 0 && versesSectionRef.current) {
       setTimeout(() => {
@@ -60,7 +61,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
-      {/* Stats Section */}
       <div className="border-b bg-gradient-to-r from-primary/10 to-primary/5">
         <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-8">
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
@@ -84,7 +84,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Hero Section */}
       <div className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="font-playfair text-5xl font-bold md:text-6xl lg:text-7xl">
@@ -152,7 +151,6 @@ export default function Home() {
             </Card>
           </div>
 
-          {/* Additional Features */}
           <div className="mt-20 grid gap-8 sm:grid-cols-2">
             <div className="flex items-start gap-6 group">
               <div className="rounded-full bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors">
@@ -180,7 +178,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Mood Selection Section */}
       <div id="mood-section" className="bg-gradient-to-b from-muted/50 to-background py-20">
         <div className="container mx-auto max-w-7xl px-4 sm:px-8">
           <h2 className="mb-12 text-center font-playfair text-4xl font-semibold">
@@ -190,7 +187,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Verses Display Section */}
       <div ref={versesSectionRef} className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
         {error ? (
           <div className="text-center text-red-500">
@@ -214,7 +210,7 @@ export default function Home() {
             >
               Choose Another Mood
             </Button>
-            <Button size="lg" className="h-14">
+            <Button size="lg" className="h-14" onClick={() => setLocation("/browse")}>
               Explore More Verses
             </Button>
           </div>
