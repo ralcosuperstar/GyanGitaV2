@@ -1,61 +1,72 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { moods } from "@/lib/moods";
 
 interface VerseDisplayProps {
-  verse: {
+  verses: Array<{
     slok: string;
     transliteration: string;
     tej: {
       ht: string;
       et: string;
     };
-  } | null;
+  }> | null;
+  selectedMood: string | null;
   isLoading: boolean;
 }
 
-export default function VerseDisplay({ verse, isLoading }: VerseDisplayProps) {
+export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
+  const selectedMoodData = moods.find(m => m.id === selectedMood);
+
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-2/3" />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-20" />
-          <Skeleton className="h-16" />
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
     );
   }
 
-  if (!verse) return null;
+  if (!verses || !selectedMoodData) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="font-playfair text-2xl">
-          Divine Guidance
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div>
-          <h3 className="mb-2 font-semibold">Sanskrit Verse</h3>
-          <p className="text-lg italic">{verse.slok}</p>
-        </div>
-        
-        <div>
-          <h3 className="mb-2 font-semibold">Transliteration</h3>
-          <p className="text-lg">{verse.transliteration}</p>
-        </div>
-        
-        <div>
-          <h3 className="mb-2 font-semibold">Translation</h3>
-          <div className="space-y-4">
-            <p>{verse.tej.ht}</p>
-            <p className="text-muted-foreground">{verse.tej.et}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="font-playfair text-2xl font-semibold mb-2">
+          {selectedMoodData.icon} Verses for {selectedMoodData.label}
+        </h2>
+        <p className="text-muted-foreground">{selectedMoodData.description}</p>
+      </div>
+
+      {verses.map((verse, index) => (
+        <Card key={index}>
+          <CardHeader>
+            <CardTitle className="font-playfair text-xl">
+              Verse {index + 1}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h3 className="font-semibold mb-2">Sanskrit Verse</h3>
+              <p className="text-lg italic">{verse.slok}</p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-2">Transliteration</h3>
+              <p className="text-lg">{verse.transliteration}</p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-2">Translation</h3>
+              <div className="space-y-2">
+                <p>{verse.tej.ht}</p>
+                <p className="text-muted-foreground">{verse.tej.et}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }

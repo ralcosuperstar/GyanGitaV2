@@ -9,7 +9,7 @@ import { Link } from "wouter";
 export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
-  const { data: verse, isLoading } = useQuery({
+  const { data: verses, isLoading } = useQuery({
     queryKey: ['/api/mood', selectedMood],
     enabled: !!selectedMood
   });
@@ -27,52 +27,19 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Feature Cards */}
-      {!selectedMood && (
-        <div className="mt-16 grid gap-8 md:grid-cols-3">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <span className="text-4xl">🎯</span>
-              <h3 className="mt-4 font-playfair text-xl font-semibold">Personalized Guidance</h3>
-              <p className="mt-2 text-muted-foreground">
-                Receive verses that resonate with your current emotional state
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <span className="text-4xl">📖</span>
-              <h3 className="mt-4 font-playfair text-xl font-semibold">Ancient Wisdom</h3>
-              <p className="mt-2 text-muted-foreground">
-                Access the timeless teachings of the Bhagavad Gita
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <span className="text-4xl">🌟</span>
-              <h3 className="mt-4 font-playfair text-xl font-semibold">Daily Inspiration</h3>
-              <p className="mt-2 text-muted-foreground">
-                Find new insights and inspiration every day
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
       {/* Mood Selection */}
       <div className="mt-12">
         <h2 className="mb-8 text-center font-playfair text-2xl font-semibold">
           How are you feeling today?
         </h2>
-        <MoodSelector onSelect={setSelectedMood} />
+        <MoodSelector onSelect={setSelectedMood} selectedMood={selectedMood} />
       </div>
 
       {/* Verse Display */}
-      {selectedMood && (
-        <div className="mt-12">
-          <VerseDisplay verse={verse} isLoading={isLoading} />
+      <div className="mt-12">
+        <VerseDisplay verses={verses} selectedMood={selectedMood} isLoading={isLoading} />
 
+        {selectedMood && (
           <div className="mt-8 flex justify-center space-x-4">
             <Button
               variant="outline"
@@ -86,8 +53,8 @@ export default function Home() {
               </Button>
             </Link>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Call to Action */}
       {!selectedMood && (
