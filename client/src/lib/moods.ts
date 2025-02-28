@@ -7,51 +7,51 @@ export interface Mood {
 
 export const moods: Mood[] = [
   {
+    id: "anger",
+    label: "Anger",
+    description: "Find peace and control through divine wisdom",
+    icon: "😠"
+  },
+  {
     id: "peaceful",
-    label: "Peaceful",
-    description: "Find inner peace and tranquility",
-    icon: "https://images.unsplash.com/photo-1531643439684-b25b6c766747"
+    label: "Seeking Peace",
+    description: "Discover inner tranquility and calmness",
+    icon: "😌"
   },
   {
-    id: "anxious",
-    label: "Anxious",
-    description: "Calm your mind and reduce anxiety",
-    icon: "https://images.unsplash.com/photo-1455849318743-b2233052fcff"
+    id: "depression",
+    label: "Depression",
+    description: "Find solace and hope in spiritual wisdom",
+    icon: "😞"
   },
   {
-    id: "confused",
-    label: "Confused",
-    description: "Seek clarity and guidance",
-    icon: "https://images.unsplash.com/photo-1507120410856-1f35574c3b45"
+    id: "confusion",
+    label: "Confusion",
+    description: "Gain clarity and direction through divine guidance",
+    icon: "😕"
   },
   {
-    id: "motivated",
-    label: "Motivated",
-    description: "Boost your spiritual energy",
-    icon: "https://images.unsplash.com/photo-1617440168937-c6497eaa8db5"
+    id: "fear",
+    label: "Fear",
+    description: "Overcome anxiety with spiritual strength",
+    icon: "😨"
   },
   {
-    id: "grateful",
-    label: "Grateful",
-    description: "Express gratitude and appreciation",
-    icon: "https://images.unsplash.com/photo-1496449903678-68ddcb189a24"
+    id: "greed",
+    label: "Greed",
+    description: "Learn to transcend material attachments",
+    icon: "🤑"
   },
   {
-    id: "sad",
-    label: "Sad",
-    description: "Find comfort in divine wisdom",
-    icon: "https://images.unsplash.com/photo-1458682625221-3a45f8a844c7"
+    id: "demotivated",
+    label: "Demotivated",
+    description: "Find inspiration in sacred wisdom",
+    icon: "😩"
   },
   {
-    id: "happy",
-    label: "Happy",
-    description: "Celebrate with spiritual joy",
-    icon: "https://images.unsplash.com/photo-1504548840739-580b10ae7715"
-  },
-  {
-    id: "seeking",
-    label: "Seeking",
-    description: "Discover deeper meaning",
-    icon: "https://images.unsplash.com/photo-1499728603263-13726abce5fd"
+    id: "temptation",
+    label: "Temptation",
+    description: "Master your senses and desires",
+    icon: "😈"
   }
 ];

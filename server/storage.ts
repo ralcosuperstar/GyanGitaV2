@@ -15,21 +15,19 @@ export class MemStorage implements IStorage {
   constructor() {
     this.moodVerseMap = new Map();
     this.currentId = 1;
-
-    // Initialize with some default mood-verse mappings
     this.initializeMoodVerses();
   }
 
   private initializeMoodVerses() {
     const defaultMappings = [
-      { mood: "peaceful", chapter: "2", verse: "70" },
-      { mood: "anxious", chapter: "2", verse: "14" },
-      { mood: "confused", chapter: "2", verse: "7" },
-      { mood: "motivated", chapter: "2", verse: "47" },
-      { mood: "grateful", chapter: "4", verse: "39" },
-      { mood: "sad", chapter: "2", verse: "11" },
-      { mood: "happy", chapter: "5", verse: "23" },
-      { mood: "seeking", chapter: "4", verse: "34" },
+      { mood: "anger", chapter: "2", verse: "56" },
+      { mood: "peaceful", chapter: "2", verse: "66" },
+      { mood: "depression", chapter: "2", verse: "14" },
+      { mood: "confusion", chapter: "2", verse: "7" },
+      { mood: "fear", chapter: "4", verse: "10" },
+      { mood: "greed", chapter: "14", verse: "17" },
+      { mood: "demotivated", chapter: "11", verse: "33" },
+      { mood: "temptation", chapter: "2", verse: "60" }
     ];
 
     defaultMappings.forEach((mapping, index) => {
