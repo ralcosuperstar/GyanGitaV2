@@ -39,7 +39,7 @@ function SearchResultModal({ result, onClose }: {
     <DialogContent className="max-w-3xl">
       <DialogHeader>
         <DialogTitle>
-          Chapter {result.chapter}, Verse {result.verse}
+          Chapter {result.chapter}, {result.type === 'chapter' ? 'Overview' : `Verse ${result.verse}`}
         </DialogTitle>
       </DialogHeader>
       <div className="space-y-6">

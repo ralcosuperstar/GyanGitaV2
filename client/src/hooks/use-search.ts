@@ -57,11 +57,6 @@ export function useSearch(query: string) {
     const numberOnly = q.match(/^(\d+)$/);
     if (numberOnly) {
       const num = parseInt(numberOnly[1]);
-      // If number could be a chapter (1-18)
-      if (num > 0 && num <= 18) {
-        return { type: 'chapter', chapter: num };
-      }
-      // Otherwise search for verses containing this number
       return { type: 'keyword', term: numberOnly[1] };
     }
 
@@ -94,7 +89,61 @@ export function useSearch(query: string) {
       let results: SearchResult[] = [];
 
       try {
-        if (parsed.type === 'chapter') {
+        // For numeric search, we'll check both chapters and verses
+        if (parsed.type === 'keyword' && parsed.term?.match(/^\d+$/)) {
+          const num = parseInt(parsed.term);
+
+          // If number could be a chapter (1-18), add it to results
+          if (num > 0 && num <= 18) {
+            const chapterResponse = await fetch(`https://vedicscriptures.github.io/chapters/${num}`);
+            if (chapterResponse.ok) {
+              const chapterData: ChapterData = await chapterResponse.json();
+
+              // Fetch first verse for preview
+              const verseResponse = await fetch(`https://vedicscriptures.github.io/slok/${num}/1`);
+              if (verseResponse.ok) {
+                const verseData: VerseData = await verseResponse.json();
+                results.push({
+                  chapter: num,
+                  verse: 1,
+                  preview: `${chapterData.name} - ${chapterData.name_meaning}`,
+                  type: 'chapter',
+                  content: {
+                    slok: verseData.slok,
+                    transliteration: verseData.transliteration,
+                    translation: verseData.tej.ht
+                  }
+                });
+              }
+            }
+          }
+
+          // Search for verses with this number
+          for (let chapter = 1; chapter <= 18; chapter++) {
+            const chapterResponse = await fetch(`https://vedicscriptures.github.io/chapters/${chapter}`);
+            if (chapterResponse.ok) {
+              const chapterData: ChapterData = await chapterResponse.json();
+              if (num <= chapterData.verses_count) {
+                const verseResponse = await fetch(`https://vedicscriptures.github.io/slok/${chapter}/${num}`);
+                if (verseResponse.ok) {
+                  const verseData: VerseData = await verseResponse.json();
+                  results.push({
+                    chapter,
+                    verse: num,
+                    preview: verseData.transliteration,
+                    type: 'verse',
+                    content: {
+                      slok: verseData.slok,
+                      transliteration: verseData.transliteration,
+                      translation: verseData.tej.ht
+                    }
+                  });
+                }
+              }
+            }
+          }
+        } 
+        else if (parsed.type === 'chapter') {
           const response = await fetch(`https://vedicscriptures.github.io/chapters/${parsed.chapter}`);
           if (!response.ok) throw new Error('Failed to fetch chapter');
           const data: ChapterData = await response.json();
@@ -135,36 +184,6 @@ export function useSearch(query: string) {
               translation: data.tej.ht
             }
           }];
-        }
-        else if (parsed.type === 'keyword' && parsed.term?.match(/^\d+$/)) {
-          // Search for verses containing the number
-          const num = parseInt(parsed.term);
-          // Search in first few chapters (for demo)
-          for (let chapter = 1; chapter <= 18; chapter++) {
-            const response = await fetch(`https://vedicscriptures.github.io/chapters/${chapter}`);
-            if (response.ok) {
-              const data: ChapterData = await response.json();
-              for (let verse = 1; verse <= data.verses_count; verse++) {
-                if (verse === num) {
-                  const verseResponse = await fetch(`https://vedicscriptures.github.io/slok/${chapter}/${verse}`);
-                  if (verseResponse.ok) {
-                    const verseData: VerseData = await verseResponse.json();
-                    results.push({
-                      chapter,
-                      verse,
-                      preview: verseData.transliteration,
-                      type: 'verse',
-                      content: {
-                        slok: verseData.slok,
-                        transliteration: verseData.transliteration,
-                        translation: verseData.tej.ht
-                      }
-                    });
-                  }
-                }
-              }
-            }
-          }
         }
 
         return results;
