@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import MoodSelector from "@/components/MoodSelector";
 import VerseDisplay from "@/components/VerseDisplay";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { Share2 } from "lucide-react";
 
 interface VerseResponse {
   slok: string;
@@ -27,6 +28,7 @@ interface VerseResponse {
 
 export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const versesSectionRef = useRef<HTMLDivElement>(null);
 
   const { data: verses, isLoading, error } = useQuery<VerseResponse[]>({
     queryKey: ['/api/mood', selectedMood],
@@ -40,29 +42,80 @@ export default function Home() {
       console.log('Fetched verses:', data);
       return data;
     },
-    enabled: !!selectedMood
+    enabled: !!selectedMood,
+    onSuccess: () => {
+      // Scroll to verses section when data is loaded
+      versesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 
+  const handleShareWhatsApp = () => {
+    const text = "Discover divine wisdom from Bhagavad Gita for your daily challenges at GyanGita! 🕉️\n\nFind spiritual guidance tailored to your emotional state.";
+    const url = window.location.origin;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n\n' + url)}`, '_blank');
+  };
+
   return (
-    <div className="container px-4 py-12 sm:px-8">
-      <div className="mx-auto max-w-3xl text-center">
-        <h1 className="font-playfair text-4xl font-bold md:text-5xl lg:text-6xl">
-          Find Peace in Ancient Wisdom
-        </h1>
-        <p className="mt-6 text-lg text-muted-foreground">
-          Discover personalized spiritual guidance from the Bhagavad Gita based on your current emotional state. 
-          Let the timeless wisdom guide you through life's journey.
-        </p>
+    <div className="min-h-screen">
+      <div className="container px-4 py-16 sm:px-8">
+        <div className="mx-auto max-w-4xl text-center">
+          <h1 className="font-playfair text-4xl font-bold md:text-5xl lg:text-6xl">
+            Divine Wisdom for Modern Life's Challenges
+          </h1>
+          <p className="mt-6 text-xl text-muted-foreground">
+            Navigate life's journey with timeless guidance from the Bhagavad Gita,
+            perfectly matched to your emotional state.
+          </p>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 max-w-xl mx-auto">
+            <Button
+              size="lg"
+              className="text-lg"
+              onClick={() => {
+                const moodSection = document.getElementById('mood-section');
+                moodSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+            >
+              Find Guidance
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-lg gap-2"
+              onClick={handleShareWhatsApp}
+            >
+              <Share2 className="w-5 h-5" />
+              Share on WhatsApp
+            </Button>
+          </div>
+
+          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="text-center p-6 rounded-lg bg-primary/5">
+              <h3 className="text-xl font-semibold mb-2">Personalized Guidance</h3>
+              <p>Receive verses that resonate with your current emotional state and life situation</p>
+            </div>
+            <div className="text-center p-6 rounded-lg bg-primary/5">
+              <h3 className="text-xl font-semibold mb-2">Ancient Wisdom</h3>
+              <p>Access profound teachings from Bhagavad Gita with expert translations and commentaries</p>
+            </div>
+            <div className="text-center p-6 rounded-lg bg-primary/5">
+              <h3 className="text-xl font-semibold mb-2">Daily Inspiration</h3>
+              <p>Transform challenges into opportunities with divine guidance for modern life</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-12">
-        <h2 className="mb-8 text-center font-playfair text-2xl font-semibold">
-          How are you feeling today?
-        </h2>
-        <MoodSelector onSelect={setSelectedMood} selectedMood={selectedMood} />
+      <div id="mood-section" className="bg-muted/50 py-16">
+        <div className="container px-4 sm:px-8">
+          <h2 className="mb-8 text-center font-playfair text-3xl font-semibold">
+            How are you feeling today?
+          </h2>
+          <MoodSelector onSelect={setSelectedMood} selectedMood={selectedMood} />
+        </div>
       </div>
 
-      <div className="mt-12">
+      <div ref={versesSectionRef} className="container px-4 py-16 sm:px-8">
         {error ? (
           <div className="text-center text-red-500">
             Error loading verses. Please try again.
@@ -75,7 +128,11 @@ export default function Home() {
           <div className="mt-8 flex justify-center space-x-4">
             <Button
               variant="outline"
-              onClick={() => setSelectedMood(null)}
+              onClick={() => {
+                setSelectedMood(null);
+                const moodSection = document.getElementById('mood-section');
+                moodSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
             >
               Choose Another Mood
             </Button>
@@ -87,15 +144,6 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      {!selectedMood && (
-        <div className="mt-16 text-center">
-          <p className="text-lg text-muted-foreground">
-            Begin your spiritual journey today. Select your current mood above to receive 
-            divine guidance tailored to your emotional state.
-          </p>
-        </div>
-      )}
     </div>
   );
 }
