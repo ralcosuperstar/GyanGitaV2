@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { useLanguage } from "@/contexts/language-context";
 import MoodSelector from "@/components/MoodSelector";
 import VerseDisplay from "@/components/VerseDisplay";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const versesSectionRef = useRef<HTMLDivElement>(null);
   const [, setLocation] = useLocation();
+  const { t } = useLanguage();
 
   const { data: verses, isLoading, error } = useQuery<VerseResponse[]>({
     queryKey: ['/api/mood', selectedMood],
@@ -54,7 +56,7 @@ export default function Home() {
   }, [verses]);
 
   const handleShareWhatsApp = () => {
-    const text = "Discover divine wisdom from Bhagavad Gita for your daily challenges at GyanGita! 🕉️\n\nFind spiritual guidance tailored to your emotional state.";
+    const text = t('home.share.text');
     const url = window.location.origin;
     window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n\n' + url)}`, '_blank');
   };
@@ -66,12 +68,11 @@ export default function Home() {
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="font-playfair text-5xl font-bold md:text-6xl lg:text-7xl">
             <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-              Divine Wisdom for Modern Life's Challenges
+              {t('home.title')}
             </span>
           </h1>
           <p className="mt-8 text-xl text-muted-foreground leading-relaxed">
-            Navigate life's journey with timeless guidance from the Bhagavad Gita,
-            perfectly matched to your emotional state.
+            {t('home.subtitle')}
           </p>
 
           <div className="mt-12 grid gap-4 sm:grid-cols-2 max-w-xl mx-auto">
@@ -84,7 +85,7 @@ export default function Home() {
               }}
             >
               <Lightbulb className="w-6 h-6 mr-2" />
-              Find Guidance
+              {t('home.cta.find')}
             </Button>
             <Button
               size="lg"
@@ -93,7 +94,7 @@ export default function Home() {
               onClick={handleShareWhatsApp}
             >
               <Share2 className="w-6 h-6 mr-2" />
-              Share on WhatsApp
+              {t('home.cta.share')}
             </Button>
           </div>
         </div>
@@ -105,19 +106,19 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             <div className="text-center transform hover:scale-105 transition-transform">
               <p className="text-4xl font-bold text-primary">18</p>
-              <p className="text-sm text-muted-foreground">Sacred Chapters</p>
+              <p className="text-sm text-muted-foreground">{t('stats.chapters')}</p>
             </div>
             <div className="text-center transform hover:scale-105 transition-transform">
               <p className="text-4xl font-bold text-primary">700</p>
-              <p className="text-sm text-muted-foreground">Divine Verses</p>
+              <p className="text-sm text-muted-foreground">{t('stats.verses')}</p>
             </div>
             <div className="text-center transform hover:scale-105 transition-transform">
               <p className="text-4xl font-bold text-primary">15+</p>
-              <p className="text-sm text-muted-foreground">Emotional States</p>
+              <p className="text-sm text-muted-foreground">{t('stats.states')}</p>
             </div>
             <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">5+</p>
-              <p className="text-sm text-muted-foreground">Expert Translations</p>
+              <p className="text-4xl font-bold text-primary">5000+</p>
+              <p className="text-sm text-muted-foreground">{t('stats.years')}</p>
             </div>
           </div>
         </div>
@@ -131,9 +132,9 @@ export default function Home() {
               <div className="absolute top-6 right-6 text-primary/30">
                 <Brain className="w-12 h-12" />
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Personalized Guidance</h3>
+              <h3 className="text-2xl font-semibold mb-4">{t('features.personal.title')}</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Receive verses that resonate with your current emotional state, helping you navigate life's challenges with divine wisdom.
+                {t('features.personal.desc')}
               </p>
             </Card>
 
@@ -141,9 +142,9 @@ export default function Home() {
               <div className="absolute top-6 right-6 text-primary/30">
                 <Book className="w-12 h-12" />
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Ancient Wisdom</h3>
+              <h3 className="text-2xl font-semibold mb-4">{t('features.ancient.title')}</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Access profound teachings with expert translations and commentaries from renowned scholars and spiritual masters.
+                {t('features.ancient.desc')}
               </p>
             </Card>
 
@@ -151,9 +152,9 @@ export default function Home() {
               <div className="absolute top-6 right-6 text-primary/30">
                 <Heart className="w-12 h-12" />
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Daily Inspiration</h3>
+              <h3 className="text-2xl font-semibold mb-4">{t('features.daily.title')}</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Transform challenges into opportunities with timeless spiritual principles applicable to modern life.
+                {t('features.daily.desc')}
               </p>
             </Card>
           </div>
@@ -164,9 +165,9 @@ export default function Home() {
                 <Target className="w-8 h-8 text-primary" />
               </div>
               <div className="text-left">
-                <h3 className="text-xl font-semibold mb-2">Mood-Based Recommendations</h3>
+                <h3 className="text-xl font-semibold mb-2">{t('features.mood.title')}</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Find verses that specifically address your current emotional state and life situation.
+                  {t('features.mood.desc')}
                 </p>
               </div>
             </div>
@@ -175,9 +176,9 @@ export default function Home() {
                 <Users className="w-8 h-8 text-primary" />
               </div>
               <div className="text-left">
-                <h3 className="text-xl font-semibold mb-2">Multiple Perspectives</h3>
+                <h3 className="text-xl font-semibold mb-2">{t('features.perspectives.title')}</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Gain deeper understanding through various scholarly interpretations and commentaries.
+                  {t('features.perspectives.desc')}
                 </p>
               </div>
             </div>
@@ -188,7 +189,7 @@ export default function Home() {
       <div id="mood-section" className="bg-gradient-to-b from-muted/50 to-background py-20">
         <div className="container mx-auto max-w-7xl px-4 sm:px-8">
           <h2 className="mb-12 text-center font-playfair text-4xl font-semibold">
-            How are you feeling today?
+            {t('home.mood.title')}
           </h2>
           <MoodSelector onSelect={setSelectedMood} selectedMood={selectedMood} />
         </div>
@@ -215,10 +216,10 @@ export default function Home() {
                 moodSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
             >
-              Choose Another Mood
+              {t('home.mood.change')}
             </Button>
             <Button size="lg" className="h-14" onClick={() => setLocation("/browse")}>
-              Explore More Verses
+              {t('home.explore')}
             </Button>
           </div>
         )}
