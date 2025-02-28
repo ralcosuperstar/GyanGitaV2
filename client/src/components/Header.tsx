@@ -150,8 +150,14 @@ function SearchOverlay() {
                     ))}
                   </div>
                 ) : searchQuery ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    {t('search.no_results')}
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <Search className="h-12 w-12 text-muted-foreground mb-4" /> {/* Replace with appropriate icon */}
+                    <h3 className="font-semibold text-lg mb-1">No results found</h3>
+                    <p className="text-muted-foreground max-w-md">
+                      We couldn't find any verses or chapters that match "{searchQuery}". 
+                      Try searching for a chapter number (1-18), a verse reference like "1:1", 
+                      or a keyword.
+                    </p>
                   </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
