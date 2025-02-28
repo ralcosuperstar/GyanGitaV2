@@ -63,23 +63,23 @@ export default function VerseCard({ verse }: VerseCardProps) {
       </Card>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-3xl h-[90vh] p-0">
-          <DialogHeader className="px-6 py-4 sticky top-0 bg-background border-b z-10">
+        <DialogContent className="max-w-3xl h-[90vh] flex flex-col">
+          <DialogHeader className="px-6 py-4 bg-background border-b">
             <DialogTitle className="font-playfair text-2xl">
               Chapter {verse.chapter}, Verse {verse.verse}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="px-6 flex flex-col h-[calc(100%-8rem)]">
-            <Tabs defaultValue="verse" className="flex-1">
-              <TabsList className="sticky top-0 bg-background w-full grid grid-cols-3">
-                <TabsTrigger value="verse">Verse</TabsTrigger>
-                <TabsTrigger value="translations">Translations</TabsTrigger>
-                <TabsTrigger value="commentary">Commentary</TabsTrigger>
-              </TabsList>
+          <Tabs defaultValue="verse" className="flex-1 flex flex-col min-h-0">
+            <TabsList className="w-full grid grid-cols-3 px-6 bg-background">
+              <TabsTrigger value="verse">Verse</TabsTrigger>
+              <TabsTrigger value="translations">Translations</TabsTrigger>
+              <TabsTrigger value="commentary">Commentary</TabsTrigger>
+            </TabsList>
 
-              <ScrollArea className="h-full mt-4 pr-4">
-                <TabsContent value="verse" className="space-y-6 pb-6">
+            <div className="flex-1 overflow-auto px-6">
+              <ScrollArea className="h-full py-4">
+                <TabsContent value="verse" className="space-y-6 mt-0">
                   <div>
                     <h3 className="font-semibold mb-2 text-primary">Sanskrit</h3>
                     <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg">{verse.slok}</p>
@@ -90,7 +90,7 @@ export default function VerseCard({ verse }: VerseCardProps) {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="translations" className="space-y-6 pb-6">
+                <TabsContent value="translations" className="space-y-6 mt-0">
                   {verse.tej && (
                     <div className="bg-muted/50 p-4 rounded-lg">
                       <p className="font-medium text-primary mb-2">Swami Tejomayananda</p>
@@ -116,7 +116,7 @@ export default function VerseCard({ verse }: VerseCardProps) {
                   )}
                 </TabsContent>
 
-                <TabsContent value="commentary" className="space-y-6 pb-6">
+                <TabsContent value="commentary" className="space-y-6 mt-0">
                   {verse.chinmay?.hc ? (
                     <div className="bg-muted/50 p-4 rounded-lg">
                       <p className="font-medium text-primary mb-2">Swami Chinmayananda</p>
@@ -127,14 +127,14 @@ export default function VerseCard({ verse }: VerseCardProps) {
                   )}
                 </TabsContent>
               </ScrollArea>
-            </Tabs>
-
-            <div className="sticky bottom-0 bg-background py-4 border-t mt-auto">
-              <Button onClick={handleShare} className="w-full gap-2">
-                <Share2 className="w-5 h-5" />
-                Share on WhatsApp
-              </Button>
             </div>
+          </Tabs>
+
+          <div className="px-6 py-4 bg-background border-t">
+            <Button onClick={handleShare} className="w-full gap-2">
+              <Share2 className="w-5 h-5" />
+              Share on WhatsApp
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
