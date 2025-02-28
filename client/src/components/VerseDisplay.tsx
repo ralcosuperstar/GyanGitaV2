@@ -2,15 +2,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { moods } from "@/lib/moods";
 
+interface VerseResponse {
+  slok: string;
+  transliteration: string;
+  tej: {
+    ht: string;
+    et: string;
+  };
+  chapter: number;
+  verse: number;
+}
+
 interface VerseDisplayProps {
-  verses: Array<{
-    slok: string;
-    transliteration: string;
-    tej: {
-      ht: string;
-      et: string;
-    };
-  }> | null;
+  verses: VerseResponse[] | null;
   selectedMood: string | null;
   isLoading: boolean;
 }
@@ -40,10 +44,10 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       </div>
 
       {verses.map((verse, index) => (
-        <Card key={index}>
+        <Card key={`${verse.chapter}-${verse.verse}`}>
           <CardHeader>
             <CardTitle className="font-playfair text-xl">
-              Verse {index + 1}
+              Chapter {verse.chapter}, Verse {verse.verse}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

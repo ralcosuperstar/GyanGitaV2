@@ -52,17 +52,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/mood/:mood', async (req, res) => {
     try {
       const { mood } = req.params;
-      // Get pre-mapped verse for the mood from storage
+      // Get all verses mapped to this mood
       const moodVerse = await storage.getMoodVerse(mood);
       if (!moodVerse) {
-        res.status(404).json({ error: 'No verse found for this mood' });
+        res.status(404).json({ error: 'No verses found for this mood' });
         return;
       }
-      
-      const verse = await fetchVerse(moodVerse.chapter, moodVerse.verse);
-      res.json(verse);
+
+      // Fetch the verse data from the API
+      const verseData = await fetchVerse(moodVerse.chapter, moodVerse.verse);
+
+      // Return the complete verse data
+      res.json([verseData]);
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch mood-based verse' });
+      console.error('Error fetching mood verses:', error);
+      res.status(500).json({ error: 'Failed to fetch mood-based verses' });
     }
   });
 
