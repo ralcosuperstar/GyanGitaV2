@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import React from "react";
 
 type Theme = "dark" | "light" | "system";
 
@@ -56,11 +57,7 @@ export function ThemeProvider({
     },
   };
 
-  return (
-    <ThemeProviderContext.Provider value={value}>
-      {children}
-    </ThemeProviderContext.Provider>
-  );
+  return React.createElement(ThemeProviderContext.Provider, { value }, children);
 }
 
 export const useTheme = () => {
