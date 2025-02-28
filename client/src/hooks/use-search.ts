@@ -186,6 +186,16 @@ export function useSearch(query: string) {
           }];
         }
 
+        // Filter for numerical search (like "23")
+        if (/^\d+$/.test(debouncedQuery)) {
+          const numQuery = debouncedQuery;
+          // Filter results to include chapter numbers or verse numbers that match the query
+          results = results.filter(result => 
+            result.chapter.toString().includes(numQuery) || 
+            (result.verse && result.verse.toString().includes(numQuery))
+          );
+        }
+        
         return results;
       } catch (error) {
         console.error('Search error:', error);
