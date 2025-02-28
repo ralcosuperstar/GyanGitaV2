@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Share2, Book, Grid } from "lucide-react";
 import VerseCard from "@/components/VerseCard";
 
@@ -46,6 +47,7 @@ export default function Browse() {
   const [selectedVerse, setSelectedVerse] = useState<string>("");
   const [viewMode, setViewMode] = useState<"search" | "grid">("search");
   const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
+  const [showVerseModal, setShowVerseModal] = useState(false);
 
   const { data: chapters, isLoading: isLoadingChapters } = useQuery<Chapter[]>({
     queryKey: ['/api/chapters'],
@@ -182,7 +184,7 @@ export default function Browse() {
                 {chapters?.map((chapter) => (
                   <Card 
                     key={chapter.chapter_number}
-                    className="cursor-pointer hover:border-primary transition-colors"
+                    className="cursor-pointer hover:border-primary transition-colors transform hover:scale-105"
                     onClick={() => setSelectedGridChapter(chapter.chapter_number)}
                   >
                     <CardHeader>
@@ -205,16 +207,17 @@ export default function Browse() {
                 >
                   ← Back to Chapters
                 </Button>
+
                 <div className="grid gap-4 grid-cols-6 sm:grid-cols-8 md:grid-cols-10">
                   {Array.from({ length: chapters?.find(c => c.chapter_number === selectedGridChapter)?.verses_count || 0 }).map((_, i) => (
                     <Button
                       key={i + 1}
                       variant="outline"
-                      className="h-12 w-12"
+                      className="h-12 w-12 hover:bg-primary/5"
                       onClick={() => {
                         setSelectedChapter(selectedGridChapter.toString());
                         setSelectedVerse((i + 1).toString());
-                        setViewMode("search");
+                        setShowVerseModal(true);
                       }}
                     >
                       {i + 1}
@@ -224,6 +227,15 @@ export default function Browse() {
               </div>
             )}
           </div>
+        )}
+
+        {/* Verse Modal */}
+        {verse && showVerseModal && (
+          <Dialog open={showVerseModal} onOpenChange={setShowVerseModal}>
+            <DialogContent className="max-w-3xl">
+              <VerseCard verse={verse} />
+            </DialogContent>
+          </Dialog>
         )}
       </div>
     </div>

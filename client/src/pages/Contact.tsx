@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, MessageSquare } from "lucide-react";
 
 export default function Contact() {
   const { toast } = useToast();
@@ -17,86 +17,102 @@ export default function Contact() {
   };
 
   return (
-    <div className="container px-4 py-12 sm:px-8">
-      <div className="mx-auto max-w-3xl text-center">
-        <h1 className="font-playfair text-4xl font-bold md:text-5xl">
-          Contact Us
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Have questions or feedback? We'd love to hear from you.
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
+      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <h1 className="font-playfair text-4xl font-bold md:text-5xl mb-4">
+            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+              Contact Us
+            </span>
+          </h1>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Have questions or feedback? We'd love to hear from you.
+          </p>
+        </div>
 
-      <div className="mt-12 grid gap-8 md:grid-cols-2">
-        <Card>
-          <CardContent className="p-6">
-            <h2 className="font-playfair text-2xl font-semibold">Get in Touch</h2>
-            <div className="mt-6 space-y-4">
-              <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-primary" />
-                <a 
-                  href="mailto:support@gyangita.com"
-                  className="hover:text-primary"
-                >
-                  support@gyangita.com
-                </a>
+        <div className="mt-12 grid gap-8 md:grid-cols-2">
+          <Card className="transform hover:scale-105 transition-all">
+            <CardContent className="p-8">
+              <h2 className="font-playfair text-2xl font-semibold mb-6">Get in Touch</h2>
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 group">
+                  <div className="rounded-full bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors">
+                    <Mail className="h-6 w-6 text-primary" />
+                  </div>
+                  <a 
+                    href="mailto:support@gyangita.com"
+                    className="text-lg hover:text-primary transition-colors"
+                  >
+                    support@gyangita.com
+                  </a>
+                </div>
+                <div className="flex items-center gap-4 group">
+                  <div className="rounded-full bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors">
+                    <Phone className="h-6 w-6 text-primary" />
+                  </div>
+                  <a 
+                    href="tel:+919370922063"
+                    className="text-lg hover:text-primary transition-colors"
+                  >
+                    +91 9370922063
+                  </a>
+                </div>
+                <div className="flex items-center gap-4 group">
+                  <div className="rounded-full bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors">
+                    <MessageSquare className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-lg text-muted-foreground">
+                    Response within 24 hours
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="h-5 w-5 text-primary" />
-                <a 
-                  href="tel:+919370922063"
-                  className="hover:text-primary"
-                >
-                  +91 9370922063
-                </a>
-              </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            <div className="mt-8">
-              <img
-                src="https://images.unsplash.com/photo-1476900164809-ff19b8ae5968"
-                alt="Contact decoration"
-                className="rounded-lg object-cover"
-                style={{ maxHeight: "200px", width: "100%" }}
-              />
-            </div>
-          </CardContent>
-        </Card>
+          <Card className="transform hover:scale-105 transition-all">
+            <CardContent className="p-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Name
+                  </label>
+                  <Input 
+                    placeholder="Your name" 
+                    required 
+                    className="h-12"
+                  />
+                </div>
 
-        <Card>
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  Name
-                </label>
-                <Input placeholder="Your name" required />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Email
+                  </label>
+                  <Input 
+                    type="email" 
+                    placeholder="your@email.com" 
+                    required 
+                    className="h-12"
+                  />
+                </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  Email
-                </label>
-                <Input type="email" placeholder="your@email.com" required />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Message
+                  </label>
+                  <Textarea 
+                    placeholder="Your message..."
+                    className="min-h-[150px] resize-none"
+                    required
+                  />
+                </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  Message
-                </label>
-                <Textarea 
-                  placeholder="Your message..."
-                  className="min-h-[150px]"
-                  required
-                />
-              </div>
-
-              <Button type="submit" className="w-full">
-                Send Message
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <Button type="submit" size="lg" className="w-full h-12">
+                  Send Message
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

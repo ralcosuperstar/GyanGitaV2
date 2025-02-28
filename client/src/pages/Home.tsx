@@ -61,29 +61,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
-      <div className="border-b bg-gradient-to-r from-primary/10 to-primary/5">
-        <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-8">
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">18</p>
-              <p className="text-sm text-muted-foreground">Sacred Chapters</p>
-            </div>
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">700</p>
-              <p className="text-sm text-muted-foreground">Divine Verses</p>
-            </div>
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">15+</p>
-              <p className="text-sm text-muted-foreground">Emotional States</p>
-            </div>
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">5+</p>
-              <p className="text-sm text-muted-foreground">Expert Translations</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      {/* Hero Section */}
       <div className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="font-playfair text-5xl font-bold md:text-6xl lg:text-7xl">
@@ -118,65 +96,33 @@ export default function Home() {
               Share on WhatsApp
             </Button>
           </div>
+        </div>
+      </div>
 
-          <div className="mt-20 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <Card className="relative overflow-hidden p-8 bg-gradient-to-br from-primary/10 to-primary/5 transform hover:scale-105 transition-all">
-              <div className="absolute top-6 right-6 text-primary/30">
-                <Brain className="w-12 h-12" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-4">Personalized Guidance</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Receive verses that resonate with your current emotional state, helping you navigate life's challenges with divine wisdom.
-              </p>
-            </Card>
-
-            <Card className="relative overflow-hidden p-8 bg-gradient-to-br from-primary/10 to-primary/5 transform hover:scale-105 transition-all">
-              <div className="absolute top-6 right-6 text-primary/30">
-                <Book className="w-12 h-12" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-4">Ancient Wisdom</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Access profound teachings with expert translations and commentaries from renowned scholars and spiritual masters.
-              </p>
-            </Card>
-
-            <Card className="relative overflow-hidden p-8 bg-gradient-to-br from-primary/10 to-primary/5 transform hover:scale-105 transition-all">
-              <div className="absolute top-6 right-6 text-primary/30">
-                <Heart className="w-12 h-12" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-4">Daily Inspiration</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Transform challenges into opportunities with timeless spiritual principles applicable to modern life.
-              </p>
-            </Card>
-          </div>
-
-          <div className="mt-20 grid gap-8 sm:grid-cols-2">
-            <div className="flex items-start gap-6 group">
-              <div className="rounded-full bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors">
-                <Target className="w-8 h-8 text-primary" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-xl font-semibold mb-2">Mood-Based Recommendations</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Find verses that specifically address your current emotional state and life situation.
-                </p>
-              </div>
+      {/* Stats Section */}
+      <div className="border-y bg-gradient-to-r from-primary/10 to-primary/5">
+        <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-8">
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+            <div className="text-center transform hover:scale-105 transition-transform">
+              <p className="text-4xl font-bold text-primary">18</p>
+              <p className="text-sm text-muted-foreground">Sacred Chapters</p>
             </div>
-            <div className="flex items-start gap-6 group">
-              <div className="rounded-full bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors">
-                <Users className="w-8 h-8 text-primary" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-xl font-semibold mb-2">Multiple Perspectives</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Gain deeper understanding through various scholarly interpretations and commentaries.
-                </p>
-              </div>
+            <div className="text-center transform hover:scale-105 transition-transform">
+              <p className="text-4xl font-bold text-primary">700</p>
+              <p className="text-sm text-muted-foreground">Divine Verses</p>
+            </div>
+            <div className="text-center transform hover:scale-105 transition-transform">
+              <p className="text-4xl font-bold text-primary">15+</p>
+              <p className="text-sm text-muted-foreground">Emotional States</p>
+            </div>
+            <div className="text-center transform hover:scale-105 transition-transform">
+              <p className="text-4xl font-bold text-primary">5+</p>
+              <p className="text-sm text-muted-foreground">Expert Translations</p>
             </div>
           </div>
         </div>
       </div>
+
 
       <div id="mood-section" className="bg-gradient-to-b from-muted/50 to-background py-20">
         <div className="container mx-auto max-w-7xl px-4 sm:px-8">
