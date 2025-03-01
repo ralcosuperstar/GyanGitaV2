@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Share2, Bookmark, BookmarkCheck } from "lucide-react";
@@ -113,7 +113,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
   };
 
   const renderVerse = (v: any) => (
-    <div key={`${v.chapter}-${v.verse}`} className="bg-muted/50 p-4 rounded-lg mb-4 hover:bg-muted/70 transition-colors">
+    <div key={`${v.chapter}-${v.verse}`} className="bg-muted/50 p-4 rounded-lg mb-4 hover:bg-muted/70 transition-colors cursor-pointer">
       <h4 className="font-medium mb-2">
         Chapter {v.chapter}, Verse {v.verse}
       </h4>
@@ -124,7 +124,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
   return (
     <>
-      <Card className="group h-full transition-transform hover:scale-[1.02] duration-200 hover:shadow-lg">
+      <Card className="group h-full transition-all hover:scale-[1.02] duration-200 hover:shadow-lg">
         <CardHeader className="bg-primary/5 transition-colors group-hover:bg-primary/10">
           <CardTitle className="font-playfair text-xl flex justify-between items-center">
             <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
@@ -179,105 +179,142 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       </Card>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-3xl h-[90vh] flex flex-col">
+        <DialogContent className="max-w-3xl h-[90vh] flex flex-col p-0">
           <DialogHeader className="px-6 py-4 bg-background border-b sticky top-0 z-10">
-            <DialogTitle className="font-playfair text-2xl">
-              Chapter {verse.chapter}, Verse {verse.verse}
+            <DialogTitle className="font-playfair text-2xl flex items-center justify-between">
+              <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
+              {showActions && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleBookmark}
+                  className="h-8 w-8 transition-transform hover:scale-110"
+                  disabled={bookmarkMutation.isPending}
+                >
+                  {isBookmarked ? (
+                    <BookmarkCheck className="h-5 w-5 text-primary" />
+                  ) : (
+                    <Bookmark className="h-5 w-5" />
+                  )}
+                </Button>
+              )}
             </DialogTitle>
           </DialogHeader>
 
           <Tabs defaultValue="verse" className="flex-1 flex flex-col min-h-0">
-            <TabsList className="w-full grid grid-cols-4 px-6 bg-background sticky top-[73px] z-10">
-              <TabsTrigger value="verse">{t('verse.text')}</TabsTrigger>
-              <TabsTrigger value="translations">{t('verse.translations')}</TabsTrigger>
-              <TabsTrigger value="commentary">{t('verse.commentary')}</TabsTrigger>
-              <TabsTrigger value="related">{t('verse.related')}</TabsTrigger>
+            <TabsList className="w-full h-12 p-0 bg-background border-b sticky top-[73px] z-10">
+              <div className="container flex max-w-3xl px-6">
+                <TabsTrigger 
+                  value="verse" 
+                  className="flex-1 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                >
+                  {t('verse.text')}
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="translations" 
+                  className="flex-1 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                >
+                  {t('verse.translations')}
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="commentary" 
+                  className="flex-1 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                >
+                  {t('verse.commentary')}
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="related" 
+                  className="flex-1 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                >
+                  {t('verse.related')}
+                </TabsTrigger>
+              </div>
             </TabsList>
 
-            <ScrollArea className="flex-1 px-6">
-              <div className="py-6 space-y-6">
-                <TabsContent value="verse" className="m-0">
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="font-semibold mb-3 text-primary">{t('verse.sanskrit')}</h3>
-                      <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg leading-relaxed break-words">
-                        {verse.slok}
-                      </p>
+            <ScrollArea className="flex-1">
+              <div className="container max-w-3xl py-6 px-6 space-y-6">
+                <TabsContent value="verse" className="m-0 space-y-6 [&>div]:animate-fadeIn">
+                  <div>
+                    <h3 className="font-semibold mb-3 text-primary/90">{t('verse.sanskrit')}</h3>
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-xl font-sanskrit leading-relaxed break-words">{verse.slok}</p>
                     </div>
-                    <div>
-                      <h3 className="font-semibold mb-3 text-primary">{t('verse.transliteration')}</h3>
-                      <p className="text-lg bg-muted/50 p-4 rounded-lg leading-relaxed break-words">
-                        {verse.transliteration}
-                      </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-3 text-primary/90">{t('verse.transliteration')}</h3>
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-lg leading-relaxed break-words">{verse.transliteration}</p>
                     </div>
                   </div>
                 </TabsContent>
 
-                <TabsContent value="translations" className="m-0">
-                  <div className="space-y-6">
-                    {verse.tej && (
-                      <div className="bg-muted/50 p-4 rounded-lg">
-                        <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
-                        <p className="leading-relaxed break-words mb-3">{verse.tej.ht}</p>
+                <TabsContent value="translations" className="m-0 space-y-6 [&>div]:animate-fadeIn">
+                  {verse.tej && (
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="font-medium text-primary/90 mb-3">Swami Tejomayananda</p>
+                      <div className="space-y-4">
+                        <p className="leading-relaxed break-words">{verse.tej.ht}</p>
                         {verse.tej.et && (
-                          <p className="text-muted-foreground leading-relaxed break-words">{verse.tej.et}</p>
+                          <p className="text-muted-foreground leading-relaxed break-words border-t border-border/50 pt-4">
+                            {verse.tej.et}
+                          </p>
                         )}
                       </div>
-                    )}
-
-                    {verse.siva?.et && (
-                      <div className="bg-muted/50 p-4 rounded-lg">
-                        <p className="font-medium text-primary mb-3">Swami Sivananda</p>
-                        <p className="leading-relaxed break-words">{verse.siva.et}</p>
-                      </div>
-                    )}
-
-                    {verse.purohit?.et && (
-                      <div className="bg-muted/50 p-4 rounded-lg">
-                        <p className="font-medium text-primary mb-3">Shri Purohit Swami</p>
-                        <p className="leading-relaxed break-words">{verse.purohit.et}</p>
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="commentary" className="m-0">
-                  {verse.chinmay?.hc ? (
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="font-medium text-primary mb-3">Swami Chinmayananda</p>
-                      <p className="leading-relaxed break-words">{verse.chinmay.hc}</p>
                     </div>
-                  ) : (
-                    <p className="text-center text-muted-foreground">
-                      {t('verse.noCommentary')}
-                    </p>
+                  )}
+
+                  {verse.siva?.et && (
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="font-medium text-primary/90 mb-3">Swami Sivananda</p>
+                      <p className="leading-relaxed break-words">{verse.siva.et}</p>
+                    </div>
+                  )}
+
+                  {verse.purohit?.et && (
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="font-medium text-primary/90 mb-3">Shri Purohit Swami</p>
+                      <p className="leading-relaxed break-words">{verse.purohit.et}</p>
+                    </div>
                   )}
                 </TabsContent>
 
-                <TabsContent value="related" className="m-0">
-                  <div className="bg-muted/50 p-4 rounded-lg">
-                    <p className="font-medium text-primary mb-4">{t('verse.relatedVerses')}</p>
-                    <div className="space-y-4">
-                      {isLoadingRelated ? (
-                        Array(3).fill(0).map((_, i) => (
-                          <Skeleton key={i} className="h-32 w-full" />
-                        ))
-                      ) : relatedVerses?.length ? (
-                        relatedVerses.map(renderVerse)
-                      ) : (
-                        <p className="text-center text-muted-foreground">
-                          {t('verse.noRelatedVerses')}
-                        </p>
-                      )}
+                <TabsContent value="commentary" className="m-0 [&>div]:animate-fadeIn">
+                  {verse.chinmay?.hc ? (
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="font-medium text-primary/90 mb-3">Swami Chinmayananda</p>
+                      <p className="leading-relaxed break-words">{verse.chinmay.hc}</p>
                     </div>
+                  ) : (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <p>{t('verse.noCommentary')}</p>
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="related" className="m-0 [&>div]:animate-fadeIn">
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-primary/90 mb-4">{t('verse.relatedVerses')}</h3>
+                    {isLoadingRelated ? (
+                      <div className="space-y-4">
+                        {Array(3).fill(0).map((_, i) => (
+                          <Skeleton key={i} className="h-32 w-full" />
+                        ))}
+                      </div>
+                    ) : relatedVerses?.length ? (
+                      relatedVerses.map(renderVerse)
+                    ) : (
+                      <div className="text-center py-12 text-muted-foreground">
+                        <p>{t('verse.noRelatedVerses')}</p>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               </div>
             </ScrollArea>
           </Tabs>
 
-          <div className="px-6 py-4 bg-background border-t sticky bottom-0">
-            <div className="flex gap-3">
+          <DialogFooter className="px-6 py-4 bg-background border-t sticky bottom-0">
+            <div className="flex gap-3 w-full">
               {showActions && (
                 <Button
                   variant="outline"
@@ -297,7 +334,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                 {t('verse.share')}
               </Button>
             </div>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
