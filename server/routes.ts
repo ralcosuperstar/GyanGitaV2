@@ -8,41 +8,13 @@ async function fetchVerse(chapter: string, verse: string) {
     const url = `https://vedicscriptures.github.io/slok/${chapter}/${verse}`;
     console.log('Fetching from URL:', url);
 
-    // Add timeout to prevent hanging requests
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-    
-    try {
-      const response = await fetch(url, { 
-        signal: controller.signal,
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'GyanGita-App/1.0'
-        }
-      });
-      
-      clearTimeout(timeoutId);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch verse: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      // Validate the data
-      if (!data || !data.slok) {
-        console.warn(`Incomplete data for verse ${chapter}:${verse}`);
-      }
-      
-      console.log(`Successfully fetched verse ${chapter}:${verse}`);
-      return data;
-    } catch (fetchError) {
-      clearTimeout(timeoutId);
-      if (fetchError.name === 'AbortError') {
-        throw new Error(`Request timeout for verse ${chapter}:${verse}`);
-      }
-      throw fetchError;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch verse: ${response.statusText}`);
     }
+    const data = await response.json();
+    console.log(`Successfully fetched verse ${chapter}:${verse}:`, data);
+    return data;
   } catch (error) {
     console.error(`Error fetching verse ${chapter}:${verse}:`, error);
     throw error;

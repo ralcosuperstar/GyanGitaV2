@@ -11,8 +11,6 @@ import Browse from "@/pages/Browse";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
-import { HelmetProvider } from "react-helmet-async";
-import ErrorBoundary from "@/components/ErrorBoundary";
 
 function Router() {
   return (
@@ -29,22 +27,18 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <ThemeProvider defaultTheme="light" storageKey="gyangita-theme">
-          <ErrorBoundary>
-            <LanguageProvider>
-              <div className="min-h-screen flex flex-col">
-                <Header />
-                <main className="flex-grow">
-                  <Router />
-                </main>
-                <Footer />
-              </div>
-              <Toaster />
-            </LanguageProvider>
-          </ErrorBoundary>
-        </ThemeProvider>
-      </HelmetProvider>
+      <ThemeProvider defaultTheme="light" storageKey="gyangita-theme">
+        <LanguageProvider>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-grow">
+              <Router />
+            </main>
+            <Footer />
+          </div>
+          <Toaster />
+        </LanguageProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

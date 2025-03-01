@@ -1,16 +1,4 @@
-
-import React, { useState, useEffect } from "react";
-import { 
-  Menu, 
-  Search, 
-  X, 
-  Sun, 
-  Moon,
-  Github,
-  Twitter,
-  Instagram
-} from "lucide-react";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, Search, Globe, X, ChevronRight } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";

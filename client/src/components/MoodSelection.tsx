@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -161,17 +162,13 @@ export function MoodSelection() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [recommendations, setRecommendations] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false); // Added loading state
   const { toast } = useToast();
 
   const handleMoodSelect = (moodId: string) => {
     setSelectedMood(moodId);
-    setIsLoading(true); // Set loading state to true
-    setRecommendations([]); // Reset recommendations before fetching
-    setTimeout(() => { // Simulate API call delay. Replace with actual API call in a real app.
-      setRecommendations(moodVerses[moodId] || []);
-      setIsLoading(false); // Set loading state to false after fetching
-    }, 500);
+    // In a real app, you would fetch these from an API
+    setRecommendations(moodVerses[moodId] || []);
+    setShowDialog(true);
   };
 
   return (
@@ -204,17 +201,11 @@ export function MoodSelection() {
               Here are verses from the Bhagavad Gita to guide you through this emotional state
             </DialogDescription>
           </DialogHeader>
-
+          
           <div className="space-y-4 my-4">
-            {isLoading ? ( // Added loading indicator
-              <Card>
-                <CardContent className="py-8 text-center">
-                  <p>Loading verses...</p>
-                </CardContent>
-              </Card>
-            ) : recommendations.length > 0 ? (
+            {recommendations.length > 0 ? (
               recommendations.map((verse, i) => (
-                <VerseCard
+                <VerseCard 
                   key={i}
                   chapter={verse.chapter}
                   verse={verse.verse}
@@ -233,9 +224,9 @@ export function MoodSelection() {
               </Card>
             )}
           </div>
-
+          
           <div className="flex justify-between">
-            <Button
+            <Button 
               variant="outline"
               onClick={() => {
                 toast({
