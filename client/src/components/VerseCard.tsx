@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, ArrowRightCircle } from "lucide-react";
+import { ArrowRight, ArrowRightCircle, Share2 } from "lucide-react"; // Added Share2 import
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -94,7 +94,13 @@ export default function VerseCard(props: VerseCardProps) {
                 </div>
                 <div className="px-6 py-4 bg-background border-t">
                   <Button onClick={handleShare} className="w-full gap-2">
-                    <Share2 className="w-5 h-5" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                      <circle cx="18" cy="5" r="3"></circle>
+                      <circle cx="6" cy="12" r="3"></circle>
+                      <circle cx="18" cy="19" r="3"></circle>
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
                     Share on WhatsApp
                   </Button>
                 </div>
