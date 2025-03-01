@@ -66,7 +66,7 @@ export default function VerseCard(props: VerseCardProps) {
 
             <div>
               <h3 className="font-semibold mb-2 text-primary">Translation</h3>
-              <p className="line-clamp-3">{verse.tej.ht}</p>
+              <p className="line-clamp-3">{verse.tej?.ht || "Translation not available"}</p>
             </div>
             <Button onClick={() => setShowModal(true)} className="w-full">
               Read More
@@ -83,11 +83,11 @@ export default function VerseCard(props: VerseCardProps) {
                     <div className="space-y-6 mt-0">
                       <div>
                         <h3 className="font-semibold mb-2 text-primary">Sanskrit</h3>
-                        <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg">{verse.slok}</p>
+                        <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg">{verse.slok || "Sanskrit text not available"}</p>
                       </div>
                       <div>
                         <h3 className="font-semibold mb-2 text-primary">Transliteration</h3>
-                        <p className="text-lg bg-muted/50 p-4 rounded-lg">{verse.transliteration}</p>
+                        <p className="text-lg bg-muted/50 p-4 rounded-lg">{verse.transliteration || "Transliteration not available"}</p>
                       </div>
                     </div>
                   </div>
