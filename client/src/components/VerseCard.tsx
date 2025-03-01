@@ -113,19 +113,19 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
   };
 
   const renderVerse = (v: any) => (
-    <div key={`${v.chapter}-${v.verse}`} className="bg-muted/50 p-4 rounded-lg mb-4">
+    <div key={`${v.chapter}-${v.verse}`} className="bg-muted/50 p-4 rounded-lg mb-4 hover:bg-muted/70 transition-colors">
       <h4 className="font-medium mb-2">
         Chapter {v.chapter}, Verse {v.verse}
       </h4>
-      <p className="text-sm font-sanskrit mb-2">{v.slok}</p>
-      <p className="text-sm text-foreground/90">{v.tej.ht}</p>
+      <p className="text-sm font-sanskrit mb-2 leading-relaxed break-words">{v.slok}</p>
+      <p className="text-sm text-foreground/90 leading-relaxed break-words">{v.tej.ht}</p>
     </div>
   );
 
   return (
     <>
-      <Card className="overflow-hidden transition-transform hover:scale-[1.02] duration-200 h-full">
-        <CardHeader className="bg-primary/5">
+      <Card className="group h-full transition-transform hover:scale-[1.02] duration-200 hover:shadow-lg">
+        <CardHeader className="bg-primary/5 transition-colors group-hover:bg-primary/10">
           <CardTitle className="font-playfair text-xl flex justify-between items-center">
             <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
             {showActions && (
@@ -133,7 +133,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                 variant="ghost"
                 size="icon"
                 onClick={handleBookmark}
-                className="h-8 w-8"
+                className="h-8 w-8 transition-transform hover:scale-110"
                 disabled={bookmarkMutation.isPending}
               >
                 {isBookmarked ? (
@@ -145,23 +145,31 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col gap-6 pt-6">
-          <div>
-            <h3 className="font-semibold text-primary mb-2">{t('verse.sanskrit')}</h3>
+
+        <CardContent className="p-6 flex flex-col min-h-[320px]">
+          <div className="mb-6">
+            <h3 className="font-semibold text-primary mb-3">{t('verse.sanskrit')}</h3>
             <p className="text-lg font-sanskrit leading-relaxed break-words">{verse.slok}</p>
           </div>
 
-          <div className="flex-grow">
-            <h3 className="font-semibold text-primary mb-2">{t('verse.translation')}</h3>
+          <div className="flex-grow mb-6">
+            <h3 className="font-semibold text-primary mb-3">{t('verse.translation')}</h3>
             <p className="leading-relaxed break-words">{verse.tej.ht}</p>
           </div>
 
-          <div className="flex gap-2 mt-4 pt-4 border-t">
-            <Button onClick={() => setShowModal(true)} className="flex-1">
+          <div className="flex gap-3 pt-4 border-t mt-auto">
+            <Button 
+              onClick={() => setShowModal(true)} 
+              className="flex-1 transition-transform hover:scale-105"
+            >
               {t('verse.readMore')}
             </Button>
             {showActions && (
-              <Button variant="outline" onClick={handleShare} className="gap-2">
+              <Button 
+                variant="outline" 
+                onClick={handleShare} 
+                className="gap-2 transition-transform hover:scale-105"
+              >
                 <Share2 className="h-4 w-4" />
                 {t('verse.share')}
               </Button>
@@ -186,53 +194,57 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               <TabsTrigger value="related">{t('verse.related')}</TabsTrigger>
             </TabsList>
 
-            <div className="flex-1 overflow-hidden">
-              <ScrollArea className="h-full py-4 px-6">
-                <TabsContent value="verse" className="space-y-6 mt-0">
-                  <div>
-                    <h3 className="font-semibold mb-2 text-primary">{t('verse.sanskrit')}</h3>
-                    <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg leading-relaxed break-words">
-                      {verse.slok}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2 text-primary">{t('verse.transliteration')}</h3>
-                    <p className="text-lg bg-muted/50 p-4 rounded-lg leading-relaxed break-words">
-                      {verse.transliteration}
-                    </p>
+            <ScrollArea className="flex-1 px-6">
+              <div className="py-6 space-y-6">
+                <TabsContent value="verse" className="m-0">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-semibold mb-3 text-primary">{t('verse.sanskrit')}</h3>
+                      <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg leading-relaxed break-words">
+                        {verse.slok}
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-3 text-primary">{t('verse.transliteration')}</h3>
+                      <p className="text-lg bg-muted/50 p-4 rounded-lg leading-relaxed break-words">
+                        {verse.transliteration}
+                      </p>
+                    </div>
                   </div>
                 </TabsContent>
 
-                <TabsContent value="translations" className="space-y-6 mt-0">
-                  {verse.tej && (
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="font-medium text-primary mb-2">Swami Tejomayananda</p>
-                      <p className="leading-relaxed break-words">{verse.tej.ht}</p>
-                      {verse.tej.et && (
-                        <p className="text-muted-foreground mt-2 leading-relaxed break-words">{verse.tej.et}</p>
-                      )}
-                    </div>
-                  )}
+                <TabsContent value="translations" className="m-0">
+                  <div className="space-y-6">
+                    {verse.tej && (
+                      <div className="bg-muted/50 p-4 rounded-lg">
+                        <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
+                        <p className="leading-relaxed break-words mb-3">{verse.tej.ht}</p>
+                        {verse.tej.et && (
+                          <p className="text-muted-foreground leading-relaxed break-words">{verse.tej.et}</p>
+                        )}
+                      </div>
+                    )}
 
-                  {verse.siva?.et && (
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="font-medium text-primary mb-2">Swami Sivananda</p>
-                      <p className="leading-relaxed break-words">{verse.siva.et}</p>
-                    </div>
-                  )}
+                    {verse.siva?.et && (
+                      <div className="bg-muted/50 p-4 rounded-lg">
+                        <p className="font-medium text-primary mb-3">Swami Sivananda</p>
+                        <p className="leading-relaxed break-words">{verse.siva.et}</p>
+                      </div>
+                    )}
 
-                  {verse.purohit?.et && (
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="font-medium text-primary mb-2">Shri Purohit Swami</p>
-                      <p className="leading-relaxed break-words">{verse.purohit.et}</p>
-                    </div>
-                  )}
+                    {verse.purohit?.et && (
+                      <div className="bg-muted/50 p-4 rounded-lg">
+                        <p className="font-medium text-primary mb-3">Shri Purohit Swami</p>
+                        <p className="leading-relaxed break-words">{verse.purohit.et}</p>
+                      </div>
+                    )}
+                  </div>
                 </TabsContent>
 
-                <TabsContent value="commentary" className="space-y-6 mt-0">
+                <TabsContent value="commentary" className="m-0">
                   {verse.chinmay?.hc ? (
                     <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="font-medium text-primary mb-2">Swami Chinmayananda</p>
+                      <p className="font-medium text-primary mb-3">Swami Chinmayananda</p>
                       <p className="leading-relaxed break-words">{verse.chinmay.hc}</p>
                     </div>
                   ) : (
@@ -242,7 +254,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   )}
                 </TabsContent>
 
-                <TabsContent value="related" className="space-y-6 mt-0">
+                <TabsContent value="related" className="m-0">
                   <div className="bg-muted/50 p-4 rounded-lg">
                     <p className="font-medium text-primary mb-4">{t('verse.relatedVerses')}</p>
                     <div className="space-y-4">
@@ -260,24 +272,27 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                     </div>
                   </div>
                 </TabsContent>
-              </ScrollArea>
-            </div>
+              </div>
+            </ScrollArea>
           </Tabs>
 
           <div className="px-6 py-4 bg-background border-t sticky bottom-0">
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               {showActions && (
                 <Button
                   variant="outline"
                   onClick={handleBookmark}
-                  className="flex-1 gap-2"
+                  className="flex-1 gap-2 transition-transform hover:scale-105"
                   disabled={bookmarkMutation.isPending}
                 >
                   {isBookmarked ? <BookmarkCheck className="h-5 w-5" /> : <Bookmark className="h-5 w-5" />}
                   {isBookmarked ? t('verse.bookmarked') : t('verse.bookmark')}
                 </Button>
               )}
-              <Button onClick={handleShare} className="flex-1 gap-2">
+              <Button 
+                onClick={handleShare} 
+                className="flex-1 gap-2 transition-transform hover:scale-105"
+              >
                 <Share2 className="h-5 w-5" />
                 {t('verse.share')}
               </Button>
