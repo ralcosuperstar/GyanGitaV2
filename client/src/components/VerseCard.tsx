@@ -179,7 +179,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       </Card>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0 mx-4">
+        <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0 mx-2">
           <DialogHeader className="p-4 sm:p-6 bg-background border-b">
             <DialogTitle className="font-playfair text-xl sm:text-2xl flex items-center justify-between">
               <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
@@ -202,29 +202,29 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
           </DialogHeader>
 
           <Tabs defaultValue="verse" className="flex-1 flex flex-col overflow-hidden">
-            <TabsList className="w-full h-12 bg-background border-b px-2 sm:px-0">
-              <div className="container flex max-w-4xl px-2 sm:px-6">
+            <TabsList className="w-full h-12 bg-background border-b">
+              <div className="flex w-full px-2 sm:px-6">
                 <TabsTrigger 
                   value="verse" 
-                  className="flex-1 text-xs sm:text-base data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-xs sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                 >
                   {t('verse.text')}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="translations" 
-                  className="flex-1 text-xs sm:text-base data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-xs sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                 >
                   {t('verse.translations')}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="commentary" 
-                  className="flex-1 text-xs sm:text-base data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-xs sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                 >
                   {t('verse.commentary')}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="related" 
-                  className="flex-1 text-xs sm:text-base data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-xs sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                 >
                   {t('verse.related')}
                 </TabsTrigger>
@@ -233,8 +233,8 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
             <div className="flex-1 overflow-hidden">
               <ScrollArea className="h-full">
-                <div className="container max-w-4xl py-4 sm:py-6 px-4 sm:px-6">
-                  <TabsContent value="verse" className="mt-0 space-y-4 sm:space-y-6">
+                <div className="p-4 sm:p-6 space-y-6">
+                  <TabsContent value="verse" className="mt-0 space-y-6">
                     <div>
                       <h3 className="font-semibold mb-3 text-primary">{t('verse.sanskrit')}</h3>
                       <div className="bg-muted/50 p-4 rounded-lg">
@@ -248,7 +248,8 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                       </div>
                     </div>
                   </TabsContent>
-                  <TabsContent value="translations" className="mt-0 space-y-4 sm:space-y-6">
+
+                  <TabsContent value="translations" className="mt-0 space-y-6">
                     {verse.tej && (
                       <div className="bg-muted/50 p-4 rounded-lg">
                         <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
@@ -285,7 +286,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                         <p className="leading-relaxed break-words">{verse.chinmay.hc}</p>
                       </div>
                     ) : (
-                      <div className="text-center py-8 sm:py-12 text-muted-foreground">
+                      <div className="text-center py-8 text-muted-foreground">
                         <p>{t('verse.noCommentary')}</p>
                       </div>
                     )}
@@ -303,7 +304,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                       ) : relatedVerses?.length ? (
                         relatedVerses.map(renderVerse)
                       ) : (
-                        <div className="text-center py-8 sm:py-12 text-muted-foreground">
+                        <div className="text-center py-8 text-muted-foreground">
                           <p>{t('verse.noRelatedVerses')}</p>
                         </div>
                       )}
@@ -320,7 +321,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                 <Button
                   variant="outline"
                   onClick={handleBookmark}
-                  className="w-full sm:flex-1 gap-2 transition-transform hover:scale-105"
+                  className="w-full sm:w-auto flex-1 gap-2 transition-transform hover:scale-105"
                   disabled={bookmarkMutation.isPending}
                 >
                   {isBookmarked ? <BookmarkCheck className="h-5 w-5" /> : <Bookmark className="h-5 w-5" />}
@@ -329,7 +330,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               )}
               <Button 
                 onClick={handleShare} 
-                className="w-full sm:flex-1 gap-2 transition-transform hover:scale-105"
+                className="w-full sm:w-auto flex-1 gap-2 transition-transform hover:scale-105"
               >
                 <Share2 className="h-5 w-5" />
                 {t('verse.share')}
