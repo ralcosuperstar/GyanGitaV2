@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Search, Globe, X, Menu, ChevronRight } from "lucide-react";
+import { Moon, Sun, Search, Globe, Menu, Home } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import {
   Sheet,
@@ -13,9 +13,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState, useEffect } from "react";
-import { useSearch } from "@/hooks/use-search";
+import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/language-context";
 import {
   DropdownMenu,
@@ -23,42 +29,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-
-// Search result modal component
-function SearchResultModal({ result, onClose }: { 
-  result: any; 
-  onClose: () => void;
-}) {
-  const { t } = useLanguage();
-
-  if (!result?.content) return null;
-
-  return (
-    <DialogContent className="max-w-3xl">
-      <DialogHeader>
-        <DialogTitle>
-          Chapter {result.chapter}, {result.type === 'chapter' ? 'Overview' : `Verse ${result.verse}`}
-        </DialogTitle>
-      </DialogHeader>
-      <div className="space-y-6">
-        <div>
-          <h3 className="font-semibold mb-2 text-primary">{t('verse.sanskrit')}</h3>
-          <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg">{result.content.slok}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold mb-2 text-primary">{t('verse.transliteration')}</h3>
-          <p className="text-lg bg-muted/50 p-4 rounded-lg">{result.content.transliteration}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold mb-2 text-primary">{t('verse.translation')}</h3>
-          <p className="text-lg bg-muted/50 p-4 rounded-lg">{result.content.translation}</p>
-        </div>
-      </div>
-    </DialogContent>
-  );
-}
 
 // Mobile menu component
 function MobileMenu() {
@@ -75,6 +45,12 @@ function MobileMenu() {
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px]">
         <nav className="flex flex-col space-y-4 mt-8">
+          <Link href="/" onClick={() => setIsOpen(false)}>
+            <a className="block py-2 px-4 hover:bg-muted rounded-md transition-colors">
+              <Home className="inline-block w-4 h-4 mr-2" />
+              {t('nav.home')}
+            </a>
+          </Link>
           <Link href="/browse" onClick={() => setIsOpen(false)}>
             <a className="block py-2 px-4 hover:bg-muted rounded-md transition-colors">
               {t('nav.browse')}
@@ -96,116 +72,130 @@ function MobileMenu() {
   );
 }
 
-// Search overlay component with instant results
-function SearchOverlay() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const { data: searchResults, isLoading } = useSearch(searchQuery);
+// Content display dialog
+function VerseDialog({ verse, onClose }: { verse: any; onClose: () => void }) {
   const { t } = useLanguage();
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedResult, setSelectedResult] = useState<any>(null);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setSearchQuery("");
-      setSelectedResult(null);
+  if (!verse) return null;
+
+  return (
+    <DialogContent className="max-w-3xl">
+      <DialogHeader>
+        <DialogTitle>
+          Chapter {verse.chapter}, Verse {verse.verse}
+        </DialogTitle>
+      </DialogHeader>
+      <div className="space-y-6">
+        <div>
+          <h3 className="font-semibold mb-2 text-primary">{t('verse.sanskrit')}</h3>
+          <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg">{verse.slok}</p>
+        </div>
+        <div>
+          <h3 className="font-semibold mb-2 text-primary">{t('verse.transliteration')}</h3>
+          <p className="text-lg bg-muted/50 p-4 rounded-lg">{verse.transliteration}</p>
+        </div>
+        <div>
+          <h3 className="font-semibold mb-2 text-primary">{t('verse.translation')}</h3>
+          <p className="text-lg bg-muted/50 p-4 rounded-lg">{verse.tej.et}</p>
+        </div>
+        <Button 
+          onClick={() => {
+            const text = `${verse.slok}\n\n${verse.transliteration}\n\n${verse.tej.et}`;
+            const url = window.location.origin;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n\n' + url)}`, '_blank');
+          }}
+          className="w-full"
+        >
+          {t('verse.share')}
+        </Button>
+      </div>
+    </DialogContent>
+  );
+}
+
+// Quick search component
+function QuickSearch() {
+  const [selectedChapter, setSelectedChapter] = useState<string>("");
+  const [selectedVerse, setSelectedVerse] = useState<string>("");
+  const [showDialog, setShowDialog] = useState(false);
+  const { t } = useLanguage();
+
+  const { data: chapters } = useQuery({
+    queryKey: ['/api/chapters'],
+    queryFn: async () => {
+      const response = await fetch('https://vedicscriptures.github.io/chapters');
+      if (!response.ok) throw new Error('Failed to fetch chapters');
+      return response.json();
     }
-  }, [isOpen]);
+  });
+
+  const { data: verse } = useQuery({
+    queryKey: ['/api/verse', selectedChapter, selectedVerse],
+    queryFn: async () => {
+      if (!selectedChapter || !selectedVerse) return null;
+      const response = await fetch(`https://vedicscriptures.github.io/slok/${selectedChapter}/${selectedVerse}`);
+      if (!response.ok) throw new Error('Failed to fetch verse');
+      return response.json();
+    },
+    enabled: !!(selectedChapter && selectedVerse)
+  });
+
+  const selectedChapterData = chapters?.find(
+    (c: any) => c.chapter_number.toString() === selectedChapter
+  );
 
   return (
     <>
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-9 w-9">
-            <Search className="h-5 w-5" />
-            <span className="sr-only">{t('nav.search')}</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent 
-          side="top" 
-          className="h-[80vh] bg-background/95 backdrop-blur p-0 border-none"
-        >
-          <div className="container mx-auto max-w-3xl">
-            <div className="relative">
-              <div className="sticky top-0 bg-background/95 backdrop-blur py-4 shadow-sm">
-                <div className="flex items-center gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder={t('search.placeholder')}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="h-12 pl-10 pr-4 text-lg w-full bg-muted/50"
-                      autoFocus
-                    />
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => setIsOpen(false)}
-                    className="h-12 w-12"
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-
-              <div className="mt-4 px-4">
-                {isLoading ? (
-                  <div className="space-y-4">
-                    {[...Array(3)].map((_, i) => (
-                      <div key={i} className="p-4 rounded-lg border">
-                        <Skeleton className="h-6 w-1/3 mb-2" />
-                        <Skeleton className="h-4 w-full" />
-                      </div>
-                    ))}
-                  </div>
-                ) : searchResults?.length ? (
-                  <div className="divide-y">
-                    {searchResults.map((result, index) => (
-                      <div 
-                        key={index}
-                        className={cn(
-                          "block p-4 -mx-4 transition-colors cursor-pointer",
-                          "hover:bg-muted/50 focus:bg-muted/50 outline-none"
-                        )}
-                        onClick={() => setSelectedResult(result)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="font-medium text-lg">
-                              Chapter {result.chapter}, {result.type === 'chapter' ? 'Overview' : `Verse ${result.verse}`}
-                            </div>
-                            <div className="text-muted-foreground mt-1 line-clamp-2">
-                              {result.preview}
-                            </div>
-                          </div>
-                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : searchQuery ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    {t('search.no_results')}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    {t('search.start_typing')}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Dialog open={!!selectedResult} onOpenChange={() => setSelectedResult(null)}>
-        <SearchResultModal 
-          result={selectedResult} 
-          onClose={() => setSelectedResult(null)} 
-        />
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <VerseDialog verse={verse} onClose={() => setShowDialog(false)} />
       </Dialog>
+
+      <div className="flex items-center gap-2">
+        <Select value={selectedChapter} onValueChange={setSelectedChapter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder={t('browse.select.chapter')} />
+          </SelectTrigger>
+          <SelectContent>
+            {chapters?.map((chapter: any) => (
+              <SelectItem 
+                key={chapter.chapter_number} 
+                value={chapter.chapter_number.toString()}
+              >
+                Ch {chapter.chapter_number}: {chapter.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={selectedVerse}
+          onValueChange={setSelectedVerse}
+          disabled={!selectedChapter}
+        >
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder={t('browse.select.verse')} />
+          </SelectTrigger>
+          <SelectContent>
+            {selectedChapterData && Array.from(
+              { length: selectedChapterData.verses_count },
+              (_, i) => (
+                <SelectItem key={i + 1} value={(i + 1).toString()}>
+                  Verse {i + 1}
+                </SelectItem>
+              )
+            )}
+          </SelectContent>
+        </Select>
+
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={!selectedChapter || !selectedVerse}
+          onClick={() => setShowDialog(true)}
+        >
+          <Search className="h-4 w-4" />
+        </Button>
+      </div>
     </>
   );
 }
@@ -246,6 +236,8 @@ export default function Header() {
           </div>
 
           <div className="flex items-center space-x-2">
+            <QuickSearch />
+
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -262,9 +254,6 @@ export default function Header() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
-            {/* Search Overlay */}
-            <SearchOverlay />
 
             {/* Theme Toggle */}
             <Button

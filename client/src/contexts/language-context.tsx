@@ -15,6 +15,7 @@ const translations = {
     'nav.about': 'About',
     'nav.contact': 'Contact',
     'nav.search': 'Search',
+    'nav.home': 'Home', // Added
 
     // Search
     'search.title': 'Search Bhagavad Gita',
@@ -98,6 +99,7 @@ const translations = {
     'nav.about': 'परिचय',
     'nav.contact': 'संपर्क करें',
     'nav.search': 'खोजें',
+    'nav.home': 'होम', // Added
 
     // Search
     'search.title': 'भगवद गीता खोजें',
