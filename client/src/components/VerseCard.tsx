@@ -157,7 +157,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             <p className="leading-relaxed break-words">{verse.tej.ht}</p>
           </div>
 
-          <div className="flex gap-3 pt-4 border-t mt-auto">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t mt-auto">
             <Button 
               onClick={() => setShowModal(true)} 
               className="flex-1 transition-transform hover:scale-105"
@@ -180,8 +180,8 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0">
-          <DialogHeader className="p-6 bg-background border-b">
-            <DialogTitle className="font-playfair text-2xl flex items-center justify-between">
+          <DialogHeader className="p-4 sm:p-6 bg-background border-b">
+            <DialogTitle className="font-playfair text-xl sm:text-2xl flex items-center justify-between">
               <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
               {showActions && (
                 <Button
@@ -202,29 +202,29 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
           </DialogHeader>
 
           <Tabs defaultValue="verse" className="flex-1 flex flex-col overflow-hidden">
-            <TabsList className="w-full h-12 bg-background border-b">
-              <div className="container flex max-w-4xl px-6">
+            <TabsList className="w-full h-12 bg-background border-b px-2 sm:px-0">
+              <div className="container flex max-w-4xl px-2 sm:px-6">
                 <TabsTrigger 
                   value="verse" 
-                  className="flex-1 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-sm sm:text-base data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                 >
                   {t('verse.text')}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="translations" 
-                  className="flex-1 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-sm sm:text-base data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                 >
                   {t('verse.translations')}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="commentary" 
-                  className="flex-1 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-sm sm:text-base data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                 >
                   {t('verse.commentary')}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="related" 
-                  className="flex-1 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-sm sm:text-base data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                 >
                   {t('verse.related')}
                 </TabsTrigger>
@@ -233,23 +233,23 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
             <div className="flex-1 overflow-hidden">
               <ScrollArea className="h-full">
-                <div className="container max-w-4xl py-6 px-6">
-                  <TabsContent value="verse" className="mt-0 space-y-6">
+                <div className="container max-w-4xl py-4 sm:py-6 px-4 sm:px-6">
+                  <TabsContent value="verse" className="mt-0 space-y-4 sm:space-y-6">
                     <div>
                       <h3 className="font-semibold mb-3 text-primary">{t('verse.sanskrit')}</h3>
                       <div className="bg-muted/50 p-4 rounded-lg">
-                        <p className="text-xl font-sanskrit leading-relaxed break-words">{verse.slok}</p>
+                        <p className="text-lg sm:text-xl font-sanskrit leading-relaxed break-words">{verse.slok}</p>
                       </div>
                     </div>
                     <div>
                       <h3 className="font-semibold mb-3 text-primary">{t('verse.transliteration')}</h3>
                       <div className="bg-muted/50 p-4 rounded-lg">
-                        <p className="text-lg leading-relaxed break-words">{verse.transliteration}</p>
+                        <p className="text-base sm:text-lg leading-relaxed break-words">{verse.transliteration}</p>
                       </div>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="translations" className="mt-0 space-y-6">
+                  <TabsContent value="translations" className="mt-0 space-y-4 sm:space-y-6">
                     {verse.tej && (
                       <div className="bg-muted/50 p-4 rounded-lg">
                         <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
@@ -286,7 +286,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                         <p className="leading-relaxed break-words">{verse.chinmay.hc}</p>
                       </div>
                     ) : (
-                      <div className="text-center py-12 text-muted-foreground">
+                      <div className="text-center py-8 sm:py-12 text-muted-foreground">
                         <p>{t('verse.noCommentary')}</p>
                       </div>
                     )}
@@ -304,7 +304,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                       ) : relatedVerses?.length ? (
                         relatedVerses.map(renderVerse)
                       ) : (
-                        <div className="text-center py-12 text-muted-foreground">
+                        <div className="text-center py-8 sm:py-12 text-muted-foreground">
                           <p>{t('verse.noRelatedVerses')}</p>
                         </div>
                       )}
@@ -315,8 +315,8 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             </div>
           </Tabs>
 
-          <DialogFooter className="p-6 bg-background border-t mt-auto">
-            <div className="flex gap-3 w-full">
+          <DialogFooter className="p-4 sm:p-6 bg-background border-t mt-auto">
+            <div className="flex flex-col sm:flex-row gap-3 w-full">
               {showActions && (
                 <Button
                   variant="outline"
