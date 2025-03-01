@@ -89,15 +89,91 @@ export function useSearch(query: string) {
       let results: SearchResult[] = [];
 
       try {
+        console.log("Searching with query:", debouncedQuery, "parsed as:", parsed);
+        
         // For numeric search, we'll check both chapters and verses
-        if (parsed.type === 'keyword' && parsed.term?.match(/^\d+$/)) {
-          const num = parseInt(parsed.term);
-
-          // If number could be a chapter (1-18), add it to results
-          if (num > 0 && num <= 18) {
-            const chapterResponse = await fetch(`https://vedicscriptures.github.io/chapters/${num}`);
-            if (chapterResponse.ok) {
-              const chapterData: ChapterData = await chapterResponse.json();
+        if (parsed.type === 'keyword' || parsed.type === 'chapter') {
+          // If it's a direct number or explicitly a chapter
+          const numericQuery = parsed.type === 'chapter' ? 
+            parsed.chapter?.toString() : 
+            parsed.term?.match(/^\d+$/) ? parsed.term : null;
+            
+          if (numericQuery) {
+            const num = parseInt(numericQuery);
+            
+            // If number could be a chapter (1-18), add it to results
+            if (num > 0 && num <= 18) {
+              try {
+                const chaptersResponse = await fetch('/api/chapters');
+                if (chaptersResponse.ok) {
+                  const chaptersData = await chaptersResponse.json();
+                  const matchingChapter = chaptersData.find((ch: any) => ch.chapter_number === num);
+                  
+                  if (matchingChapter) {
+                    results.push({
+                      chapter: num,
+                      preview: `Chapter ${num}: ${matchingChapter.name} - ${matchingChapter.verses_count} verses`,
+                      type: 'chapter',
+                      content: {
+                        slok: `Chapter ${num}: ${matchingChapter.name}`,
+                        transliteration: matchingChapter.name_meaning || '',
+                        translation: `This chapter contains ${matchingChapter.verses_count} verses.`
+                      }
+                    });
+                  }
+                }
+                
+                // Also add any verses that match this number
+                for (let chapter = 1; chapter <= 18; chapter++) {
+                  try {
+                    if (num <= 78) { // Most chapters have fewer than 78 verses
+                      const verseResponse = await fetch(`/api/verse/${chapter}/${num}`);
+                      if (verseResponse.ok) {
+                        const verseData = await verseResponse.json();
+                        results.push({
+                          chapter,
+                          verse: num,
+                          preview: `${chapter}:${num} - ${verseData.tej.et.substring(0, 50)}...`,
+                          type: 'verse',
+                          content: {
+                            slok: verseData.slok,
+                            transliteration: verseData.transliteration,
+                            translation: verseData.tej.et
+                          }
+                        });
+                      }
+                    }
+                  } catch (e) {
+                    // Verse might not exist for this chapter, continue
+                  }
+                }
+              } catch (error) {
+                console.error("Error fetching chapter data:", error);
+              }
+            }
+          }
+        } else if (parsed.type === 'verse' && parsed.chapter && parsed.verse) {
+          // Direct verse reference (e.g., "1:1" or "1.1")
+          try {
+            const verseResponse = await fetch(`/api/verse/${parsed.chapter}/${parsed.verse}`);
+            if (verseResponse.ok) {
+              const verseData = await verseResponse.json();
+              results.push({
+                chapter: parsed.chapter,
+                verse: parsed.verse,
+                preview: `${parsed.chapter}:${parsed.verse} - ${verseData.tej.et.substring(0, 50)}...`,
+                type: 'verse',
+                content: {
+                  slok: verseData.slok,
+                  transliteration: verseData.transliteration,
+                  translation: verseData.tej.et
+                }
+              });
+            }
+          } catch (error) {
+            console.error(`Error fetching verse ${parsed.chapter}:${parsed.verse}:`, error);
+          }
+        }
 
               // Fetch first verse for preview
               const verseResponse = await fetch(`https://vedicscriptures.github.io/slok/${num}/1`);
