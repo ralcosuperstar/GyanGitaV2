@@ -91,7 +91,17 @@ const translations = {
     'verse.transliteration': 'Transliteration',
     'verse.translation': 'Translation',
     'verse.commentary': 'Commentary',
-    'verse.share': 'Share on WhatsApp'
+    'verse.share': 'Share on WhatsApp',
+    'verse.text': 'Text',
+    'verse.translations': 'Translations',
+    'verse.related': 'Related',
+    'verse.readMore': 'Read More',
+    'verse.bookmark': 'Bookmark',
+    'verse.bookmarked': 'Bookmarked',
+    'verse.share': 'Share',
+    'verse.noCommentary': 'No commentary available.',
+    'verse.relatedVerses': 'Related Verses',
+    'verse.comingSoon': 'Coming soon...'
   },
   hi: {
     // Navigation
@@ -175,7 +185,17 @@ const translations = {
     'verse.transliteration': 'लिप्यंतरण',
     'verse.translation': 'अनुवाद',
     'verse.commentary': 'व्याख्या',
-    'verse.share': 'व्हाट्सएप पर शेयर करें'
+    'verse.share': 'व्हाट्सएप पर शेयर करें',
+    'verse.text': 'मूल श्लोक',
+    'verse.translations': 'अनुवाद',
+    'verse.related': 'संबंधित',
+    'verse.readMore': 'और पढ़ें',
+    'verse.bookmark': 'बुकमार्क करें',
+    'verse.bookmarked': 'बुकमार्क किया गया',
+    'verse.share': 'साझा करें',
+    'verse.noCommentary': 'कोई व्याख्या उपलब्ध नहीं है।',
+    'verse.relatedVerses': 'संबंधित श्लोक',
+    'verse.comingSoon': 'जल्द आ रहा है...'
   }
 };
 
