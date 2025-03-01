@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, ArrowRightCircle, Share2 } from "lucide-react";
+import { ArrowRight, ArrowRightCircle, Share } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -120,7 +120,7 @@ export default function VerseCard({ verse }: { verse: VerseProps }) {
             </div>
             <div className="px-6 py-4 bg-background border-t">
               <Button onClick={handleShare} className="w-full gap-2">
-                <Share2 className="w-5 h-5" />
+                <Share className="h-4 w-4" />
                 Share on WhatsApp
               </Button>
             </div>
