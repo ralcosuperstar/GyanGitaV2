@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Search, Globe, Menu, Home } from "lucide-react";
+import { Moon, Sun, Search, Globe, Menu, Home, Bookmark } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import {
   Sheet,
@@ -41,6 +41,12 @@ function MobileMenu() {
             <a className="block py-2 px-4 bg-primary/5 hover:bg-primary/10 rounded-md transition-colors text-primary">
               <Search className="inline-block w-4 h-4 mr-2" />
               {t('nav.browse')}
+            </a>
+          </Link>
+          <Link href="/bookmarks" onClick={() => setIsOpen(false)}>
+            <a className="block py-2 px-4 hover:bg-muted rounded-md transition-colors">
+              <Bookmark className="inline-block w-4 h-4 mr-2" />
+              {t('nav.bookmarks')}
             </a>
           </Link>
           <Link href="/about" onClick={() => setIsOpen(false)}>
@@ -87,6 +93,12 @@ export default function Header() {
               <a className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-md text-primary">
                 <Search className="h-4 w-4" />
                 {t('nav.browse')}
+              </a>
+            </Link>
+            <Link href="/bookmarks">
+              <a className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
+                <Bookmark className="h-4 w-4" />
+                {t('nav.bookmarks')}
               </a>
             </Link>
             <Link href="/about">

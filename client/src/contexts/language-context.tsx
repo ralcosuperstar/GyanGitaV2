@@ -15,7 +15,15 @@ const translations = {
     'nav.about': 'About',
     'nav.contact': 'Contact',
     'nav.search': 'Search',
-    'nav.home': 'Home', // Added
+    'nav.home': 'Home',
+    'nav.bookmarks': 'Bookmarks',
+
+    // Bookmarks page
+    'bookmarks.title': 'My Bookmarked Verses',
+    'bookmarks.subtitle': 'Your personal collection of sacred verses',
+    'bookmarks.empty.title': 'No bookmarks yet',
+    'bookmarks.empty.description': 'Start exploring verses and bookmark your favorites for quick access',
+    'bookmarks.empty.action': 'Browse Verses',
 
     // Search
     'search.title': 'Search Bhagavad Gita',
@@ -109,7 +117,15 @@ const translations = {
     'nav.about': 'परिचय',
     'nav.contact': 'संपर्क करें',
     'nav.search': 'खोजें',
-    'nav.home': 'होम', // Added
+    'nav.home': 'होम',
+    'nav.bookmarks': 'बुकमार्क',
+
+    // Bookmarks page
+    'bookmarks.title': 'मेरे बुकमार्क किए गए श्लोक',
+    'bookmarks.subtitle': 'आपका व्यक्तिगत पवित्र श्लोक संग्रह',
+    'bookmarks.empty.title': 'अभी तक कोई बुकमार्क नहीं',
+    'bookmarks.empty.description': 'श्लोकों का अन्वेषण करें और त्वरित पहुंच के लिए अपने पसंदीदा को बुकमार्क करें',
+    'bookmarks.empty.action': 'श्लोक ब्राउज़ करें',
 
     // Search
     'search.title': 'भगवद गीता खोजें',
