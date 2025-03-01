@@ -7,21 +7,6 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/language-context";
 import {
   DropdownMenu,
@@ -29,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useState } from "react";
 
 // Mobile menu component
 function MobileMenu() {
@@ -52,7 +38,8 @@ function MobileMenu() {
             </a>
           </Link>
           <Link href="/browse" onClick={() => setIsOpen(false)}>
-            <a className="block py-2 px-4 hover:bg-muted rounded-md transition-colors">
+            <a className="block py-2 px-4 bg-primary/5 hover:bg-primary/10 rounded-md transition-colors text-primary">
+              <Search className="inline-block w-4 h-4 mr-2" />
               {t('nav.browse')}
             </a>
           </Link>
@@ -69,134 +56,6 @@ function MobileMenu() {
         </nav>
       </SheetContent>
     </Sheet>
-  );
-}
-
-// Content display dialog
-function VerseDialog({ verse, onClose }: { verse: any; onClose: () => void }) {
-  const { t } = useLanguage();
-
-  if (!verse) return null;
-
-  return (
-    <DialogContent className="max-w-3xl">
-      <DialogHeader>
-        <DialogTitle>
-          Chapter {verse.chapter}, Verse {verse.verse}
-        </DialogTitle>
-      </DialogHeader>
-      <div className="space-y-6">
-        <div>
-          <h3 className="font-semibold mb-2 text-primary">{t('verse.sanskrit')}</h3>
-          <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg">{verse.slok}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold mb-2 text-primary">{t('verse.transliteration')}</h3>
-          <p className="text-lg bg-muted/50 p-4 rounded-lg">{verse.transliteration}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold mb-2 text-primary">{t('verse.translation')}</h3>
-          <p className="text-lg bg-muted/50 p-4 rounded-lg">{verse.tej.et}</p>
-        </div>
-        <Button 
-          onClick={() => {
-            const text = `${verse.slok}\n\n${verse.transliteration}\n\n${verse.tej.et}`;
-            const url = window.location.origin;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n\n' + url)}`, '_blank');
-          }}
-          className="w-full"
-        >
-          {t('verse.share')}
-        </Button>
-      </div>
-    </DialogContent>
-  );
-}
-
-// Quick search component
-function QuickSearch() {
-  const [selectedChapter, setSelectedChapter] = useState<string>("");
-  const [selectedVerse, setSelectedVerse] = useState<string>("");
-  const [showDialog, setShowDialog] = useState(false);
-  const { t } = useLanguage();
-
-  const { data: chapters } = useQuery({
-    queryKey: ['/api/chapters'],
-    queryFn: async () => {
-      const response = await fetch('https://vedicscriptures.github.io/chapters');
-      if (!response.ok) throw new Error('Failed to fetch chapters');
-      return response.json();
-    }
-  });
-
-  const { data: verse } = useQuery({
-    queryKey: ['/api/verse', selectedChapter, selectedVerse],
-    queryFn: async () => {
-      if (!selectedChapter || !selectedVerse) return null;
-      const response = await fetch(`https://vedicscriptures.github.io/slok/${selectedChapter}/${selectedVerse}`);
-      if (!response.ok) throw new Error('Failed to fetch verse');
-      return response.json();
-    },
-    enabled: !!(selectedChapter && selectedVerse)
-  });
-
-  const selectedChapterData = chapters?.find(
-    (c: any) => c.chapter_number.toString() === selectedChapter
-  );
-
-  return (
-    <>
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <VerseDialog verse={verse} onClose={() => setShowDialog(false)} />
-      </Dialog>
-
-      <div className="flex items-center gap-2">
-        <Select value={selectedChapter} onValueChange={setSelectedChapter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={t('browse.select.chapter')} />
-          </SelectTrigger>
-          <SelectContent>
-            {chapters?.map((chapter: any) => (
-              <SelectItem 
-                key={chapter.chapter_number} 
-                value={chapter.chapter_number.toString()}
-              >
-                Ch {chapter.chapter_number}: {chapter.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={selectedVerse}
-          onValueChange={setSelectedVerse}
-          disabled={!selectedChapter}
-        >
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder={t('browse.select.verse')} />
-          </SelectTrigger>
-          <SelectContent>
-            {selectedChapterData && Array.from(
-              { length: selectedChapterData.verses_count },
-              (_, i) => (
-                <SelectItem key={i + 1} value={(i + 1).toString()}>
-                  Verse {i + 1}
-                </SelectItem>
-              )
-            )}
-          </SelectContent>
-        </Select>
-
-        <Button
-          variant="outline"
-          size="icon"
-          disabled={!selectedChapter || !selectedVerse}
-          onClick={() => setShowDialog(true)}
-        >
-          <Search className="h-4 w-4" />
-        </Button>
-      </div>
-    </>
   );
 }
 
@@ -218,8 +77,15 @@ export default function Header() {
 
         <nav className="flex items-center space-x-6">
           <div className="hidden md:flex items-center space-x-6">
+            <Link href="/">
+              <a className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                {t('nav.home')}
+              </a>
+            </Link>
             <Link href="/browse">
-              <a className="text-sm font-medium transition-colors hover:text-primary">
+              <a className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-md text-primary">
+                <Search className="h-4 w-4" />
                 {t('nav.browse')}
               </a>
             </Link>
@@ -236,8 +102,6 @@ export default function Header() {
           </div>
 
           <div className="flex items-center space-x-2">
-            <QuickSearch />
-
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
