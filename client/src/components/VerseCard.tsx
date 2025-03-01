@@ -41,7 +41,6 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
   const { toast } = useToast();
 
-  // Fetch related verses when modal is open
   const { data: relatedVerses, isLoading: isLoadingRelated } = useQuery({
     queryKey: [`/api/verse/${verse.chapter}/${verse.verse}/related`],
     queryFn: async () => {
@@ -51,22 +50,20 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       }
       return response.json();
     },
-    enabled: showModal // Only fetch when modal is open
+    enabled: showModal
   });
 
-  // Vibration feedback function
   const triggerVibration = () => {
     if (window.navigator && window.navigator.vibrate) {
       window.navigator.vibrate(200);
     }
   };
 
-  // Bookmark mutation
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
       const response = await fetch('/api/favorites', {
         method: isBookmarked ? 'DELETE' : 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.getItem('token')
         },
@@ -127,7 +124,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
   return (
     <>
-      <Card className="overflow-hidden transition-transform hover:scale-[1.02] duration-200 flex flex-col h-full">
+      <Card className="overflow-hidden transition-transform hover:scale-[1.02] duration-200 h-full">
         <CardHeader className="bg-primary/5">
           <CardTitle className="font-playfair text-xl flex justify-between items-center">
             <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
@@ -148,18 +145,18 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col space-y-4 pt-6">
-          <div className="space-y-2">
-            <h3 className="font-semibold text-primary">{t('verse.sanskrit')}</h3>
+        <CardContent className="flex flex-col gap-6 pt-6 h-full">
+          <div>
+            <h3 className="font-semibold text-primary mb-2">{t('verse.sanskrit')}</h3>
             <p className="text-lg font-sanskrit leading-relaxed break-words">{verse.slok}</p>
           </div>
 
-          <div className="space-y-2 flex-1">
-            <h3 className="font-semibold text-primary">{t('verse.translation')}</h3>
+          <div className="flex-grow">
+            <h3 className="font-semibold text-primary mb-2">{t('verse.translation')}</h3>
             <p className="leading-relaxed break-words">{verse.tej.ht}</p>
           </div>
 
-          <div className="flex gap-2 pt-4 mt-auto">
+          <div className="flex gap-2 mt-auto pt-4 border-t">
             <Button onClick={() => setShowModal(true)} className="flex-1">
               {t('verse.readMore')}
             </Button>
@@ -270,9 +267,9 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
           <div className="px-6 py-4 bg-background border-t sticky bottom-0">
             <div className="flex gap-2">
               {showActions && (
-                <Button 
-                  variant="outline" 
-                  onClick={handleBookmark} 
+                <Button
+                  variant="outline"
+                  onClick={handleBookmark}
                   className="flex-1 gap-2"
                   disabled={bookmarkMutation.isPending}
                 >

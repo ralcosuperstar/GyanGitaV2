@@ -30,7 +30,7 @@ interface VerseResponse {
 
 export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
-  const versesSectionRef = useRef<HTMLDivElement>(null);
+  const verseSectionRef = useRef<HTMLDivElement>(null);
   const [, setLocation] = useLocation();
   const { t } = useLanguage();
 
@@ -48,12 +48,12 @@ export default function Home() {
   });
 
   useEffect(() => {
-    if (verses && verses.length > 0 && versesSectionRef.current) {
+    if (selectedMood && verseSectionRef.current) {
       setTimeout(() => {
-        versesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        verseSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     }
-  }, [verses]);
+  }, [selectedMood]);
 
   const handleShareWhatsApp = () => {
     const text = t('home.share.text');
@@ -125,77 +125,14 @@ export default function Home() {
       </div>
 
       {/* Features Section */}
-      <div className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <Card className="relative overflow-hidden p-8 bg-gradient-to-br from-primary/10 to-primary/5 transform hover:scale-105 transition-all">
-              <div className="absolute top-6 right-6 text-primary/30">
-                <Brain className="w-12 h-12" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-4">{t('features.personal.title')}</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {t('features.personal.desc')}
-              </p>
-            </Card>
-
-            <Card className="relative overflow-hidden p-8 bg-gradient-to-br from-primary/10 to-primary/5 transform hover:scale-105 transition-all">
-              <div className="absolute top-6 right-6 text-primary/30">
-                <Book className="w-12 h-12" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-4">{t('features.ancient.title')}</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {t('features.ancient.desc')}
-              </p>
-            </Card>
-
-            <Card className="relative overflow-hidden p-8 bg-gradient-to-br from-primary/10 to-primary/5 transform hover:scale-105 transition-all">
-              <div className="absolute top-6 right-6 text-primary/30">
-                <Heart className="w-12 h-12" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-4">{t('features.daily.title')}</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {t('features.daily.desc')}
-              </p>
-            </Card>
-          </div>
-
-          <div className="mt-20 grid gap-8 sm:grid-cols-2">
-            <div className="flex items-start gap-6 group">
-              <div className="rounded-full bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors">
-                <Target className="w-8 h-8 text-primary" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-xl font-semibold mb-2">{t('features.mood.title')}</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {t('features.mood.desc')}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-6 group">
-              <div className="rounded-full bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors">
-                <Users className="w-8 h-8 text-primary" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-xl font-semibold mb-2">{t('features.perspectives.title')}</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {t('features.perspectives.desc')}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div id="mood-section" className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
+        <h2 className="mb-12 text-center font-playfair text-4xl font-semibold">
+          {t('home.mood.title')}
+        </h2>
+        <MoodSelector onSelect={setSelectedMood} selectedMood={selectedMood} />
       </div>
 
-      <div id="mood-section" className="bg-gradient-to-b from-muted/50 to-background py-20">
-        <div className="container mx-auto max-w-7xl px-4 sm:px-8">
-          <h2 className="mb-12 text-center font-playfair text-4xl font-semibold">
-            {t('home.mood.title')}
-          </h2>
-          <MoodSelector onSelect={setSelectedMood} selectedMood={selectedMood} />
-        </div>
-      </div>
-
-      <div ref={versesSectionRef} className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
+      <div ref={verseSectionRef} className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
         {error ? (
           <div className="text-center text-red-500">
             Error loading verses. Please try again.
