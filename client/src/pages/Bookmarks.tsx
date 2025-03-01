@@ -68,8 +68,12 @@ export default function Bookmarks() {
                   tej: {
                     ht: favorite.translation,
                     et: favorite.translation_english
-                  }
+                  },
+                  siva: favorite.siva,
+                  purohit: favorite.purohit,
+                  chinmay: favorite.chinmay
                 }}
+                isBookmarked={true}
               />
             ))}
           </div>

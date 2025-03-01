@@ -30,20 +30,28 @@ interface VerseCardProps {
     verse: number;
   };
   showActions?: boolean;
+  isBookmarked?: boolean;
 }
 
-export default function VerseCard({ verse, showActions = true }: VerseCardProps) {
+export default function VerseCard({ verse, showActions = true, isBookmarked: initialIsBookmarked = false }: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
   const { t } = useLanguage();
   const queryClient = useQueryClient();
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
   const { toast } = useToast();
+
+  // Vibration feedback function
+  const triggerVibration = () => {
+    if (window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(200);
+    }
+  };
 
   // Bookmark mutation
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
       const response = await fetch('/api/favorites', {
-        method: 'POST',
+        method: isBookmarked ? 'DELETE' : 'POST',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -56,24 +64,20 @@ export default function VerseCard({ verse, showActions = true }: VerseCardProps)
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Please log in to bookmark verses');
+          throw new Error('Please log in to manage bookmarks');
         }
-        throw new Error('Failed to bookmark verse');
+        throw new Error(isBookmarked ? 'Failed to remove bookmark' : 'Failed to bookmark verse');
       }
 
       return response.json();
     },
     onSuccess: () => {
-      // Add vibration feedback if supported
-      if (window.navigator && window.navigator.vibrate) {
-        window.navigator.vibrate(200);
-      }
-
-      setIsBookmarked(true);
+      triggerVibration();
+      setIsBookmarked(!isBookmarked);
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
       toast({
         title: "Success",
-        description: "Verse has been bookmarked",
+        description: isBookmarked ? "Bookmark removed" : "Verse has been bookmarked",
         duration: 2000,
       });
     },
