@@ -1,17 +1,23 @@
-import { moodVerses, type MoodVerse, type InsertMoodVerse } from "@shared/schema";
+import { moodVerses, type MoodVerse, type InsertMoodVerse, favorites, type Favorite, type InsertFavorite } from "@shared/schema";
 
 export interface IStorage {
   getMoodVerses(mood: string): Promise<MoodVerse[]>;
   insertMoodVerse(moodVerse: InsertMoodVerse): Promise<MoodVerse>;
+  createFavorite(favorite: InsertFavorite): Promise<Favorite>;
+  getUserFavorites(userId: number): Promise<Favorite[]>;
 }
 
 export class MemStorage implements IStorage {
   private moodVersesMap: Map<string, MoodVerse[]>;
+  private favoritesMap: Map<number, Favorite[]>;
   currentId: number;
+  favoriteId: number;
 
   constructor() {
     this.moodVersesMap = new Map();
+    this.favoritesMap = new Map();
     this.currentId = 1;
+    this.favoriteId = 1;
     this.initializeMoodVerses();
   }
 
@@ -127,6 +133,38 @@ export class MemStorage implements IStorage {
     this.moodVersesMap.set(moodVerse.mood, [...existingVerses, newMoodVerse]);
 
     return newMoodVerse;
+  }
+
+  async createFavorite(favorite: InsertFavorite): Promise<Favorite> {
+    const id = this.favoriteId++;
+    const newFavorite: Favorite = { 
+      ...favorite, 
+      id,
+      saved_at: new Date(),
+      notes: favorite.notes || null
+    };
+
+    const userFavorites = this.favoritesMap.get(favorite.user_id) || [];
+
+    // Check if verse is already favorited
+    const exists = userFavorites.some(
+      f => f.chapter === favorite.chapter && f.verse === favorite.verse
+    );
+
+    if (exists) {
+      throw new Error('Verse is already in favorites');
+    }
+
+    this.favoritesMap.set(
+      favorite.user_id, 
+      [...userFavorites, newFavorite]
+    );
+
+    return newFavorite;
+  }
+
+  async getUserFavorites(userId: number): Promise<Favorite[]> {
+    return this.favoritesMap.get(userId) || [];
   }
 }
 

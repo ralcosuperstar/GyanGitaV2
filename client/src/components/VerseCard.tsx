@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Share2, Bookmark, BookmarkCheck } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface VerseCardProps {
   verse: {
@@ -36,24 +37,46 @@ export default function VerseCard({ verse, showActions = true }: VerseCardProps)
   const { t } = useLanguage();
   const queryClient = useQueryClient();
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const { toast } = useToast();
 
   // Bookmark mutation
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
       const response = await fetch('/api/favorites', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
         body: JSON.stringify({
-          chapter: verse.chapter,
-          verse: verse.verse
+          chapter: verse.chapter.toString(),
+          verse: verse.verse.toString()
         })
       });
-      if (!response.ok) throw new Error('Failed to bookmark verse');
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Please log in to bookmark verses');
+        }
+        throw new Error('Failed to bookmark verse');
+      }
+
       return response.json();
     },
     onSuccess: () => {
       setIsBookmarked(true);
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      toast({
+        title: "Success",
+        description: "Verse has been bookmarked",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   });
 
@@ -69,7 +92,7 @@ export default function VerseCard({ verse, showActions = true }: VerseCardProps)
 
   return (
     <>
-      <Card className="overflow-hidden transition-transform hover:scale-[1.02] duration-200">
+      <Card className="overflow-hidden transition-transform hover:scale-[1.02] duration-200 flex flex-col">
         <CardHeader className="bg-primary/5">
           <CardTitle className="font-playfair text-xl flex justify-between items-center">
             <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
@@ -79,6 +102,7 @@ export default function VerseCard({ verse, showActions = true }: VerseCardProps)
                 size="icon"
                 onClick={handleBookmark}
                 className="h-8 w-8"
+                disabled={bookmarkMutation.isPending}
               >
                 {isBookmarked ? (
                   <BookmarkCheck className="h-5 w-5 text-primary" />
@@ -89,18 +113,18 @@ export default function VerseCard({ verse, showActions = true }: VerseCardProps)
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 pt-6">
+        <CardContent className="flex-1 flex flex-col space-y-4 pt-6">
           <div className="space-y-2">
             <h3 className="font-semibold text-primary">{t('verse.sanskrit')}</h3>
             <p className="text-lg font-sanskrit leading-relaxed">{verse.slok}</p>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 flex-1">
             <h3 className="font-semibold text-primary">{t('verse.translation')}</h3>
             <p className="leading-relaxed">{verse.tej.ht}</p>
           </div>
 
-          <div className="flex gap-2 pt-2">
+          <div className="flex gap-2 pt-4 mt-auto">
             <Button onClick={() => setShowModal(true)} className="flex-1">
               {t('verse.readMore')}
             </Button>
@@ -208,6 +232,7 @@ export default function VerseCard({ verse, showActions = true }: VerseCardProps)
                   variant="outline" 
                   onClick={handleBookmark} 
                   className="flex-1 gap-2"
+                  disabled={bookmarkMutation.isPending}
                 >
                   {isBookmarked ? <BookmarkCheck className="h-5 w-5" /> : <Bookmark className="h-5 w-5" />}
                   {isBookmarked ? t('verse.bookmarked') : t('verse.bookmark')}

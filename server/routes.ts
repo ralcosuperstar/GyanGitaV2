@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { insertFavoriteSchema } from "@shared/schema";
 
 async function fetchVerse(chapter: string, verse: string) {
   try {
@@ -35,6 +36,16 @@ async function fetchChapters() {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth check middleware
+  const requireAuth = (req: any, res: any, next: any) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    // In a real app, verify the token here
+    next();
+  };
+
   // Chapter and verse routes
   app.get('/api/chapters', async (_req, res) => {
     try {
@@ -54,6 +65,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching verse:', error);
       res.status(500).json({ error: 'Failed to fetch verse' });
+    }
+  });
+
+  // Favorites routes
+  app.post('/api/favorites', requireAuth, async (req, res) => {
+    try {
+      // In a real app, get user_id from the auth token
+      const userId = 1; // Temporary for testing
+
+      const favoriteData = insertFavoriteSchema.parse({
+        user_id: userId,
+        chapter: req.body.chapter,
+        verse: req.body.verse
+      });
+
+      const favorite = await storage.createFavorite(favoriteData);
+      res.json(favorite);
+    } catch (error) {
+      console.error('Error creating favorite:', error);
+      res.status(500).json({ error: 'Failed to save favorite' });
+    }
+  });
+
+  app.get('/api/user/favorites', requireAuth, async (req, res) => {
+    try {
+      // In a real app, get user_id from the auth token
+      const userId = 1; // Temporary for testing
+
+      const favorites = await storage.getUserFavorites(userId);
+      res.json(favorites);
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+      res.status(500).json({ error: 'Failed to fetch favorites' });
     }
   });
 
