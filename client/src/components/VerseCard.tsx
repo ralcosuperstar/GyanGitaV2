@@ -145,7 +145,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col gap-6 pt-6 h-full">
+        <CardContent className="flex flex-col gap-6 pt-6">
           <div>
             <h3 className="font-semibold text-primary mb-2">{t('verse.sanskrit')}</h3>
             <p className="text-lg font-sanskrit leading-relaxed break-words">{verse.slok}</p>
@@ -156,7 +156,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             <p className="leading-relaxed break-words">{verse.tej.ht}</p>
           </div>
 
-          <div className="flex gap-2 mt-auto pt-4 border-t">
+          <div className="flex gap-2 mt-4 pt-4 border-t">
             <Button onClick={() => setShowModal(true)} className="flex-1">
               {t('verse.readMore')}
             </Button>
