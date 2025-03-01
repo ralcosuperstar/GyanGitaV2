@@ -179,7 +179,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       </Card>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0 mx-2 sm:mx-4 rounded-lg sm:rounded-xl overflow-hidden shadow-lg animate-in fade-in-0 zoom-in-95 duration-200">
+        <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0 mx-2 sm:mx-4 bg-background rounded-lg sm:rounded-xl overflow-hidden shadow-lg animate-in fade-in-0 zoom-in-95 duration-200">
           <DialogHeader className="p-4 sm:p-6 bg-background border-b">
             <DialogTitle className="font-playfair text-xl sm:text-2xl flex items-center justify-between">
               <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
