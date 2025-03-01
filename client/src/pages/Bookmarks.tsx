@@ -66,7 +66,8 @@ export default function Bookmarks() {
                   slok: favorite.slok,
                   transliteration: favorite.transliteration,
                   tej: {
-                    ht: favorite.translation
+                    ht: favorite.translation,
+                    et: favorite.translation_english
                   }
                 }}
               />

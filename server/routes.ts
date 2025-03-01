@@ -94,7 +94,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = 1; // Temporary for testing
 
       const favorites = await storage.getUserFavorites(userId);
-      res.json(favorites);
+
+      // Fetch verse data for each favorite
+      const favoritesWithData = await Promise.all(
+        favorites.map(async (favorite) => {
+          try {
+            const verseData = await fetchVerse(favorite.chapter, favorite.verse);
+            return {
+              ...favorite,
+              ...verseData
+            };
+          } catch (error) {
+            console.error(`Error fetching verse ${favorite.chapter}:${favorite.verse}:`, error);
+            return favorite;
+          }
+        })
+      );
+
+      res.json(favoritesWithData);
     } catch (error) {
       console.error('Error fetching favorites:', error);
       res.status(500).json({ error: 'Failed to fetch favorites' });

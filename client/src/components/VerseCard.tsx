@@ -64,11 +64,17 @@ export default function VerseCard({ verse, showActions = true }: VerseCardProps)
       return response.json();
     },
     onSuccess: () => {
+      // Add vibration feedback if supported
+      if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(200);
+      }
+
       setIsBookmarked(true);
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
       toast({
         title: "Success",
         description: "Verse has been bookmarked",
+        duration: 2000,
       });
     },
     onError: (error: Error) => {
@@ -76,6 +82,7 @@ export default function VerseCard({ verse, showActions = true }: VerseCardProps)
         title: "Error",
         description: error.message,
         variant: "destructive",
+        duration: 3000,
       });
     }
   });
@@ -85,14 +92,14 @@ export default function VerseCard({ verse, showActions = true }: VerseCardProps)
   };
 
   const handleShare = () => {
-    const text = `Bhagavad Gita - Chapter ${verse.chapter}, Verse ${verse.verse}\n\n${verse.transliteration}\n\nTranslation: ${verse.tej.ht}`;
-    const url = `${window.location.origin}?chapter=${verse.chapter}&verse=${verse.verse}`;
+    const text = `Bhagavad Gita - Chapter ${verse.chapter}, Verse ${verse.verse}\n\n${verse.slok}\n\n${verse.transliteration}\n\n${verse.tej.ht}`;
+    const url = `${window.location.origin}/browse?chapter=${verse.chapter}&verse=${verse.verse}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n\n' + url)}`, '_blank');
   };
 
   return (
     <>
-      <Card className="overflow-hidden transition-transform hover:scale-[1.02] duration-200 flex flex-col">
+      <Card className="overflow-hidden transition-transform hover:scale-[1.02] duration-200 flex flex-col h-full">
         <CardHeader className="bg-primary/5">
           <CardTitle className="font-playfair text-xl flex justify-between items-center">
             <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
