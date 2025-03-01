@@ -142,11 +142,11 @@ export default function Home() {
         )}
 
         {selectedMood && verses?.length > 0 && (
-          <div className="mt-12 flex justify-center space-x-4">
+          <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4">
             <Button
               variant="outline"
               size="lg"
-              className="h-14"
+              className="h-14 w-full sm:w-auto"
               onClick={() => {
                 setSelectedMood(null);
                 const moodSection = document.getElementById('mood-section');
@@ -155,7 +155,11 @@ export default function Home() {
             >
               {t('home.mood.change')}
             </Button>
-            <Button size="lg" className="h-14" onClick={() => setLocation("/browse")}>
+            <Button 
+              size="lg" 
+              className="h-14 w-full sm:w-auto"
+              onClick={() => setLocation("/browse")}
+            >
               {t('home.explore')}
             </Button>
           </div>
