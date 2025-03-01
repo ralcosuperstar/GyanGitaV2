@@ -69,11 +69,18 @@ export default function Bookmarks() {
                     ht: favorite.translation,
                     et: favorite.translation_english
                   },
-                  siva: favorite.siva,
-                  purohit: favorite.purohit,
-                  chinmay: favorite.chinmay
+                  siva: {
+                    et: favorite.siva?.et
+                  },
+                  purohit: {
+                    et: favorite.purohit?.et
+                  },
+                  chinmay: {
+                    hc: favorite.chinmay?.hc
+                  }
                 }}
                 isBookmarked={true}
+                showActions={true}
               />
             ))}
           </div>
