@@ -109,7 +109,7 @@ const translations = {
     'verse.share': 'Share',
     'verse.noCommentary': 'No commentary available.',
     'verse.relatedVerses': 'Related Verses',
-    'verse.comingSoon': 'Coming soon...'
+    'verse.noRelatedVerses': 'No related verses available.',
   },
   hi: {
     // Navigation
@@ -211,7 +211,7 @@ const translations = {
     'verse.share': 'साझा करें',
     'verse.noCommentary': 'कोई व्याख्या उपलब्ध नहीं है।',
     'verse.relatedVerses': 'संबंधित श्लोक',
-    'verse.comingSoon': 'जल्द आ रहा है...'
+    'verse.noRelatedVerses': 'कोई संबंधित श्लोक उपलब्ध नहीं है।',
   }
 };
 

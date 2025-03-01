@@ -6,8 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Share2, Bookmark, BookmarkCheck } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface VerseCardProps {
   verse: {
@@ -39,6 +40,19 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
   const queryClient = useQueryClient();
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
   const { toast } = useToast();
+
+  // Fetch related verses when modal is open
+  const { data: relatedVerses, isLoading: isLoadingRelated } = useQuery({
+    queryKey: [`/api/verse/${verse.chapter}/${verse.verse}/related`],
+    queryFn: async () => {
+      const response = await fetch(`/api/verse/${verse.chapter}/${verse.verse}/related`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch related verses');
+      }
+      return response.json();
+    },
+    enabled: showModal // Only fetch when modal is open
+  });
 
   // Vibration feedback function
   const triggerVibration = () => {
@@ -100,6 +114,16 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
     const url = `${window.location.origin}/browse?chapter=${verse.chapter}&verse=${verse.verse}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n\n' + url)}`, '_blank');
   };
+
+  const renderVerse = (v: any) => (
+    <div key={`${v.chapter}-${v.verse}`} className="bg-muted/50 p-4 rounded-lg mb-4">
+      <h4 className="font-medium mb-2">
+        Chapter {v.chapter}, Verse {v.verse}
+      </h4>
+      <p className="text-sm font-sanskrit mb-2">{v.slok}</p>
+      <p className="text-sm">{v.tej.ht}</p>
+    </div>
+  );
 
   return (
     <>
@@ -225,10 +249,17 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   <div className="bg-muted/50 p-4 rounded-lg">
                     <p className="font-medium text-primary mb-4">{t('verse.relatedVerses')}</p>
                     <div className="space-y-4">
-                      {/* We'll implement related verses in the next iteration */}
-                      <p className="text-center text-muted-foreground">
-                        {t('verse.comingSoon')}
-                      </p>
+                      {isLoadingRelated ? (
+                        Array(3).fill(0).map((_, i) => (
+                          <Skeleton key={i} className="h-32 w-full" />
+                        ))
+                      ) : relatedVerses?.length ? (
+                        relatedVerses.map(renderVerse)
+                      ) : (
+                        <p className="text-center text-muted-foreground">
+                          {t('verse.noRelatedVerses')}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
