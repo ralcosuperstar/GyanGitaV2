@@ -6,6 +6,7 @@ export interface IStorage {
   createFavorite(favorite: InsertFavorite): Promise<Favorite>;
   getUserFavorites(userId: number): Promise<Favorite[]>;
   removeFavorite(userId: number, chapter: string, verse: string): Promise<void>;
+  getAllVerses(): Promise<{ chapter: string; verse: string; }[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -124,6 +125,23 @@ export class MemStorage implements IStorage {
 
   async getMoodVerses(mood: string): Promise<MoodVerse[]> {
     return this.moodVersesMap.get(mood) || [];
+  }
+
+  async getAllVerses(): Promise<{ chapter: string; verse: string; }[]> {
+    const allVerses: { chapter: string; verse: string; }[] = [];
+    this.moodVersesMap.forEach((verses) => {
+      verses.forEach((v) => {
+        if (!allVerses.some(existing => 
+          existing.chapter === v.chapter && existing.verse === v.verse
+        )) {
+          allVerses.push({
+            chapter: v.chapter,
+            verse: v.verse
+          });
+        }
+      });
+    });
+    return allVerses;
   }
 
   async insertMoodVerse(moodVerse: InsertMoodVerse): Promise<MoodVerse> {
