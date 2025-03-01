@@ -65,18 +65,32 @@ const DailyVerse = () => {
         const verse = Math.floor(Math.random() * 40) + 1;
         
         const response = await fetch(`/api/verse/${chapter}/${verse}`);
-        if (response.ok) {
-          const data = await response.json();
-          setVerse({
-            slok: data.slok,
-            transliteration: data.transliteration,
-            translation: data.tej.et,
-            chapter,
-            verse
-          });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch verse: ${response.statusText}`);
         }
+        
+        const data = await response.json();
+        if (!data || !data.slok) {
+          throw new Error("Invalid verse data received");
+        }
+        
+        setVerse({
+          slok: data.slok || "Sanskrit text not available",
+          transliteration: data.transliteration || "Transliteration not available",
+          translation: data.tej?.et || data.tej?.ht || "Translation not available",
+          chapter,
+          verse
+        });
       } catch (error) {
         console.error("Error fetching daily verse:", error);
+        // Set fallback data
+        setVerse({
+          slok: "Error loading verse",
+          transliteration: "Please try again later",
+          translation: "Could not load the daily verse. Please refresh the page.",
+          chapter: 1,
+          verse: 1
+        });
       } finally {
         setLoading(false);
       }

@@ -49,9 +49,10 @@ export default function Browse() {
   const [viewMode, setViewMode] = useState<"search" | "grid">("search");
   const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
   const [showVerseModal, setShowVerseModal] = useState(false);
+  const [verseError, setVerseError] = useState<string | null>(null); // Added error state
   const { t } = useLanguage();
 
-  const { data: chapters, isLoading: isLoadingChapters } = useQuery<Chapter[]>({
+  const { data: chapters, isLoading: isLoadingChapters, error: chaptersError } = useQuery<Chapter[]>({
     queryKey: ['/api/chapters'],
     queryFn: async () => {
       const response = await fetch('https://vedicscriptures.github.io/chapters');
@@ -60,16 +61,25 @@ export default function Browse() {
     }
   });
 
-  const { data: verse, isLoading: isLoadingVerse } = useQuery<VerseResponse>({
+  const { data: verse, isLoading: isLoadingVerse, error: verseErrorQuery } = useQuery<VerseResponse>({
     queryKey: ['/api/verse', selectedChapter, selectedVerse],
     queryFn: async () => {
       if (!selectedChapter || !selectedVerse) return null;
       const response = await fetch(`https://vedicscriptures.github.io/slok/${selectedChapter}/${selectedVerse}`);
-      if (!response.ok) throw new Error('Failed to fetch verse');
+      if (!response.ok) {
+        const message = `Failed to fetch verse: ${response.status} ${response.statusText}`;
+        throw new Error(message);
+      }
       const data = await response.json();
       return { ...data, chapter: parseInt(selectedChapter), verse: parseInt(selectedVerse) };
     },
-    enabled: !!(selectedChapter && selectedVerse)
+    enabled: !!(selectedChapter && selectedVerse),
+    onError: (error) => {
+      setVerseError(error.message);
+    },
+    onSettled: () => {
+      setVerseError(null); // Reset error on success or failure
+    }
   });
 
   return (
@@ -136,8 +146,11 @@ export default function Browse() {
                 <label className="block text-sm font-medium mb-2">
                   {t('browse.select.chapter')}
                 </label>
-                {isLoadingChapters ? (
-                  <Skeleton className="h-10 w-full" />
+                {isLoadingChapters || chaptersError ? (
+                  <div>
+                    {isLoadingChapters && <Skeleton className="h-10 w-full" />}
+                    {chaptersError && <p className="text-red-500">Error loading chapters: {chaptersError.message}</p>}
+                  </div>
                 ) : (
                   <Select
                     value={selectedChapter}
@@ -148,8 +161,8 @@ export default function Browse() {
                     </SelectTrigger>
                     <SelectContent>
                       {chapters?.map((chapter) => (
-                        <SelectItem 
-                          key={chapter.chapter_number} 
+                        <SelectItem
+                          key={chapter.chapter_number}
                           value={chapter.chapter_number.toString()}
                         >
                           Chapter {chapter.chapter_number}: {chapter.name}
@@ -177,7 +190,11 @@ export default function Browse() {
               </div>
             </div>
 
-            {selectedChapter && selectedVerse && verse && (
+            {isLoadingVerse ? (
+              <Skeleton className="h-20 w-full mt-12" />
+            ) : verseError ? (
+              <p className="text-red-500 mt-12">{verseError}</p>
+            ) : selectedChapter && selectedVerse && verse && (
               <div className="mt-12">
                 <VerseCard verse={verse} />
               </div>
@@ -185,10 +202,15 @@ export default function Browse() {
           </div>
         ) : (
           <div className="space-y-12">
-            {selectedGridChapter === null ? (
+            {isLoadingChapters || chaptersError ? (
+              <div>
+                {isLoadingChapters && <Skeleton className="h-20 w-full" />}
+                {chaptersError && <p className="text-red-500">Error loading chapters: {chaptersError.message}</p>}
+              </div>
+            ) : selectedGridChapter === null ? (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {chapters?.map((chapter) => (
-                  <Card 
+                  <Card
                     key={chapter.chapter_number}
                     className="cursor-pointer hover:border-primary transition-colors transform hover:scale-105"
                     onClick={() => setSelectedGridChapter(chapter.chapter_number)}
@@ -208,8 +230,8 @@ export default function Browse() {
               </div>
             ) : (
               <div>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="mb-8"
                   onClick={() => setSelectedGridChapter(null)}
                 >
@@ -238,10 +260,14 @@ export default function Browse() {
         )}
 
         {/* Verse Modal */}
-        {verse && showVerseModal && (
+        {showVerseModal && (
           <Dialog open={showVerseModal} onOpenChange={setShowVerseModal}>
             <DialogContent className="max-w-3xl">
-              <VerseCard verse={verse} />
+              {isLoadingVerse ? (
+                <Skeleton className="h-48 w-full" />
+              ) : verseError ? (
+                <p className="text-red-500">{verseError}</p>
+              ) : verse && <VerseCard verse={verse} />}
             </DialogContent>
           </Dialog>
         )}
