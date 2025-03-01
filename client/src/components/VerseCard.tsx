@@ -179,7 +179,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       </Card>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0 mx-2">
+        <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 gap-0 mx-2 sm:mx-4 rounded-lg sm:rounded-xl overflow-hidden shadow-lg animate-in fade-in-0 zoom-in-95 duration-200">
           <DialogHeader className="p-4 sm:p-6 bg-background border-b">
             <DialogTitle className="font-playfair text-xl sm:text-2xl flex items-center justify-between">
               <span>Chapter {verse.chapter}, Verse {verse.verse}</span>
@@ -203,55 +203,55 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
           <Tabs defaultValue="verse" className="flex-1 flex flex-col overflow-hidden">
             <TabsList className="w-full h-12 bg-background border-b">
-              <div className="flex w-full px-2 sm:px-6">
+              <div className="flex w-full">
                 <TabsTrigger 
                   value="verse" 
-                  className="flex-1 text-xs sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
                 >
                   {t('verse.text')}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="translations" 
-                  className="flex-1 text-xs sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
                 >
                   {t('verse.translations')}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="commentary" 
-                  className="flex-1 text-xs sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
                 >
                   {t('verse.commentary')}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="related" 
-                  className="flex-1 text-xs sm:text-base py-2 sm:py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
                 >
                   {t('verse.related')}
                 </TabsTrigger>
               </div>
             </TabsList>
 
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden bg-muted/5">
               <ScrollArea className="h-full">
-                <div className="p-4 sm:p-6 space-y-6">
-                  <TabsContent value="verse" className="mt-0 space-y-6">
+                <div className="px-4 sm:px-6 py-6 space-y-6">
+                  <TabsContent value="verse" className="mt-0 space-y-6 animate-in fade-in-50">
                     <div>
                       <h3 className="font-semibold mb-3 text-primary">{t('verse.sanskrit')}</h3>
-                      <div className="bg-muted/50 p-4 rounded-lg">
+                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
                         <p className="text-lg sm:text-xl font-sanskrit leading-relaxed break-words">{verse.slok}</p>
                       </div>
                     </div>
                     <div>
                       <h3 className="font-semibold mb-3 text-primary">{t('verse.transliteration')}</h3>
-                      <div className="bg-muted/50 p-4 rounded-lg">
+                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
                         <p className="text-base sm:text-lg leading-relaxed break-words">{verse.transliteration}</p>
                       </div>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="translations" className="mt-0 space-y-6">
+                  <TabsContent value="translations" className="mt-0 space-y-6 animate-in fade-in-50">
                     {verse.tej && (
-                      <div className="bg-muted/50 p-4 rounded-lg">
+                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
                         <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
                         <div className="space-y-4">
                           <p className="leading-relaxed break-words">{verse.tej.ht}</p>
@@ -265,34 +265,34 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                     )}
 
                     {verse.siva?.et && (
-                      <div className="bg-muted/50 p-4 rounded-lg">
+                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
                         <p className="font-medium text-primary mb-3">Swami Sivananda</p>
                         <p className="leading-relaxed break-words">{verse.siva.et}</p>
                       </div>
                     )}
 
                     {verse.purohit?.et && (
-                      <div className="bg-muted/50 p-4 rounded-lg">
+                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
                         <p className="font-medium text-primary mb-3">Shri Purohit Swami</p>
                         <p className="leading-relaxed break-words">{verse.purohit.et}</p>
                       </div>
                     )}
                   </TabsContent>
 
-                  <TabsContent value="commentary" className="mt-0">
+                  <TabsContent value="commentary" className="mt-0 animate-in fade-in-50">
                     {verse.chinmay?.hc ? (
-                      <div className="bg-muted/50 p-4 rounded-lg">
+                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
                         <p className="font-medium text-primary mb-3">Swami Chinmayananda</p>
                         <p className="leading-relaxed break-words">{verse.chinmay.hc}</p>
                       </div>
                     ) : (
-                      <div className="text-center py-8 text-muted-foreground">
+                      <div className="text-center py-12 text-muted-foreground">
                         <p>{t('verse.noCommentary')}</p>
                       </div>
                     )}
                   </TabsContent>
 
-                  <TabsContent value="related" className="mt-0">
+                  <TabsContent value="related" className="mt-0 animate-in fade-in-50">
                     <div className="space-y-4">
                       <h3 className="font-medium text-primary mb-4">{t('verse.relatedVerses')}</h3>
                       {isLoadingRelated ? (
@@ -304,7 +304,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                       ) : relatedVerses?.length ? (
                         relatedVerses.map(renderVerse)
                       ) : (
-                        <div className="text-center py-8 text-muted-foreground">
+                        <div className="text-center py-12 text-muted-foreground">
                           <p>{t('verse.noRelatedVerses')}</p>
                         </div>
                       )}
