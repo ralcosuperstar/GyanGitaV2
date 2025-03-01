@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Search, Globe, X, ChevronRight } from "lucide-react";
+import { Moon, Sun, Search, Globe, X, Menu, ChevronRight } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import {
   Sheet,
@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSearch } from "@/hooks/use-search";
 import { useLanguage } from "@/contexts/language-context";
 import {
@@ -60,6 +60,42 @@ function SearchResultModal({ result, onClose }: {
   );
 }
 
+// Mobile menu component
+function MobileMenu() {
+  const { t } = useLanguage();
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+        <nav className="flex flex-col space-y-4 mt-8">
+          <Link href="/browse" onClick={() => setIsOpen(false)}>
+            <a className="block py-2 px-4 hover:bg-muted rounded-md transition-colors">
+              {t('nav.browse')}
+            </a>
+          </Link>
+          <Link href="/about" onClick={() => setIsOpen(false)}>
+            <a className="block py-2 px-4 hover:bg-muted rounded-md transition-colors">
+              {t('nav.about')}
+            </a>
+          </Link>
+          <Link href="/contact" onClick={() => setIsOpen(false)}>
+            <a className="block py-2 px-4 hover:bg-muted rounded-md transition-colors">
+              {t('nav.contact')}
+            </a>
+          </Link>
+        </nav>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
 // Search overlay component with instant results
 function SearchOverlay() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -67,16 +103,11 @@ function SearchOverlay() {
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedResult, setSelectedResult] = useState<any>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Reset search when closed
   useEffect(() => {
     if (!isOpen) {
       setSearchQuery("");
       setSelectedResult(null);
-      if (searchInputRef.current) {
-        searchInputRef.current.value = '';
-      }
     }
   }, [isOpen]);
 
@@ -84,37 +115,42 @@ function SearchOverlay() {
     <>
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="mr-1" aria-label="Search">
+          <Button variant="ghost" size="icon" className="h-9 w-9">
             <Search className="h-5 w-5" />
+            <span className="sr-only">{t('nav.search')}</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="top" className="max-h-[80vh] overflow-y-auto">
-          <div className="flex flex-col h-full max-w-4xl mx-auto">
-            <div className="flex items-center">
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <Search className="h-4 w-4 text-muted-foreground" />
+        <SheetContent 
+          side="top" 
+          className="h-[80vh] bg-background/95 backdrop-blur p-0 border-none"
+        >
+          <div className="container mx-auto max-w-3xl">
+            <div className="relative">
+              <div className="sticky top-0 bg-background/95 backdrop-blur py-4 shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      type="search"
+                      placeholder={t('search.placeholder')}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="h-12 pl-10 pr-4 text-lg w-full bg-muted/50"
+                      autoFocus
+                    />
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => setIsOpen(false)}
+                    className="h-12 w-12"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
                 </div>
-                <Input
-                  ref={searchInputRef}
-                  type="search"
-                  placeholder={t('search.placeholder')}
-                  className="pl-10"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
               </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setIsOpen(false)} 
-                className="ml-2"
-                aria-label="Close search"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="mt-4 px-4 flex-1 overflow-y-auto">
+
+              <div className="mt-4 px-4">
                 {isLoading ? (
                   <div className="space-y-4">
                     {[...Array(3)].map((_, i) => (
@@ -159,6 +195,7 @@ function SearchOverlay() {
                   </div>
                 )}
               </div>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
@@ -180,11 +217,14 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-4 sm:px-8">
-        <Link href="/">
-          <a className="flex items-center space-x-2">
-            <span className="font-playfair text-xl font-bold">GyanGita</span>
-          </a>
-        </Link>
+        <div className="flex items-center">
+          <MobileMenu />
+          <Link href="/">
+            <a className="flex items-center space-x-2 ml-2 md:ml-0">
+              <span className="font-playfair text-xl font-bold">GyanGita</span>
+            </a>
+          </Link>
+        </div>
 
         <nav className="flex items-center space-x-6">
           <div className="hidden md:flex items-center space-x-6">
