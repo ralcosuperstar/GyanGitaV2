@@ -121,7 +121,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
         Chapter {v.chapter}, Verse {v.verse}
       </h4>
       <p className="text-sm font-sanskrit mb-2">{v.slok}</p>
-      <p className="text-sm">{v.tej.ht}</p>
+      <p className="text-sm text-foreground/90">{v.tej.ht}</p>
     </div>
   );
 
@@ -151,12 +151,12 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
         <CardContent className="flex-1 flex flex-col space-y-4 pt-6">
           <div className="space-y-2">
             <h3 className="font-semibold text-primary">{t('verse.sanskrit')}</h3>
-            <p className="text-lg font-sanskrit leading-relaxed">{verse.slok}</p>
+            <p className="text-lg font-sanskrit leading-relaxed break-words">{verse.slok}</p>
           </div>
 
           <div className="space-y-2 flex-1">
             <h3 className="font-semibold text-primary">{t('verse.translation')}</h3>
-            <p className="leading-relaxed">{verse.tej.ht}</p>
+            <p className="leading-relaxed break-words">{verse.tej.ht}</p>
           </div>
 
           <div className="flex gap-2 pt-4 mt-auto">
@@ -175,32 +175,32 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-3xl h-[90vh] flex flex-col">
-          <DialogHeader className="px-6 py-4 bg-background border-b">
+          <DialogHeader className="px-6 py-4 bg-background border-b sticky top-0 z-10">
             <DialogTitle className="font-playfair text-2xl">
               Chapter {verse.chapter}, Verse {verse.verse}
             </DialogTitle>
           </DialogHeader>
 
           <Tabs defaultValue="verse" className="flex-1 flex flex-col min-h-0">
-            <TabsList className="w-full grid grid-cols-4 px-6 bg-background">
+            <TabsList className="w-full grid grid-cols-4 px-6 bg-background sticky top-[73px] z-10">
               <TabsTrigger value="verse">{t('verse.text')}</TabsTrigger>
               <TabsTrigger value="translations">{t('verse.translations')}</TabsTrigger>
               <TabsTrigger value="commentary">{t('verse.commentary')}</TabsTrigger>
               <TabsTrigger value="related">{t('verse.related')}</TabsTrigger>
             </TabsList>
 
-            <div className="flex-1 overflow-auto px-6">
-              <ScrollArea className="h-full py-4">
+            <div className="flex-1 overflow-hidden">
+              <ScrollArea className="h-full py-4 px-6">
                 <TabsContent value="verse" className="space-y-6 mt-0">
                   <div>
                     <h3 className="font-semibold mb-2 text-primary">{t('verse.sanskrit')}</h3>
-                    <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg leading-relaxed">
+                    <p className="text-xl font-sanskrit bg-muted/50 p-4 rounded-lg leading-relaxed break-words">
                       {verse.slok}
                     </p>
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2 text-primary">{t('verse.transliteration')}</h3>
-                    <p className="text-lg bg-muted/50 p-4 rounded-lg leading-relaxed">
+                    <p className="text-lg bg-muted/50 p-4 rounded-lg leading-relaxed break-words">
                       {verse.transliteration}
                     </p>
                   </div>
@@ -210,9 +210,9 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   {verse.tej && (
                     <div className="bg-muted/50 p-4 rounded-lg">
                       <p className="font-medium text-primary mb-2">Swami Tejomayananda</p>
-                      <p className="leading-relaxed">{verse.tej.ht}</p>
+                      <p className="leading-relaxed break-words">{verse.tej.ht}</p>
                       {verse.tej.et && (
-                        <p className="text-muted-foreground mt-2 leading-relaxed">{verse.tej.et}</p>
+                        <p className="text-muted-foreground mt-2 leading-relaxed break-words">{verse.tej.et}</p>
                       )}
                     </div>
                   )}
@@ -220,14 +220,14 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   {verse.siva?.et && (
                     <div className="bg-muted/50 p-4 rounded-lg">
                       <p className="font-medium text-primary mb-2">Swami Sivananda</p>
-                      <p className="leading-relaxed">{verse.siva.et}</p>
+                      <p className="leading-relaxed break-words">{verse.siva.et}</p>
                     </div>
                   )}
 
                   {verse.purohit?.et && (
                     <div className="bg-muted/50 p-4 rounded-lg">
                       <p className="font-medium text-primary mb-2">Shri Purohit Swami</p>
-                      <p className="leading-relaxed">{verse.purohit.et}</p>
+                      <p className="leading-relaxed break-words">{verse.purohit.et}</p>
                     </div>
                   )}
                 </TabsContent>
@@ -236,7 +236,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   {verse.chinmay?.hc ? (
                     <div className="bg-muted/50 p-4 rounded-lg">
                       <p className="font-medium text-primary mb-2">Swami Chinmayananda</p>
-                      <p className="leading-relaxed">{verse.chinmay.hc}</p>
+                      <p className="leading-relaxed break-words">{verse.chinmay.hc}</p>
                     </div>
                   ) : (
                     <p className="text-center text-muted-foreground">
@@ -267,7 +267,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             </div>
           </Tabs>
 
-          <div className="px-6 py-4 bg-background border-t">
+          <div className="px-6 py-4 bg-background border-t sticky bottom-0">
             <div className="flex gap-2">
               {showActions && (
                 <Button 
