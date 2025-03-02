@@ -3,8 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Copy, Check } from "lucide-react";
-import { BsWhatsapp, BsTwitter } from "react-icons/bs";
+import { BsWhatsapp } from "react-icons/bs";
 import { FaFacebookF, FaLinkedinIn } from "react-icons/fa";
+import { SiX } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -135,8 +136,8 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
                   className="gap-2"
                   onClick={() => handleShare('twitter')}
                 >
-                  <BsTwitter className="h-4 w-4" />
-                  <span className="hidden sm:inline">Twitter</span>
+                  <SiX className="h-4 w-4" />
+                  <span className="hidden sm:inline">X</span>
                 </Button>
                 <Button
                   variant="outline"
