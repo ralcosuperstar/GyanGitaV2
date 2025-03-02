@@ -16,9 +16,11 @@ interface ShareDialogProps {
 
 export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogProps) {
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState('verse');
   const { toast } = useToast();
 
-  const handleCopy = async (text: string) => {
+  const handleCopy = async () => {
+    const text = activeTab === 'verse' ? generateVerseText() : generateCommentaryText();
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -29,7 +31,8 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
     });
   };
 
-  const handleShare = (platform: string, text: string) => {
+  const handleShare = (platform: string) => {
+    const text = activeTab === 'verse' ? generateVerseText() : generateCommentaryText();
     const url = `${window.location.origin}/verse/${verse.chapter}/${verse.verse}`;
     const shareText = encodeURIComponent(`${text}\n\nShared via GyanGita - ${url}`);
 
@@ -68,12 +71,17 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] w-[calc(100%-2rem)] h-[90vh] flex flex-col p-0 gap-0">
+      <DialogContent className="sm:max-w-[600px] w-[calc(100%-2rem)] h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl">
         <DialogHeader className="p-4 sm:p-6 border-b">
           <DialogTitle>Share Verse</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="verse" className="flex-1 flex flex-col overflow-hidden">
+        <Tabs 
+          defaultValue="verse" 
+          className="flex-1 flex flex-col overflow-hidden"
+          value={activeTab}
+          onValueChange={setActiveTab}
+        >
           <TabsList className="w-full grid grid-cols-2 p-1 bg-muted/5 border-b">
             <TabsTrigger value="verse">Verse & Translation</TabsTrigger>
             <TabsTrigger value="commentary">With Commentary</TabsTrigger>
@@ -116,7 +124,7 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
                   variant="outline"
                   size="sm"
                   className="gap-2"
-                  onClick={() => handleShare('whatsapp', generateVerseText())}
+                  onClick={() => handleShare('whatsapp')}
                 >
                   <BsWhatsapp className="h-4 w-4" />
                   <span className="hidden sm:inline">WhatsApp</span>
@@ -125,7 +133,7 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
                   variant="outline"
                   size="sm"
                   className="gap-2"
-                  onClick={() => handleShare('twitter', generateVerseText())}
+                  onClick={() => handleShare('twitter')}
                 >
                   <BsTwitter className="h-4 w-4" />
                   <span className="hidden sm:inline">Twitter</span>
@@ -134,7 +142,7 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
                   variant="outline"
                   size="sm"
                   className="gap-2"
-                  onClick={() => handleShare('facebook', generateVerseText())}
+                  onClick={() => handleShare('facebook')}
                 >
                   <FaFacebookF className="h-4 w-4" />
                   <span className="hidden sm:inline">Facebook</span>
@@ -143,7 +151,7 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
                   variant="outline"
                   size="sm"
                   className="gap-2"
-                  onClick={() => handleShare('linkedin', generateVerseText())}
+                  onClick={() => handleShare('linkedin')}
                 >
                   <FaLinkedinIn className="h-4 w-4" />
                   <span className="hidden sm:inline">LinkedIn</span>
@@ -153,7 +161,7 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
               <Button
                 variant="secondary"
                 className="w-full gap-2"
-                onClick={() => handleCopy(generateVerseText())}
+                onClick={handleCopy}
               >
                 {copied ? (
                   <Check className="h-4 w-4" />
