@@ -180,8 +180,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent 
-          className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] gap-0 border bg-background p-0 shadow-lg duration-200 sm:rounded-lg md:w-full"
-          style={{ maxHeight: '90vh' }}
+          className="sm:max-w-[90%] md:max-w-4xl w-[calc(100%-2rem)] h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl bg-background shadow-lg overflow-hidden border data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
         >
           <DialogHeader className="p-4 sm:p-6 border-b">
             <DialogTitle className="font-playfair text-xl sm:text-2xl flex items-center justify-between">
