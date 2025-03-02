@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Share2, Bookmark, BookmarkCheck } from "lucide-react";
+import { Share2, Bookmark, BookmarkCheck, X } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -36,6 +36,8 @@ interface VerseCardProps {
 
 export default function VerseCard({ verse, showActions = true, isBookmarked: initialIsBookmarked = false }: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("verse");
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
   const queryClient = useQueryClient();
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
@@ -122,6 +124,14 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
     </div>
   );
 
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      setTimeout(() => {
+        scrollAreaRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 50);
+    }
+  }, [activeTab]);
+
   return (
     <>
       <Card className="group h-full transition-all hover:scale-[1.02] duration-200 hover:shadow-lg">
@@ -187,13 +197,13 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               <DialogTitle className="font-playfair text-xl sm:text-2xl">
                 Chapter {verse.chapter}, Verse {verse.verse}
               </DialogTitle>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-1">
                 {showActions && (
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={handleBookmark}
-                    className="h-8 w-8 transition-transform hover:scale-110"
+                    className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
                     disabled={bookmarkMutation.isPending}
                   >
                     {isBookmarked ? (
@@ -203,6 +213,14 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                     )}
                   </Button>
                 )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
+                  onClick={() => setShowModal(false)}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
               </div>
             </div>
           </DialogHeader>
@@ -210,12 +228,8 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
           <Tabs 
             defaultValue="verse" 
             className="flex-1 flex flex-col overflow-hidden"
-            onValueChange={(value) => {
-              const scrollArea = document.querySelector('.scroll-area');
-              if (scrollArea) {
-                scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
+            value={activeTab}
+            onValueChange={setActiveTab}
           >
             <TabsList className="w-full h-12 bg-background border-b">
               <div className="flex w-full">
@@ -247,7 +261,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             </TabsList>
 
             <div className="flex-1 overflow-hidden bg-muted/5">
-              <ScrollArea className="h-full scroll-area">
+              <ScrollArea ref={scrollAreaRef} className="h-full scroll-area">
                 <div className="p-4 sm:p-6 space-y-6">
                   <TabsContent value="verse" className="mt-0 space-y-6 animate-in fade-in-50">
                     <div>
