@@ -233,7 +233,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
             <div className="flex-1 overflow-hidden bg-muted/5">
               <ScrollArea className="h-full">
-                <div className="px-4 sm:px-6 py-6 space-y-6">
+                <div className="p-4 sm:p-6 space-y-6">
                   <TabsContent value="verse" className="mt-0 space-y-6 animate-in fade-in-50">
                     <div>
                       <h3 className="font-semibold mb-3 text-primary">{t('verse.sanskrit')}</h3>
