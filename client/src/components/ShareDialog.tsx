@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { generateQuote } from "@/services/quoteGenerator";
-import { Facebook, Twitter, Linkedin, Copy, Check } from "lucide-react";
-import { BsWhatsapp } from "react-icons/bs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Copy, Check } from "lucide-react";
+import { BsWhatsapp, BsTwitter } from "react-icons/bs";
+import { FaFacebookF, FaLinkedinIn } from "react-icons/fa";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/language-context";
 
@@ -18,19 +15,12 @@ interface ShareDialogProps {
 }
 
 export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogProps) {
-  const [style, setStyle] = useState({
-    template: 'minimal',
-    language: 'english',
-    showAttribution: true
-  });
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
   const { t } = useLanguage();
 
-  const quote = generateQuote(verse, style as any);
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(quote.text);
+  const handleCopy = async (text: string) => {
+    await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     toast({
@@ -40,20 +30,20 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
     });
   };
 
-  const handleShare = (platform: string) => {
-    const url = window.location.origin;
-    const text = encodeURIComponent(quote.socialText);
+  const handleShare = (platform: string, text: string) => {
+    const url = `${window.location.origin}/verse/${verse.chapter}/${verse.verse}`;
+    const shareText = encodeURIComponent(`${text}\n\nShared via GyanGita - ${url}`);
 
     let shareUrl = '';
     switch (platform) {
       case 'whatsapp':
-        shareUrl = `https://wa.me/?text=${text}\n\n${url}`;
+        shareUrl = `https://wa.me/?text=${shareText}`;
         break;
       case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+        shareUrl = `https://twitter.com/intent/tweet?text=${shareText}`;
         break;
       case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`;
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${shareText}`;
         break;
       case 'linkedin':
         shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
@@ -63,184 +53,99 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
     window.open(shareUrl, '_blank');
   };
 
+  const generateShareText = (lang: 'sanskrit' | 'hindi' | 'english') => {
+    let text = '';
+    const attribution = `\n\n- Bhagavad Gita, Chapter ${verse.chapter}, Verse ${verse.verse}`;
+
+    switch (lang) {
+      case 'sanskrit':
+        text = `${verse.slok}\n\n${verse.transliteration}\n\n${verse.tej.ht}`;
+        break;
+      case 'hindi':
+        text = `${verse.tej.ht}\n\n${verse.slok}`;
+        break;
+      case 'english':
+        text = `${verse.tej.et || verse.transliteration}\n\n${verse.slok}`;
+        break;
+    }
+    return text + attribution;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] space-y-6">
         <DialogHeader>
           <DialogTitle>{t('share.title')}</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="preview">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="preview">{t('share.preview')}</TabsTrigger>
-            <TabsTrigger value="customize">{t('share.customize')}</TabsTrigger>
+        <Tabs defaultValue="hindi" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="hindi">{t('share.languages.hindi')}</TabsTrigger>
+            <TabsTrigger value="sanskrit">{t('share.languages.sanskrit')}</TabsTrigger>
+            <TabsTrigger value="english">{t('share.languages.english')}</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="preview" className="space-y-4">
-            <div 
-              className="p-6 bg-muted rounded-lg"
-              dangerouslySetInnerHTML={{ __html: quote.html }}
-            />
+          {['hindi', 'sanskrit', 'english'].map((lang) => (
+            <TabsContent key={lang} value={lang} className="space-y-4">
+              <div className="border rounded-lg bg-muted/5 p-6 space-y-4">
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  {generateShareText(lang as any).split('\n').map((line, i) => (
+                    <p key={i} className={i === 0 ? 'font-medium leading-relaxed' : 'text-muted-foreground leading-relaxed'}>
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              </div>
 
-            <div className="grid grid-cols-4 gap-2">
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4"
-                onClick={() => handleShare('whatsapp')}
-              >
-                <BsWhatsapp className="h-5 w-5" />
-                <span className="text-xs">WhatsApp</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4"
-                onClick={() => handleShare('twitter')}
-              >
-                <Twitter className="h-5 w-5" />
-                <span className="text-xs">Twitter</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4"
-                onClick={() => handleShare('facebook')}
-              >
-                <Facebook className="h-5 w-5" />
-                <span className="text-xs">Facebook</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="flex flex-col items-center gap-2 h-auto py-4"
-                onClick={() => handleShare('linkedin')}
-              >
-                <Linkedin className="h-5 w-5" />
-                <span className="text-xs">LinkedIn</span>
-              </Button>
-            </div>
-
-            <Button 
-              variant="secondary" 
-              className="w-full gap-2"
-              onClick={handleCopy}
-            >
-              {copied ? (
-                <Check className="h-4 w-4" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
-              {t('share.copyText')}
-            </Button>
-          </TabsContent>
-
-          <TabsContent value="customize" className="space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>{t('share.template')}</Label>
-                <RadioGroup
-                  defaultValue={style.template}
-                  onValueChange={(value) => setStyle({ ...style, template: value as any })}
-                  className="grid grid-cols-3 gap-2"
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => handleShare('whatsapp', generateShareText(lang as any))}
                 >
-                  <div>
-                    <RadioGroupItem
-                      value="minimal"
-                      id="minimal"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="minimal"
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      <span className="text-sm font-semibold">{t('share.templates.minimal')}</span>
-                    </Label>
-                  </div>
-                  <div>
-                    <RadioGroupItem
-                      value="decorative"
-                      id="decorative"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="decorative"
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      <span className="text-sm font-semibold">{t('share.templates.decorative')}</span>
-                    </Label>
-                  </div>
-                  <div>
-                    <RadioGroupItem
-                      value="traditional"
-                      id="traditional"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="traditional"
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      <span className="text-sm font-semibold">{t('share.templates.traditional')}</span>
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label>{t('share.language')}</Label>
-                <RadioGroup
-                  defaultValue={style.language}
-                  onValueChange={(value) => setStyle({ ...style, language: value as any })}
-                  className="grid grid-cols-3 gap-2"
+                  <BsWhatsapp className="h-4 w-4" />
+                  WhatsApp
+                </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => handleShare('twitter', generateShareText(lang as any))}
                 >
-                  <div>
-                    <RadioGroupItem
-                      value="sanskrit"
-                      id="sanskrit"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="sanskrit"
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      <span className="text-sm font-semibold">{t('share.languages.sanskrit')}</span>
-                    </Label>
-                  </div>
-                  <div>
-                    <RadioGroupItem
-                      value="english"
-                      id="english"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="english"
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      <span className="text-sm font-semibold">{t('share.languages.english')}</span>
-                    </Label>
-                  </div>
-                  <div>
-                    <RadioGroupItem
-                      value="hindi"
-                      id="hindi"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="hindi"
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      <span className="text-sm font-semibold">{t('share.languages.hindi')}</span>
-                    </Label>
-                  </div>
-                </RadioGroup>
+                  <BsTwitter className="h-4 w-4" />
+                  Twitter
+                </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => handleShare('facebook', generateShareText(lang as any))}
+                >
+                  <FaFacebookF className="h-4 w-4" />
+                  Facebook
+                </Button>
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => handleShare('linkedin', generateShareText(lang as any))}
+                >
+                  <FaLinkedinIn className="h-4 w-4" />
+                  LinkedIn
+                </Button>
               </div>
 
-              <div className="flex items-center justify-between">
-                <Label htmlFor="attribution">{t('share.showAttribution')}</Label>
-                <Switch
-                  id="attribution"
-                  checked={style.showAttribution}
-                  onCheckedChange={(checked) => setStyle({ ...style, showAttribution: checked })}
-                />
-              </div>
-            </div>
-          </TabsContent>
+              <Button
+                variant="secondary"
+                className="w-full gap-2"
+                onClick={() => handleCopy(generateShareText(lang as any))}
+              >
+                {copied ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+                {t('share.copyText')}
+              </Button>
+            </TabsContent>
+          ))}
         </Tabs>
       </DialogContent>
     </Dialog>

@@ -1,9 +1,8 @@
 import { type VerseResponse } from "@/types/verse";
 
 interface QuoteStyle {
-  template: 'minimal' | 'decorative' | 'traditional';
   language: 'sanskrit' | 'english' | 'hindi';
-  showAttribution: boolean;
+  includeTranslation: boolean;
 }
 
 interface GeneratedQuote {
@@ -14,44 +13,45 @@ interface GeneratedQuote {
 
 export function generateQuote(verse: VerseResponse, style: QuoteStyle): GeneratedQuote {
   const { chapter, verse: verseNumber, slok, transliteration, tej } = verse;
-  
-  // Get the appropriate text based on language
+
+  // Get the main text based on language
   let mainText = '';
-  let attribution = '';
-  
+  let translation = '';
+
   switch (style.language) {
     case 'sanskrit':
       mainText = slok;
+      translation = tej.ht || tej.et;
       break;
     case 'english':
       mainText = tej.et || transliteration;
+      translation = tej.ht;
       break;
     case 'hindi':
       mainText = tej.ht;
+      translation = tej.et;
       break;
   }
 
   // Format attribution
-  attribution = `- Bhagavad Gita, Chapter ${chapter}, Verse ${verseNumber}`;
+  const attribution = `- Bhagavad Gita, Chapter ${chapter}, Verse ${verseNumber}`;
 
-  // Generate formatted text for different platforms
-  const textQuote = `"${mainText}"\n\n${attribution}\n\nShared via GyanGita`;
-  
-  // Generate HTML version with styling
+  // Generate formatted text
+  const textQuote = style.includeTranslation 
+    ? `${mainText}\n\n${translation}\n\n${attribution}`
+    : `${mainText}\n\n${attribution}`;
+
+  // Generate HTML version with proper styling
   const htmlQuote = `
-    <div class="quote-${style.template}">
-      <div class="quote-text">${mainText}</div>
-      ${style.showAttribution ? `<div class="quote-attribution">${attribution}</div>` : ''}
-      <div class="quote-branding">Shared via GyanGita</div>
+    <div class="quote-container p-6 space-y-4">
+      <div class="text-lg font-medium leading-relaxed break-words">${mainText}</div>
+      ${style.includeTranslation ? `<div class="text-muted-foreground leading-relaxed break-words">${translation}</div>` : ''}
+      <div class="text-sm text-primary">${attribution}</div>
     </div>
   `;
 
-  // Generate social media optimized text
-  const socialText = `"${mainText.substring(0, 200)}${mainText.length > 200 ? '...' : ''}"
-${attribution}
-
-Discover more wisdom at GyanGita
-#BhagavadGita #Spirituality #Wisdom`;
+  // Generate social media optimized text (limited to ~200 chars)
+  const socialText = `${mainText.substring(0, 180)}${mainText.length > 180 ? '...' : ''}\n${attribution}\n\nRead on GyanGita`;
 
   return {
     text: textQuote,
