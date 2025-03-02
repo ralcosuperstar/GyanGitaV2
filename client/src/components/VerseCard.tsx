@@ -188,184 +188,186 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
         </CardContent>
       </Card>
 
-      <Dialog open={showModal} onOpenChange={setShowModal}>
+      <Dialog open={showModal} onOpenChange={setShowModal} hideCloseButton>
         <DialogContent 
           className="sm:max-w-[90%] md:max-w-4xl w-[calc(100%-2rem)] h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl bg-background shadow-lg overflow-hidden border data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
         >
-          <DialogHeader className="p-4 sm:p-6 border-b">
-            <div className="flex items-center justify-between">
-              <DialogTitle className="font-playfair text-xl sm:text-2xl">
-                Chapter {verse.chapter}, Verse {verse.verse}
-              </DialogTitle>
-              <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-1">
-                {showActions && (
+          <div className="flex flex-col h-full">
+            <div className="p-4 sm:p-6 border-b">
+              <div className="flex items-center justify-between">
+                <DialogTitle className="font-playfair text-xl sm:text-2xl">
+                  Chapter {verse.chapter}, Verse {verse.verse}
+                </DialogTitle>
+                <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-1">
+                  {showActions && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleBookmark}
+                      className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
+                      disabled={bookmarkMutation.isPending}
+                    >
+                      {isBookmarked ? (
+                        <BookmarkCheck className="h-5 w-5 text-primary" />
+                      ) : (
+                        <Bookmark className="h-5 w-5" />
+                      )}
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={handleBookmark}
                     className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
-                    disabled={bookmarkMutation.isPending}
+                    onClick={() => setShowModal(false)}
                   >
-                    {isBookmarked ? (
-                      <BookmarkCheck className="h-5 w-5 text-primary" />
-                    ) : (
-                      <Bookmark className="h-5 w-5" />
-                    )}
+                    <X className="h-5 w-5" />
                   </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
-                  onClick={() => setShowModal(false)}
-                >
-                  <X className="h-5 w-5" />
-                </Button>
+                </div>
               </div>
             </div>
-          </DialogHeader>
 
-          <Tabs 
-            defaultValue="verse" 
-            className="flex-1 flex flex-col overflow-hidden"
-            value={activeTab}
-            onValueChange={setActiveTab}
-          >
-            <TabsList className="w-full h-12 bg-background border-b">
-              <div className="flex w-full">
-                <TabsTrigger 
-                  value="verse" 
-                  className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
-                >
-                  {t('verse.text')}
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="translations" 
-                  className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
-                >
-                  {t('verse.translations')}
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="commentary" 
-                  className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
-                >
-                  {t('verse.commentary')}
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="related" 
-                  className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
-                >
-                  {t('verse.related')}
-                </TabsTrigger>
-              </div>
-            </TabsList>
+            <Tabs 
+              defaultValue="verse" 
+              className="flex-1 flex flex-col overflow-hidden"
+              value={activeTab}
+              onValueChange={setActiveTab}
+            >
+              <TabsList className="w-full h-12 bg-background border-b">
+                <div className="flex w-full">
+                  <TabsTrigger 
+                    value="verse" 
+                    className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
+                  >
+                    {t('verse.text')}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="translations" 
+                    className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
+                  >
+                    {t('verse.translations')}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="commentary" 
+                    className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
+                  >
+                    {t('verse.commentary')}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="related" 
+                    className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
+                  >
+                    {t('verse.related')}
+                  </TabsTrigger>
+                </div>
+              </TabsList>
 
-            <div className="flex-1 overflow-hidden bg-muted/5">
-              <ScrollArea ref={scrollAreaRef} className="h-full scroll-area">
-                <div className="p-4 sm:p-6 space-y-6">
-                  <TabsContent value="verse" className="mt-0 space-y-6 animate-in fade-in-50">
-                    <div>
-                      <h3 className="font-semibold mb-3 text-primary">{t('verse.sanskrit')}</h3>
-                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                        <p className="text-lg sm:text-xl font-sanskrit leading-relaxed break-words">{verse.slok}</p>
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-3 text-primary">{t('verse.transliteration')}</h3>
-                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                        <p className="text-base sm:text-lg leading-relaxed break-words">{verse.transliteration}</p>
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="translations" className="mt-0 space-y-6 animate-in fade-in-50">
-                    {verse.tej && (
-                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                        <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
-                        <div className="space-y-4">
-                          <p className="leading-relaxed break-words">{verse.tej.ht}</p>
-                          {verse.tej.et && (
-                            <p className="text-muted-foreground leading-relaxed break-words border-t border-border/50 pt-4">
-                              {verse.tej.et}
-                            </p>
-                          )}
+              <div className="flex-1 overflow-hidden bg-muted/5">
+                <ScrollArea ref={scrollAreaRef} className="h-full scroll-area">
+                  <div className="p-4 sm:p-6 space-y-6">
+                    <TabsContent value="verse" className="mt-0 space-y-6 animate-in fade-in-50">
+                      <div>
+                        <h3 className="font-semibold mb-3 text-primary">{t('verse.sanskrit')}</h3>
+                        <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                          <p className="text-lg sm:text-xl font-sanskrit leading-relaxed break-words">{verse.slok}</p>
                         </div>
                       </div>
-                    )}
-
-                    {verse.siva?.et && (
-                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                        <p className="font-medium text-primary mb-3">Swami Sivananda</p>
-                        <p className="leading-relaxed break-words">{verse.siva.et}</p>
-                      </div>
-                    )}
-
-                    {verse.purohit?.et && (
-                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                        <p className="font-medium text-primary mb-3">Shri Purohit Swami</p>
-                        <p className="leading-relaxed break-words">{verse.purohit.et}</p>
-                      </div>
-                    )}
-                  </TabsContent>
-
-                  <TabsContent value="commentary" className="mt-0 animate-in fade-in-50">
-                    {verse.chinmay?.hc ? (
-                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                        <p className="font-medium text-primary mb-3">Swami Chinmayananda</p>
-                        <p className="leading-relaxed break-words">{verse.chinmay.hc}</p>
-                      </div>
-                    ) : (
-                      <div className="text-center py-12 text-muted-foreground">
-                        <p>{t('verse.noCommentary')}</p>
-                      </div>
-                    )}
-                  </TabsContent>
-
-                  <TabsContent value="related" className="mt-0 animate-in fade-in-50">
-                    <div className="space-y-4">
-                      <h3 className="font-medium text-primary mb-4">{t('verse.relatedVerses')}</h3>
-                      {isLoadingRelated ? (
-                        <div className="space-y-4">
-                          {Array(3).fill(0).map((_, i) => (
-                            <Skeleton key={i} className="h-32 w-full" />
-                          ))}
+                      <div>
+                        <h3 className="font-semibold mb-3 text-primary">{t('verse.transliteration')}</h3>
+                        <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                          <p className="text-base sm:text-lg leading-relaxed break-words">{verse.transliteration}</p>
                         </div>
-                      ) : relatedVerses?.length ? (
-                        relatedVerses.map(renderVerse)
-                      ) : (
-                        <div className="text-center py-12 text-muted-foreground">
-                          <p>{t('verse.noRelatedVerses')}</p>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="translations" className="mt-0 space-y-6 animate-in fade-in-50">
+                      {verse.tej && (
+                        <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                          <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
+                          <div className="space-y-4">
+                            <p className="leading-relaxed break-words">{verse.tej.ht}</p>
+                            {verse.tej.et && (
+                              <p className="text-muted-foreground leading-relaxed break-words border-t border-border/50 pt-4">
+                                {verse.tej.et}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       )}
-                    </div>
-                  </TabsContent>
-                </div>
-              </ScrollArea>
-            </div>
-          </Tabs>
 
-          <DialogFooter className="p-4 sm:p-6 bg-background border-t mt-auto">
-            <div className="flex flex-col sm:flex-row gap-3 w-full">
-              {showActions && (
-                <Button
-                  variant="outline"
-                  onClick={handleBookmark}
+                      {verse.siva?.et && (
+                        <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                          <p className="font-medium text-primary mb-3">Swami Sivananda</p>
+                          <p className="leading-relaxed break-words">{verse.siva.et}</p>
+                        </div>
+                      )}
+
+                      {verse.purohit?.et && (
+                        <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                          <p className="font-medium text-primary mb-3">Shri Purohit Swami</p>
+                          <p className="leading-relaxed break-words">{verse.purohit.et}</p>
+                        </div>
+                      )}
+                    </TabsContent>
+
+                    <TabsContent value="commentary" className="mt-0 animate-in fade-in-50">
+                      {verse.chinmay?.hc ? (
+                        <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                          <p className="font-medium text-primary mb-3">Swami Chinmayananda</p>
+                          <p className="leading-relaxed break-words">{verse.chinmay.hc}</p>
+                        </div>
+                      ) : (
+                        <div className="text-center py-12 text-muted-foreground">
+                          <p>{t('verse.noCommentary')}</p>
+                        </div>
+                      )}
+                    </TabsContent>
+
+                    <TabsContent value="related" className="mt-0 animate-in fade-in-50">
+                      <div className="space-y-4">
+                        <h3 className="font-medium text-primary mb-4">{t('verse.relatedVerses')}</h3>
+                        {isLoadingRelated ? (
+                          <div className="space-y-4">
+                            {Array(3).fill(0).map((_, i) => (
+                              <Skeleton key={i} className="h-32 w-full" />
+                            ))}
+                          </div>
+                        ) : relatedVerses?.length ? (
+                          relatedVerses.map(renderVerse)
+                        ) : (
+                          <div className="text-center py-12 text-muted-foreground">
+                            <p>{t('verse.noRelatedVerses')}</p>
+                          </div>
+                        )}
+                      </div>
+                    </TabsContent>
+                  </div>
+                </ScrollArea>
+              </div>
+            </Tabs>
+
+            <DialogFooter className="p-4 sm:p-6 bg-background border-t mt-auto">
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                {showActions && (
+                  <Button
+                    variant="outline"
+                    onClick={handleBookmark}
+                    className="w-full sm:w-auto flex-1 gap-2 transition-transform hover:scale-105"
+                    disabled={bookmarkMutation.isPending}
+                  >
+                    {isBookmarked ? <BookmarkCheck className="h-5 w-5" /> : <Bookmark className="h-5 w-5" />}
+                    {isBookmarked ? t('verse.bookmarked') : t('verse.bookmark')}
+                  </Button>
+                )}
+                <Button 
+                  onClick={handleShare} 
                   className="w-full sm:w-auto flex-1 gap-2 transition-transform hover:scale-105"
-                  disabled={bookmarkMutation.isPending}
                 >
-                  {isBookmarked ? <BookmarkCheck className="h-5 w-5" /> : <Bookmark className="h-5 w-5" />}
-                  {isBookmarked ? t('verse.bookmarked') : t('verse.bookmark')}
+                  <Share2 className="h-5 w-5" />
+                  {t('verse.share')}
                 </Button>
-              )}
-              <Button 
-                onClick={handleShare} 
-                className="w-full sm:w-auto flex-1 gap-2 transition-transform hover:scale-105"
-              >
-                <Share2 className="h-5 w-5" />
-                {t('verse.share')}
-              </Button>
-            </div>
-          </DialogFooter>
+              </div>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </>
