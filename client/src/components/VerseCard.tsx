@@ -9,6 +9,7 @@ import { useLanguage } from "@/contexts/language-context";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import ShareDialog from "@/components/ShareDialog";
 
 interface VerseCardProps {
   verse: {
@@ -34,8 +35,10 @@ interface VerseCardProps {
   isBookmarked?: boolean;
 }
 
+// Add showShareDialog state
 export default function VerseCard({ verse, showActions = true, isBookmarked: initialIsBookmarked = false }: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("verse");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
@@ -108,10 +111,9 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
     bookmarkMutation.mutate();
   };
 
+  // Replace the handleShare function
   const handleShare = () => {
-    const text = `Bhagavad Gita - Chapter ${verse.chapter}, Verse ${verse.verse}\n\n${verse.slok}\n\n${verse.transliteration}\n\n${verse.tej.ht}`;
-    const url = `${window.location.origin}/browse?chapter=${verse.chapter}&verse=${verse.verse}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n\n' + url)}`, '_blank');
+    setShowShareDialog(true);
   };
 
   const renderVerse = (v: any) => (
@@ -168,16 +170,16 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t mt-auto">
-            <Button 
-              onClick={() => setShowModal(true)} 
+            <Button
+              onClick={() => setShowModal(true)}
               className="flex-1 transition-transform hover:scale-105"
             >
               {t('verse.readMore')}
             </Button>
             {showActions && (
-              <Button 
-                variant="outline" 
-                onClick={handleShare} 
+              <Button
+                variant="outline"
+                onClick={handleShare}
                 className="gap-2 transition-transform hover:scale-105"
               >
                 <Share2 className="h-4 w-4" />
@@ -189,7 +191,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       </Card>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent 
+        <DialogContent
           className="sm:max-w-[90%] md:max-w-4xl w-[calc(100%-2rem)] h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl bg-background shadow-lg overflow-hidden border data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
           hideCloseButton
         >
@@ -227,8 +229,8 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               </div>
             </div>
 
-            <Tabs 
-              defaultValue="verse" 
+            <Tabs
+              defaultValue="verse"
               className="flex-1 flex flex-col overflow-hidden"
               value={activeTab}
               onValueChange={(value) => {
@@ -243,26 +245,26 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             >
               <TabsList className="w-full h-12 bg-background border-b">
                 <div className="flex w-full">
-                  <TabsTrigger 
-                    value="verse" 
+                  <TabsTrigger
+                    value="verse"
                     className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
                   >
                     {t('verse.text')}
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="translations" 
+                  <TabsTrigger
+                    value="translations"
                     className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
                   >
                     {t('verse.translations')}
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="commentary" 
+                  <TabsTrigger
+                    value="commentary"
                     className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
                   >
                     {t('verse.commentary')}
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="related" 
+                  <TabsTrigger
+                    value="related"
                     className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-colors"
                   >
                     {t('verse.related')}
@@ -367,8 +369,8 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                     {isBookmarked ? t('verse.bookmarked') : t('verse.bookmark')}
                   </Button>
                 )}
-                <Button 
-                  onClick={handleShare} 
+                <Button
+                  onClick={handleShare}
                   className="w-full sm:w-auto flex-1 gap-2 transition-transform hover:scale-105"
                 >
                   <Share2 className="h-5 w-5" />
@@ -379,6 +381,13 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Add ShareDialog */}
+      <ShareDialog
+        verse={verse}
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+      />
     </>
   );
 }
