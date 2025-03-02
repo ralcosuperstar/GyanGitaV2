@@ -182,32 +182,38 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
         <DialogContent 
           className="sm:max-w-[90%] md:max-w-4xl w-[calc(100%-2rem)] h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl bg-background shadow-lg overflow-hidden border data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
         >
-          <DialogHeader className="p-4 sm:p-6 border-b flex justify-between items-center">
-            <DialogTitle className="font-playfair text-xl sm:text-2xl">
-              Chapter {verse.chapter}, Verse {verse.verse}
-            </DialogTitle>
-            {showActions && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleBookmark}
-                className="h-8 w-8 transition-transform hover:scale-110 ml-4"
-                disabled={bookmarkMutation.isPending}
-              >
-                {isBookmarked ? (
-                  <BookmarkCheck className="h-5 w-5 text-primary" />
-                ) : (
-                  <Bookmark className="h-5 w-5" />
+          <DialogHeader className="p-4 sm:p-6 border-b">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="font-playfair text-xl sm:text-2xl">
+                Chapter {verse.chapter}, Verse {verse.verse}
+              </DialogTitle>
+              <div className="flex items-center gap-2">
+                {showActions && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleBookmark}
+                    className="h-8 w-8 transition-transform hover:scale-110"
+                    disabled={bookmarkMutation.isPending}
+                  >
+                    {isBookmarked ? (
+                      <BookmarkCheck className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Bookmark className="h-5 w-5" />
+                    )}
+                  </Button>
                 )}
-              </Button>
-            )}
+              </div>
+            </div>
           </DialogHeader>
 
-          <Tabs defaultValue="verse" className="flex-1 flex flex-col overflow-hidden"
-            onValueChange={() => {
+          <Tabs 
+            defaultValue="verse" 
+            className="flex-1 flex flex-col overflow-hidden"
+            onValueChange={(value) => {
               const scrollArea = document.querySelector('.scroll-area');
               if (scrollArea) {
-                scrollArea.scrollTop = 0;
+                scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
               }
             }}
           >
