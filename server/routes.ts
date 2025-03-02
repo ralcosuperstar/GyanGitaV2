@@ -147,14 +147,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'No verses found for this mood' });
       }
 
-      // Get random verses (max 3)
-      const selectedVerses = moodVerses
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
-
-      // Fetch verse data
+      // Fetch verse data for all verses
       const versesData = await Promise.all(
-        selectedVerses.map(async (mv) => {
+        moodVerses.map(async (mv) => {
           try {
             const verseData = await fetchVerse(mv.chapter, mv.verse);
             return {
