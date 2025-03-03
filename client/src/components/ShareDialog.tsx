@@ -122,9 +122,8 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
             <div className="w-full space-y-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                 <Button
-                  variant="outline"
+                  className="gap-2 bg-[#25D366] hover:bg-[#25D366]/90 text-white"
                   size="sm"
-                  className="gap-2"
                   onClick={() => handleShare('whatsapp')}
                 >
                   <BsWhatsapp className="h-4 w-4" />
