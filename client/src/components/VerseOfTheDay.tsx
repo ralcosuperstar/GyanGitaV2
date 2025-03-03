@@ -17,7 +17,6 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [activeVerse, setActiveVerse] = useState<any>(null);
 
-  // Fetch today's verse
   const { data: dailyVerse, isLoading: isDailyLoading } = useQuery({
     queryKey: ['/api/verse/daily'],
     queryFn: async () => {
@@ -27,7 +26,6 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
     }
   });
 
-  // Fetch popular verses
   const { data: popularVerses, isLoading: isPopularLoading } = useQuery({
     queryKey: ['/api/verses/popular'],
     queryFn: async () => {
@@ -47,10 +45,10 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
   };
 
   const renderVerse = (verse: any) => (
-    <div className="bg-white/5 backdrop-blur-sm rounded-lg border p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-card/5 rounded-lg">
+      <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">browse.chapter {verse.chapter}, browse.verse {verse.verse}</span>
+          <span className="text-sm">browse.chapter {verse.chapter}, browse.verse {verse.verse}</span>
         </div>
         <div className="flex gap-2">
           <Button
@@ -72,21 +70,16 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
         </div>
       </div>
 
-      <div className="text-center space-y-8">
-        <div className="space-y-4">
-          <p className="text-2xl font-sanskrit leading-relaxed">
-            {verse.slok}
-          </p>
-          <p className="text-base italic text-muted-foreground">
-            {verse.transliteration}
-          </p>
-        </div>
-
-        <div className="pt-6 border-t text-left">
-          <p className="text-lg leading-relaxed">
-            You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.
-          </p>
-        </div>
+      <div className="px-4 pb-4 text-center">
+        <p className="text-2xl font-sanskrit leading-relaxed mb-2">
+          {verse.slok}
+        </p>
+        <p className="text-base italic text-muted-foreground mb-6">
+          {verse.transliteration}
+        </p>
+        <p className="text-base leading-relaxed">
+          You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.
+        </p>
       </div>
     </div>
   );
@@ -102,16 +95,16 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
   return (
     <div className={className}>
       <Tabs defaultValue="daily" className="w-full">
-        <TabsList className="w-full mb-8">
-          <TabsTrigger value="daily" className="flex-1 text-lg py-3">
+        <TabsList className="w-full">
+          <TabsTrigger value="daily" className="flex-1">
             Today's Verse
           </TabsTrigger>
-          <TabsTrigger value="popular" className="flex-1 text-lg py-3">
+          <TabsTrigger value="popular" className="flex-1">
             Popular Verses
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="daily" className="mt-0">
+        <TabsContent value="daily" className="mt-8">
           {isDailyLoading ? (
             <LoadingSkeleton />
           ) : dailyVerse ? (
@@ -125,7 +118,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
           ) : null}
         </TabsContent>
 
-        <TabsContent value="popular" className="mt-0">
+        <TabsContent value="popular" className="mt-8">
           <div className="space-y-8">
             {isPopularLoading ? (
               Array(3).fill(null).map((_, i) => (
