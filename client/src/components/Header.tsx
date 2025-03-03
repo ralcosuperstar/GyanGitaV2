@@ -35,6 +35,7 @@ function MobileMenu() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+        <div className="sr-only">Navigation Menu</div> {/* Added for accessibility */}
         <nav className="flex flex-col space-y-4 mt-8">
           <AnimatePresence>
             {[

@@ -1,7 +1,6 @@
-
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useRouter } from 'wouter';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { useLocation } from "wouter";
 import { moods } from '@/lib/moods';
 import { useLanguage } from '@/contexts/language-context';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,14 +13,14 @@ type MoodSelectionProps = {
 
 export default function MoodSelection({ className = "" }: MoodSelectionProps) {
   const { t } = useLanguage();
-  const [, navigate] = useRouter();
+  const [, navigate] = useLocation();
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleMoodSelect = (moodId: string) => {
     setSelectedMood(moodId);
     setIsAnimating(true);
-    
+
     // Simulate a loading effect, then navigate
     setTimeout(() => {
       navigate(`/mood/${moodId}`);
@@ -38,7 +37,7 @@ export default function MoodSelection({ className = "" }: MoodSelectionProps) {
       }
     }
   };
-  
+
   const moodVariants = {
     hidden: { scale: 0.8, opacity: 0 },
     visible: { 
@@ -69,7 +68,7 @@ export default function MoodSelection({ className = "" }: MoodSelectionProps) {
 
   // Show only a subset of moods on the homepage
   const homepageMoods = moods.slice(0, 8);
-  
+
   return (
     <div className={className}>
       <motion.div 
