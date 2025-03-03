@@ -52,7 +52,7 @@ function MobileMenu() {
                 animate="visible"
               >
                 <Link href={item.href} onClick={() => setIsOpen(false)}>
-                  <a className={`block py-2 px-4 rounded-md transition-colors hover:bg-muted`}>
+                  <a className="block py-2 px-4 rounded-md transition-colors hover:bg-muted">
                     {item.icon && <span className="inline-block mr-2">{item.icon}</span>}
                     {item.label}
                   </a>
@@ -83,7 +83,7 @@ export default function Header() {
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
     >
-      <div className="container mx-auto max-w-7xl flex h-20 items-center justify-between px-4 sm:px-8">
+      <div className="container mx-auto max-w-7xl flex h-24 items-center justify-between px-4 sm:px-8">
         <div className="flex items-center">
           <MobileMenu />
           <Link href="/">
@@ -97,7 +97,7 @@ export default function Header() {
                 key={brandTitle}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="font-playfair text-xl font-bold leading-relaxed py-1"
+                className="font-playfair text-xl font-bold leading-loose py-2"
               >
                 {brandTitle}
               </motion.span>
@@ -116,7 +116,7 @@ export default function Header() {
             ].map((item) => (
               <Link key={item.href} href={item.href}>
                 <motion.a
-                  className={`text-sm font-medium transition-colors hover:text-primary flex items-center gap-2`}
+                  className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2"
                   variants={navItemVariants}
                   whileHover="hover"
                   whileTap={{ scale: 0.95 }}

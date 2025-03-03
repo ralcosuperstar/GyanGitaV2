@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Share2, Book, Heart, Brain, Lightbulb, Target, Users, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { BsWhatsapp } from 'react-icons/bs'; // Import BsWhatsapp
+import { BsWhatsapp } from 'react-icons/bs';
 
 interface VerseResponse {
   slok: string;
@@ -98,14 +98,36 @@ export default function Home() {
               transition={{ duration: 0.8 }}
             >
               <h1 className="font-playfair text-5xl font-bold md:text-6xl lg:text-7xl mb-8">
-                <span className="inline-block bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                  {t('home.title')}
-                </span>
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="block mb-4"
+                >
+                  <span className="inline-block bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                    Life's a Mess?
+                  </span>
+                </motion.span>
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="block"
+                >
+                  <span className="inline-block bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                    Let the Gita Sort It Out
+                  </span>
+                </motion.span>
               </h1>
 
-              <p className="mt-8 text-xl text-muted-foreground leading-relaxed">
-                {t('home.subtitle')}
-              </p>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="mt-8 text-xl text-muted-foreground leading-relaxed"
+              >
+                From tough days to big wins, find the Bhagavad Gita verse that speaks to you right now
+              </motion.p>
 
               <div className="mt-12 grid gap-4 sm:grid-cols-2 max-w-xl mx-auto">
                 <motion.div
@@ -131,11 +153,10 @@ export default function Home() {
                 >
                   <Button
                     size="lg"
-                    variant="outline"
-                    className="w-full text-lg h-16 border-2 bg-[#25D366] hover:bg-[#25D366]/90 text-white border-none" // Updated WhatsApp button
+                    className="w-full text-lg h-16 bg-[#25D366] hover:bg-[#25D366]/90 text-white"
                     onClick={handleShareWhatsApp}
                   >
-                    <BsWhatsapp className="w-6 h-6 mr-2" /> {/* Changed icon */}
+                    <BsWhatsapp className="w-6 h-6 mr-2" />
                     {t('home.cta.share')}
                   </Button>
                 </motion.div>
