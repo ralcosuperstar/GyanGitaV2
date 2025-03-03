@@ -2,20 +2,12 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, Search, Globe, Menu, Home, Bookmark } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/language-context";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { OmLogo } from "./icons/OmLogo";
 
 function MobileMenu() {
   const { t } = useLanguage();
@@ -86,6 +78,8 @@ export default function Header() {
     hover: { scale: 1.05, transition: { type: "spring", stiffness: 400 } }
   };
 
+  const brandTitle = language === 'hi' ? 'ज्ञानगीता' : 'GyanGita';
+
   return (
     <motion.header
       className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
@@ -98,11 +92,19 @@ export default function Header() {
           <MobileMenu />
           <Link href="/">
             <motion.a 
-              className="flex items-center space-x-2 ml-2 md:ml-0"
+              className="flex items-center space-x-3 ml-2 md:ml-0"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="font-playfair text-xl font-bold">GyanGita</span>
+              <OmLogo className="h-8 w-8 text-primary" />
+              <motion.span 
+                key={brandTitle}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="font-playfair text-xl font-bold"
+              >
+                {brandTitle}
+              </motion.span>
             </motion.a>
           </Link>
         </div>
