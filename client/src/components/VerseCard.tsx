@@ -137,7 +137,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
   return (
     <>
-      <Card className="group h-full transition-all hover:scale-[1.02] duration-200 hover:shadow-lg">
+      <Card className="group h-full flex flex-col transition-all hover:scale-[1.02] duration-200 hover:shadow-lg">
         <CardHeader className="bg-primary/5 transition-colors group-hover:bg-primary/10">
           <CardTitle className="font-playfair text-xl flex justify-between items-center">
             <motion.span
@@ -170,7 +170,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="p-6 flex flex-col min-h-[320px]">
+        <CardContent className="flex-1 p-6 flex flex-col">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -178,24 +178,28 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             className="mb-6"
           >
             <h3 className="font-semibold text-primary mb-3">{t('verse.sanskrit')}</h3>
-            <p className="text-lg font-sanskrit leading-relaxed break-words">{verse.slok}</p>
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <p className="text-lg font-sanskrit leading-relaxed break-words">{verse.slok}</p>
+            </div>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex-grow mb-6"
+            className="flex-1 mb-6"
           >
             <h3 className="font-semibold text-primary mb-3">{t('verse.translation')}</h3>
-            <p className="leading-relaxed break-words">{verse.tej.ht}</p>
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <p className="leading-relaxed break-words">{verse.tej.ht}</p>
+            </div>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-3 pt-4 border-t mt-auto"
+            className="pt-4 border-t mt-auto space-y-3 sm:space-y-0 sm:flex sm:gap-3"
           >
             <motion.div
               whileHover={{ scale: 1.02 }}
@@ -417,7 +421,6 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
         </DialogContent>
       </Dialog>
 
-      {/* Add ShareDialog */}
       <ShareDialog
         verse={verse}
         open={showShareDialog}
