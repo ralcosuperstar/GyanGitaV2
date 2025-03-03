@@ -3,10 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/language-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Share2, Copy } from "lucide-react";
+import { Share2, Copy, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import ShareDialog from "@/components/ShareDialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 interface VerseOfTheDayProps {
   className?: string;
@@ -35,6 +36,8 @@ interface Verse {
 export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [activeVerse, setActiveVerse] = useState<Verse | null>(null);
+  const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Fetch one random verse for Today's Verse
   const { data: todayVerse, isLoading: isTodayLoading } = useQuery<Verse>({
@@ -70,67 +73,99 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
     setShowShareDialog(true);
   };
 
-  const handleCopy = async (text: string) => {
-    await navigator.clipboard.writeText(text);
+  const handleCopy = async (verse: Verse) => {
+    const verseId = `${verse.chapter}-${verse.verse}`;
+    const textToCopy = `${verse.slok}\n\n${verse.transliteration}\n\n${verse.tej.ht}`;
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopiedVerseId(verseId);
+      toast({
+        title: "Copied!",
+        description: "Verse has been copied to clipboard",
+        duration: 2000,
+      });
+
+      // Reset the copied state after 2 seconds
+      setTimeout(() => {
+        setCopiedVerseId(null);
+      }, 2000);
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Please try again",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
   };
 
-  const renderVerse = (verse: Verse) => (
-    <div className="bg-muted/50 rounded-lg overflow-hidden">
-      <div className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-2">
-          <span className="text-sm">Chapter {verse.chapter}, Verse {verse.verse}</span>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleCopy(verse.slok)}
-            className="h-8 w-8 p-0"
-          >
-            <Copy className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleShare(verse)}
-            className="h-8 w-8 p-0"
-          >
-            <Share2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+  const renderVerse = (verse: Verse) => {
+    const verseId = `${verse.chapter}-${verse.verse}`;
+    const isCopied = copiedVerseId === verseId;
 
-      <div className="p-6 space-y-6 text-center">
-        <div className="space-y-4">
-          <p className="text-2xl font-sanskrit leading-relaxed">
-            {verse.slok}
-          </p>
-          <p className="text-base italic text-muted-foreground">
-            {verse.transliteration}
-          </p>
+    return (
+      <div className="bg-muted/50 rounded-lg overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">Chapter {verse.chapter}, Verse {verse.verse}</span>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleCopy(verse)}
+              className="h-8 w-8 p-0 relative"
+            >
+              {isCopied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleShare(verse)}
+              className="h-8 w-8 p-0"
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
-        <div className="space-y-4 pt-4 border-t">
-          <p className="text-lg leading-relaxed">
-            {verse.tej.ht}
-          </p>
-          {verse.tej.et && (
-            <p className="text-base text-muted-foreground">
-              {verse.tej.et}
+        <div className="p-6 space-y-6 text-center">
+          <div className="space-y-4">
+            <p className="text-2xl font-sanskrit leading-relaxed">
+              {verse.slok}
             </p>
-          )}
-        </div>
-
-        {verse.siva?.et && (
-          <div className="pt-4 border-t text-sm">
-            <p className="leading-relaxed text-muted-foreground">
-              {verse.siva.et}
+            <p className="text-base italic text-muted-foreground">
+              {verse.transliteration}
             </p>
           </div>
-        )}
+
+          <div className="space-y-4 pt-4 border-t">
+            <p className="text-lg leading-relaxed">
+              {verse.tej.ht}
+            </p>
+            {verse.tej.et && (
+              <p className="text-base text-muted-foreground">
+                {verse.tej.et}
+              </p>
+            )}
+          </div>
+
+          {verse.siva?.et && (
+            <div className="pt-4 border-t text-sm">
+              <p className="leading-relaxed text-muted-foreground">
+                {verse.siva.et}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const LoadingSkeleton = () => (
     <div className="space-y-4">
