@@ -287,13 +287,18 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             >
               <TabsList className="w-full h-12 bg-background border-b">
                 <div className="flex w-full">
-                  {['verse', 'translations', 'commentary', 'related'].map((tab) => (
+                  {[
+                    { value: 'verse', key: 'verse.text' },
+                    { value: 'translations', key: 'verse.translations' },
+                    { value: 'commentary', key: 'verse.commentary' },
+                    { value: 'related', key: 'verse.related' }
+                  ].map((tab) => (
                     <TabsTrigger
-                      key={tab}
-                      value={tab}
+                      key={tab.value}
+                      value={tab.value}
                       className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-all duration-300 ease-out"
                     >
-                      {t(`verse.${tab}`)}
+                      {t(tab.key)}
                     </TabsTrigger>
                   ))}
                 </div>
