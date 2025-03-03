@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Share2, Book, Heart, Brain, Lightbulb, Target, Users, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { BsWhatsapp } from 'react-icons/bs'; // Import BsWhatsapp
 
 interface VerseResponse {
   slok: string;
@@ -131,10 +132,10 @@ export default function Home() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="w-full text-lg h-16 border-2"
+                    className="w-full text-lg h-16 border-2 bg-[#25D366] hover:bg-[#25D366]/90 text-white border-none" // Updated WhatsApp button
                     onClick={handleShareWhatsApp}
                   >
-                    <Share2 className="w-6 h-6 mr-2" />
+                    <BsWhatsapp className="w-6 h-6 mr-2" /> {/* Changed icon */}
                     {t('home.cta.share')}
                   </Button>
                 </motion.div>
@@ -143,7 +144,7 @@ export default function Home() {
           </div>
 
           {/* Floating Stats */}
-          <motion.div 
+          <motion.div
             className="mt-20 grid grid-cols-2 gap-6 md:grid-cols-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -211,8 +212,8 @@ export default function Home() {
             >
               {t('home.mood.change')}
             </Button>
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="h-14 w-full sm:w-auto"
               onClick={() => setLocation("/browse")}
             >

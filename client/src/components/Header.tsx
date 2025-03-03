@@ -52,11 +52,7 @@ function MobileMenu() {
                 animate="visible"
               >
                 <Link href={item.href} onClick={() => setIsOpen(false)}>
-                  <a className={`block py-2 px-4 rounded-md transition-colors
-                    ${item.href === "/browse" 
-                      ? "bg-primary/5 hover:bg-primary/10 text-primary" 
-                      : "hover:bg-muted"}`}
-                  >
+                  <a className={`block py-2 px-4 rounded-md transition-colors hover:bg-muted`}>
                     {item.icon && <span className="inline-block mr-2">{item.icon}</span>}
                     {item.label}
                   </a>
@@ -91,17 +87,17 @@ export default function Header() {
         <div className="flex items-center">
           <MobileMenu />
           <Link href="/">
-            <motion.a 
+            <motion.a
               className="flex items-center space-x-3 ml-2 md:ml-0"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <OmLogo className="h-8 w-8 text-primary" />
-              <motion.span 
+              <motion.span
                 key={brandTitle}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="font-playfair text-xl font-bold"
+                className="font-playfair text-xl font-bold leading-relaxed"
               >
                 {brandTitle}
               </motion.span>
@@ -120,8 +116,7 @@ export default function Header() {
             ].map((item) => (
               <Link key={item.href} href={item.href}>
                 <motion.a
-                  className={`text-sm font-medium transition-colors hover:text-primary flex items-center gap-2
-                    ${item.href === "/browse" ? "bg-primary/5 px-4 py-2 rounded-md text-primary" : ""}`}
+                  className={`text-sm font-medium transition-colors hover:text-primary flex items-center gap-2`}
                   variants={navItemVariants}
                   whileHover="hover"
                   whileTap={{ scale: 0.95 }}

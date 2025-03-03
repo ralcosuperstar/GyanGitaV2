@@ -92,11 +92,11 @@ export default function Browse() {
               <p className="text-sm text-muted-foreground">{t('stats.verses')}</p>
             </div>
             <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">5+</p>
-              <p className="text-sm text-muted-foreground">{t('stats.translations')}</p>
+              <p className="text-4xl font-bold text-primary">15+</p>
+              <p className="text-sm text-muted-foreground">{t('stats.states')}</p>
             </div>
             <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">2500+</p>
+              <p className="text-4xl font-bold text-primary">5000+</p>
               <p className="text-sm text-muted-foreground">{t('stats.years')}</p>
             </div>
           </div>
