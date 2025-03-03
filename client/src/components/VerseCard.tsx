@@ -145,7 +145,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               animate={{ opacity: 1, x: 0 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
             >
-              Chapter {verse.chapter}, Verse {verse.verse}
+              {t('verse.verseNumber', { chapter: verse.chapter, verse: verse.verse })}
             </motion.span>
             {showActions && (
               <motion.div
@@ -241,7 +241,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             <div className="p-4 sm:p-6 border-b">
               <div className="flex items-center justify-between">
                 <DialogTitle className="font-playfair text-xl sm:text-2xl">
-                  Chapter {verse.chapter}, Verse {verse.verse}
+                  {t('verse.verseNumber', { chapter: verse.chapter, verse: verse.verse })}
                 </DialogTitle>
                 <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-1">
                   {showActions && (

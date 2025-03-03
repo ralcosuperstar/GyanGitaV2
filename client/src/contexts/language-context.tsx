@@ -5,7 +5,7 @@ type Language = 'en' | 'hi';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 const translations = {
@@ -100,9 +100,9 @@ const translations = {
     'verse.translation': 'Translation',
     'verse.commentary': 'Commentary',
     'verse.share': 'Share on WhatsApp',
-    'verse.text': 'Text',
+    'verse.text': 'Original Text',
     'verse.translations': 'Translations',
-    'verse.related': 'Related',
+    'verse.related': 'Related Verses',
     'verse.readMore': 'Read More',
     'verse.bookmark': 'Bookmark',
     'verse.bookmarked': 'Bookmarked',
@@ -110,6 +110,7 @@ const translations = {
     'verse.noCommentary': 'No commentary available.',
     'verse.relatedVerses': 'Related Verses',
     'verse.noRelatedVerses': 'No related verses available.',
+    'verse.verseNumber': 'Chapter {chapter}, Verse {verse}',
   },
   hi: {
     // Navigation
@@ -196,7 +197,7 @@ const translations = {
     'contact.get_in_touch': 'संपर्क में रहें',
     'contact.response_time': '24 घंटे के भीतर प्रतिक्रिया',
 
-    // Verse display
+    // Verse display in Hindi
     'verse.sanskrit': 'संस्कृत',
     'verse.transliteration': 'लिप्यंतरण',
     'verse.translation': 'अनुवाद',
@@ -212,6 +213,7 @@ const translations = {
     'verse.noCommentary': 'कोई व्याख्या उपलब्ध नहीं है।',
     'verse.relatedVerses': 'संबंधित श्लोक',
     'verse.noRelatedVerses': 'कोई संबंधित श्लोक उपलब्ध नहीं है।',
+    'verse.verseNumber': 'अध्याय {chapter}, श्लोक {verse}',
   }
 };
 
@@ -220,9 +222,18 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>('en');
 
-  const t = (key: string): string => {
+  const t = (key: string, params?: Record<string, string | number>): string => {
     const lang = translations[language];
-    return lang[key as keyof typeof translations['en']] || key;
+    let text = lang[key as keyof typeof translations['en']] || key;
+
+    // Replace parameters if they exist
+    if (params) {
+      Object.entries(params).forEach(([param, value]) => {
+        text = text.replace(`{${param}}`, String(value));
+      });
+    }
+
+    return text;
   };
 
   return (
