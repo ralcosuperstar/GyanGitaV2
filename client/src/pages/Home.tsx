@@ -115,7 +115,7 @@ export default function Home() {
                   className="block"
                 >
                   <span className="inline-block bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                    Let the Gita Sort It Out
+                    Let the Bhagavad Gita Guide You
                   </span>
                 </motion.span>
               </h1>
@@ -126,7 +126,7 @@ export default function Home() {
                 transition={{ delay: 0.6 }}
                 className="mt-8 text-xl text-muted-foreground leading-relaxed"
               >
-                From tough days to big wins, find the Bhagavad Gita verse that speaks to you right now
+                From tough days to big wins, find the Bhagavad Gita verse that speaks to your heart and soul
               </motion.p>
 
               <div className="mt-12 grid gap-4 sm:grid-cols-2 max-w-xl mx-auto">
