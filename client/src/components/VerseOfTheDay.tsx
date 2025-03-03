@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Share2 } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Share2, Copy } from "lucide-react";
 import { motion } from "framer-motion";
 import ShareDialog from "@/components/ShareDialog";
-import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface VerseOfTheDayProps {
   className?: string;
@@ -14,96 +16,133 @@ interface VerseOfTheDayProps {
 export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
   const { t } = useLanguage();
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [activeVerse, setActiveVerse] = useState<any>(null);
 
-  const { data: verse, isLoading } = useQuery({
+  const { data: dailyVerse, isLoading: isDailyLoading } = useQuery({
     queryKey: ['/api/verse/daily'],
     queryFn: async () => {
       const response = await fetch('/api/verse/daily');
-      if (!response.ok) {
-        throw new Error('Failed to fetch daily verse');
-      }
+      if (!response.ok) throw new Error('Failed to fetch daily verse');
       return response.json();
     }
   });
 
-  if (isLoading) {
-    return (
-      <Card className={`animate-pulse ${className}`}>
-        <CardHeader className="space-y-2">
-          <div className="h-4 bg-muted rounded w-1/4" />
-          <div className="h-6 bg-muted rounded w-3/4" />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="h-20 bg-muted rounded" />
-          <div className="h-20 bg-muted rounded" />
-        </CardContent>
-      </Card>
-    );
-  }
+  const { data: popularVerses, isLoading: isPopularLoading } = useQuery({
+    queryKey: ['/api/verses/popular'],
+    queryFn: async () => {
+      const response = await fetch('/api/verses/popular');
+      if (!response.ok) throw new Error('Failed to fetch popular verses');
+      return response.json();
+    }
+  });
 
-  if (!verse) return null;
+  const handleShare = (verse: any) => {
+    setActiveVerse(verse);
+    setShowShareDialog(true);
+  };
+
+  const handleCopy = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    // You could add a toast notification here
+  };
+
+  const renderVerseCard = (verse: any) => (
+    <Card className="bg-white/5 backdrop-blur-sm">
+      <CardContent className="p-6 space-y-6">
+        <div className="space-y-2">
+          <p className="text-lg font-sanskrit leading-relaxed">{verse.slok}</p>
+          <p className="text-sm text-muted-foreground italic">{verse.transliteration}</p>
+        </div>
+
+        <div>
+          <p className="text-base leading-relaxed">{verse.tej.ht}</p>
+          {verse.tej.et && (
+            <p className="mt-2 text-sm text-muted-foreground">{verse.tej.et}</p>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-2 pt-4 border-t">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleCopy(verse.slok)}
+            className="gap-2"
+          >
+            <Copy className="h-4 w-4" />
+            Copy
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleShare(verse)}
+            className="gap-2"
+          >
+            <Share2 className="h-4 w-4" />
+            Share
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const LoadingSkeleton = () => (
+    <Skeleton className="h-[300px] w-full" />
+  );
 
   return (
-    <>
-      <Card className={`group transition-all hover:shadow-lg ${className}`}>
-        <CardHeader className="bg-primary/5 transition-colors group-hover:bg-primary/10">
-          <CardTitle className="font-playfair text-xl">
-            <motion.span
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            >
-              {t('verse.verseNumber', { chapter: verse.chapter, verse: verse.verse })}
-            </motion.span>
-          </CardTitle>
-        </CardHeader>
+    <div className={className}>
+      <Tabs defaultValue="daily" className="w-full">
+        <TabsList className="w-full grid grid-cols-2 mb-8">
+          <TabsTrigger value="daily" className="text-lg">
+            {t('home.sections.daily')}
+          </TabsTrigger>
+          <TabsTrigger value="popular" className="text-lg">
+            {t('home.sections.popular')}
+          </TabsTrigger>
+        </TabsList>
 
-        <CardContent className="p-6 space-y-6">
+        <TabsContent value="daily" className="mt-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            exit={{ opacity: 0, y: -20 }}
           >
-            <h3 className="font-semibold text-primary mb-3">{t('verse.sanskrit')}</h3>
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <p className="text-lg font-sanskrit leading-relaxed break-words">{verse.slok}</p>
-            </div>
+            {isDailyLoading ? <LoadingSkeleton /> : dailyVerse && renderVerseCard(dailyVerse)}
           </motion.div>
+        </TabsContent>
 
+        <TabsContent value="popular" className="mt-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-6"
           >
-            <h3 className="font-semibold text-primary mb-3">{t('verse.translation')}</h3>
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <p className="leading-relaxed break-words">{verse.tej.et}</p>
-            </div>
+            {isPopularLoading ? (
+              Array(3).fill(null).map((_, i) => <LoadingSkeleton key={i} />)
+            ) : (
+              popularVerses?.map((verse: any) => (
+                <motion.div
+                  key={`${verse.chapter}-${verse.verse}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  {renderVerseCard(verse)}
+                </motion.div>
+              ))
+            )}
           </motion.div>
+        </TabsContent>
+      </Tabs>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="pt-4 border-t flex justify-end"
-          >
-            <Button
-              variant="outline"
-              onClick={() => setShowShareDialog(true)}
-              className="gap-2 transition-transform hover:scale-105"
-            >
-              <Share2 className="h-4 w-4" />
-              {t('verse.share')}
-            </Button>
-          </motion.div>
-        </CardContent>
-      </Card>
-
-      <ShareDialog
-        verse={verse}
-        open={showShareDialog}
-        onOpenChange={setShowShareDialog}
-      />
-    </>
+      {activeVerse && (
+        <ShareDialog
+          verse={activeVerse}
+          open={showShareDialog}
+          onOpenChange={setShowShareDialog}
+        />
+      )}
+    </div>
   );
 }
