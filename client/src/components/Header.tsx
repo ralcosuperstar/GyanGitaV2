@@ -35,7 +35,6 @@ function MobileMenu() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-        <div className="sr-only">Navigation Menu</div> {/* Added for accessibility */}
         <nav className="flex flex-col space-y-4 mt-8">
           <AnimatePresence>
             {[
@@ -53,10 +52,10 @@ function MobileMenu() {
                 animate="visible"
               >
                 <Link href={item.href} onClick={() => setIsOpen(false)}>
-                  <div className="block py-2 px-4 rounded-md transition-colors hover:bg-muted"> {/* Changed <a> to <div> */}
+                  <a className="block py-2 px-4 rounded-md transition-colors hover:bg-muted">
                     {item.icon && <span className="inline-block mr-2">{item.icon}</span>}
                     {item.label}
-                  </div>
+                  </a>
                 </Link>
               </motion.div>
             ))}
@@ -88,7 +87,11 @@ export default function Header() {
         <div className="flex items-center">
           <MobileMenu />
           <Link href="/">
-            <motion.div className="flex items-center space-x-3 ml-2 md:ml-0" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}> {/* Changed <a> to <div> */}
+            <motion.a
+              className="flex items-center space-x-3 ml-2 md:ml-0"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <OmLogo className="h-8 w-8 text-primary" />
               <motion.span
                 key={brandTitle}
@@ -98,7 +101,7 @@ export default function Header() {
               >
                 {brandTitle}
               </motion.span>
-            </motion.div>
+            </motion.a>
           </Link>
         </div>
 
