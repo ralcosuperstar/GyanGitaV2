@@ -15,6 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Share2, Book, Grid } from "lucide-react";
 import VerseCard from "@/components/VerseCard";
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils'
 
 interface Chapter {
   chapter_number: number;
@@ -223,10 +225,23 @@ export default function Browse() {
 
                 <div className="grid gap-4 grid-cols-6 sm:grid-cols-8 md:grid-cols-10">
                   {Array.from({ length: chapters?.find(c => c.chapter_number === selectedGridChapter)?.verses_count || 0 }).map((_, i) => (
-                    <Button
+                    <motion.button
                       key={i + 1}
-                      variant="outline"
-                      className="h-12 w-12 hover:bg-primary/5"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 17,
+                        delay: i * 0.02
+                      }}
+                      className={cn(
+                        "h-12 w-12 rounded-md border border-input hover:bg-primary/5",
+                        "flex items-center justify-center text-sm font-medium",
+                        "transition-colors hover:border-primary/50"
+                      )}
                       onClick={() => {
                         setSelectedChapter(selectedGridChapter.toString());
                         setSelectedVerse((i + 1).toString());
@@ -234,7 +249,7 @@ export default function Browse() {
                       }}
                     >
                       {i + 1}
-                    </Button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
