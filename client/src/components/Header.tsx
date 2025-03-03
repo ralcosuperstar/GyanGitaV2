@@ -52,10 +52,10 @@ function MobileMenu() {
                 animate="visible"
               >
                 <Link href={item.href} onClick={() => setIsOpen(false)}>
-                  <a className="block py-2 px-4 rounded-md transition-colors hover:bg-muted">
+                  <div className="block py-2 px-4 rounded-md transition-colors hover:bg-muted"> {/* Changed <a> to <div> */}
                     {item.icon && <span className="inline-block mr-2">{item.icon}</span>}
                     {item.label}
-                  </a>
+                  </div>
                 </Link>
               </motion.div>
             ))}
@@ -87,11 +87,7 @@ export default function Header() {
         <div className="flex items-center">
           <MobileMenu />
           <Link href="/">
-            <motion.a
-              className="flex items-center space-x-3 ml-2 md:ml-0"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <motion.div className="flex items-center space-x-3 ml-2 md:ml-0" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}> {/* Changed <a> to <div> */}
               <OmLogo className="h-8 w-8 text-primary" />
               <motion.span
                 key={brandTitle}
@@ -101,7 +97,7 @@ export default function Header() {
               >
                 {brandTitle}
               </motion.span>
-            </motion.a>
+            </motion.div>
           </Link>
         </div>
 

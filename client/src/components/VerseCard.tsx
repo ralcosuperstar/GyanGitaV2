@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Share2, Bookmark, BookmarkPlus, Play, HeartOff, Copy } from 'lucide-react';
 import { Link } from 'wouter';
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import { useLanguage } from '@/contexts/language-context';
 
 type VerseCardProps = {

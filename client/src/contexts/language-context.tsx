@@ -208,7 +208,7 @@ const translations = {
     'verse.readMore': 'और पढ़ें',
     'verse.bookmark': 'बुकमार्क करें',
     'verse.bookmarked': 'बुकमार्क किया गया',
-    'verse.share': 'साझा करें',
+    'verse.shareVerse': 'साझा करें',
     'verse.noCommentary': 'कोई व्याख्या उपलब्ध नहीं है।',
     'verse.relatedVerses': 'संबंधित श्लोक',
     'verse.noRelatedVerses': 'कोई संबंधित श्लोक उपलब्ध नहीं है।',
