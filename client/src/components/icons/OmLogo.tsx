@@ -1,22 +1,12 @@
-import { SVGProps } from 'react';
+import { ImgHTMLAttributes } from 'react';
+import omLogo from '../../assets/om-logo.png';
 
-export function OmLogo(props: SVGProps<SVGSVGElement>) {
+export function OmLogo(props: ImgHTMLAttributes<HTMLImageElement>) {
   return (
-    <svg
-      viewBox="0 0 1000 1000"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
+    <img
+      src={omLogo}
+      alt="Om Symbol"
       {...props}
-    >
-      <path
-        d="M300 700 C300 600 400 550 450 550 L450 550 C400 550 300 500 300 400 C300 300 400 200 600 200 C800 200 900 300 900 400 C900 500 800 550 700 550 C800 550 900 600 900 700 C900 800 800 900 600 900 C400 900 300 800 300 700 Z"
-      />
-      <path
-        d="M200 550 C200 600 250 650 300 650 C350 650 400 600 400 550 C400 500 350 450 300 450 C250 450 200 500 200 550 Z"
-      />
-      <path
-        d="M150 450 C150 475 175 500 200 500 C225 500 250 475 250 450 C250 425 225 400 200 400 C175 400 150 425 150 450 Z"
-      />
-    </svg>
+    />
   );
 }
