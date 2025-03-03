@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/contexts/language-context";
@@ -180,7 +180,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Features Section */}
+      {/* Mood Section */}
       <div id="mood-section" className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
         <h2 className="mb-12 text-center font-playfair text-4xl font-semibold">
           {t('home.mood.title')}
@@ -194,10 +194,10 @@ export default function Home() {
             Error loading verses. Please try again.
           </div>
         ) : (
-          <VerseDisplay verses={verses || null} selectedMood={selectedMood} isLoading={isLoading} />
+          <VerseDisplay verses={verses} selectedMood={selectedMood} isLoading={isLoading} />
         )}
 
-        {selectedMood && verses?.length > 0 && (
+        {selectedMood && verses && verses.length > 0 && (
           <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4">
             <Button
               variant="outline"
