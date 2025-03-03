@@ -89,20 +89,20 @@ export default function Bookmarks() {
                 verse={{
                   chapter: parseInt(favorite.chapter),
                   verse: parseInt(favorite.verse),
-                  slok: favorite.slok,
+                  slok: favorite.sanskrit || favorite.slok,
                   transliteration: favorite.transliteration,
                   tej: {
                     ht: favorite.translation,
                     et: favorite.translation_english
                   },
                   siva: {
-                    et: favorite.siva?.et
+                    et: favorite.siva_translation
                   },
                   purohit: {
-                    et: favorite.purohit?.et
+                    et: favorite.purohit_translation
                   },
                   chinmay: {
-                    hc: favorite.chinmay?.hc
+                    hc: favorite.chinmay_commentary
                   }
                 }}
                 isBookmarked={true}
