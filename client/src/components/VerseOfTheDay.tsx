@@ -19,6 +19,15 @@ interface Verse {
     ht: string;
     et: string;
   };
+  siva?: {
+    et: string;
+  };
+  purohit?: {
+    et: string;
+  };
+  chinmay?: {
+    hc: string;
+  };
   chapter: number;
   verse: number;
 }
@@ -91,16 +100,34 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
         </div>
       </div>
 
-      <div className="p-6 text-center">
-        <p className="text-2xl font-sanskrit leading-relaxed mb-4">
-          {verse.slok}
-        </p>
-        <p className="text-base italic text-muted-foreground mb-6">
-          {verse.transliteration}
-        </p>
-        <p className="text-base leading-relaxed">
-          {verse.tej.ht}
-        </p>
+      <div className="p-6 space-y-6 text-center">
+        <div className="space-y-4">
+          <p className="text-2xl font-sanskrit leading-relaxed">
+            {verse.slok}
+          </p>
+          <p className="text-base italic text-muted-foreground">
+            {verse.transliteration}
+          </p>
+        </div>
+
+        <div className="space-y-4 pt-4 border-t">
+          <p className="text-lg leading-relaxed">
+            {verse.tej.ht}
+          </p>
+          {verse.tej.et && (
+            <p className="text-base text-muted-foreground">
+              {verse.tej.et}
+            </p>
+          )}
+        </div>
+
+        {verse.siva?.et && (
+          <div className="pt-4 border-t text-sm">
+            <p className="leading-relaxed text-muted-foreground">
+              {verse.siva.et}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
