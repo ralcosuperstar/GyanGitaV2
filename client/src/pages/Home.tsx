@@ -6,7 +6,8 @@ import MoodSelector from "@/components/MoodSelector";
 import VerseDisplay from "@/components/VerseDisplay";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Share2, Book, Heart, Brain, Lightbulb, Target, Users } from "lucide-react";
+import { Share2, Book, Heart, Brain, Lightbulb, Target, Users, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface VerseResponse {
   slok: string;
@@ -27,6 +28,21 @@ interface VerseResponse {
   chapter: number;
   verse: number;
 }
+
+const FloatingElement = ({ delay = 0, children }: { delay?: number, children: React.ReactNode }) => (
+  <motion.div
+    initial={{ y: 0 }}
+    animate={{ y: [-10, 10, -10] }}
+    transition={{
+      duration: 4,
+      ease: "easeInOut",
+      repeat: Infinity,
+      delay
+    }}
+  >
+    {children}
+  </motion.div>
+);
 
 export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
@@ -62,65 +78,105 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="font-playfair text-5xl font-bold md:text-6xl lg:text-7xl">
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-              {t('home.title')}
-            </span>
-          </h1>
-          <p className="mt-8 text-xl text-muted-foreground leading-relaxed">
-            {t('home.subtitle')}
-          </p>
-
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 max-w-xl mx-auto">
-            <Button
-              size="lg"
-              className="text-lg h-16 transform hover:scale-105 transition-all"
-              onClick={() => {
-                const moodSection = document.getElementById('mood-section');
-                moodSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-            >
-              <Lightbulb className="w-6 h-6 mr-2" />
-              {t('home.cta.find')}
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg h-16 transform hover:scale-105 transition-all"
-              onClick={handleShareWhatsApp}
-            >
-              <Share2 className="w-6 h-6 mr-2" />
-              {t('home.cta.share')}
-            </Button>
-          </div>
+      <div className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background">
+        {/* Decorative Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-1/2 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
         </div>
-      </div>
 
-      {/* Stats Section */}
-      <div className="border-y bg-gradient-to-r from-primary/10 to-primary/5">
-        <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-8">
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">18</p>
-              <p className="text-sm text-muted-foreground">{t('stats.chapters')}</p>
-            </div>
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">700</p>
-              <p className="text-sm text-muted-foreground">{t('stats.verses')}</p>
-            </div>
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">15+</p>
-              <p className="text-sm text-muted-foreground">{t('stats.states')}</p>
-            </div>
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">5000+</p>
-              <p className="text-sm text-muted-foreground">{t('stats.years')}</p>
-            </div>
+        {/* Content */}
+        <div className="container relative mx-auto max-w-7xl px-4 py-24 sm:px-8 sm:py-32">
+          <div className="mx-auto max-w-4xl text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h1 className="font-playfair text-5xl font-bold md:text-6xl lg:text-7xl mb-8">
+                <span className="inline-block bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                  {t('home.title')}
+                </span>
+              </h1>
+
+              <p className="mt-8 text-xl text-muted-foreground leading-relaxed">
+                {t('home.subtitle')}
+              </p>
+
+              <div className="mt-12 grid gap-4 sm:grid-cols-2 max-w-xl mx-auto">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    size="lg"
+                    className="w-full text-lg h-16 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                    onClick={() => {
+                      const moodSection = document.getElementById('mood-section');
+                      moodSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                  >
+                    <Sparkles className="w-6 h-6 mr-2" />
+                    {t('home.cta.find')}
+                  </Button>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full text-lg h-16 border-2"
+                    onClick={handleShareWhatsApp}
+                  >
+                    <Share2 className="w-6 h-6 mr-2" />
+                    {t('home.cta.share')}
+                  </Button>
+                </motion.div>
+              </div>
+            </motion.div>
           </div>
+
+          {/* Floating Stats */}
+          <motion.div 
+            className="mt-20 grid grid-cols-2 gap-6 md:grid-cols-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <FloatingElement delay={0}>
+              <div className="text-center transform hover:scale-105 transition-all bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-primary/10">
+                <p className="text-4xl font-bold text-primary">18</p>
+                <p className="text-sm text-muted-foreground">{t('stats.chapters')}</p>
+              </div>
+            </FloatingElement>
+
+            <FloatingElement delay={0.1}>
+              <div className="text-center transform hover:scale-105 transition-all bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-primary/10">
+                <p className="text-4xl font-bold text-primary">700</p>
+                <p className="text-sm text-muted-foreground">{t('stats.verses')}</p>
+              </div>
+            </FloatingElement>
+
+            <FloatingElement delay={0.2}>
+              <div className="text-center transform hover:scale-105 transition-all bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-primary/10">
+                <p className="text-4xl font-bold text-primary">15+</p>
+                <p className="text-sm text-muted-foreground">{t('stats.states')}</p>
+              </div>
+            </FloatingElement>
+
+            <FloatingElement delay={0.3}>
+              <div className="text-center transform hover:scale-105 transition-all bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-primary/10">
+                <p className="text-4xl font-bold text-primary">5000+</p>
+                <p className="text-sm text-muted-foreground">{t('stats.years')}</p>
+              </div>
+            </FloatingElement>
+          </motion.div>
         </div>
       </div>
 
