@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,11 @@ export default function Browse() {
   const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
   const [showVerseModal, setShowVerseModal] = useState(false);
   const { t } = useLanguage();
+
+  // Add effect to scroll to top when chapter changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [selectedGridChapter]);
 
   const { data: chapters, isLoading: isLoadingChapters } = useQuery<Chapter[]>({
     queryKey: ['/api/chapters'],
@@ -148,8 +153,8 @@ export default function Browse() {
                     </SelectTrigger>
                     <SelectContent>
                       {chapters?.map((chapter) => (
-                        <SelectItem 
-                          key={chapter.chapter_number} 
+                        <SelectItem
+                          key={chapter.chapter_number}
                           value={chapter.chapter_number.toString()}
                         >
                           Chapter {chapter.chapter_number}: {chapter.name}
@@ -188,7 +193,7 @@ export default function Browse() {
             {selectedGridChapter === null ? (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {chapters?.map((chapter) => (
-                  <Card 
+                  <Card
                     key={chapter.chapter_number}
                     className="cursor-pointer hover:border-primary transition-colors transform hover:scale-105"
                     onClick={() => setSelectedGridChapter(chapter.chapter_number)}
@@ -208,8 +213,8 @@ export default function Browse() {
               </div>
             ) : (
               <div>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="mb-8"
                   onClick={() => setSelectedGridChapter(null)}
                 >
