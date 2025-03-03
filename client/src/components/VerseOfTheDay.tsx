@@ -12,12 +12,22 @@ interface VerseOfTheDayProps {
   className?: string;
 }
 
-export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
-  const { t } = useLanguage();
-  const [showShareDialog, setShowShareDialog] = useState(false);
-  const [activeVerse, setActiveVerse] = useState<any>(null);
+interface Verse {
+  slok: string;
+  transliteration: string;
+  tej: {
+    ht: string;
+    et: string;
+  };
+  chapter: number;
+  verse: number;
+}
 
-  const { data: dailyVerse, isLoading: isDailyLoading } = useQuery({
+export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [activeVerse, setActiveVerse] = useState<Verse | null>(null);
+
+  const { data: dailyVerse, isLoading: isDailyLoading } = useQuery<Verse>({
     queryKey: ['/api/verse/daily'],
     queryFn: async () => {
       const response = await fetch(`/api/verse/daily`);
@@ -26,7 +36,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
     }
   });
 
-  const { data: popularVerses, isLoading: isPopularLoading } = useQuery({
+  const { data: popularVerses, isLoading: isPopularLoading } = useQuery<Verse[]>({
     queryKey: ['/api/verses/popular'],
     queryFn: async () => {
       const response = await fetch(`/api/verses/popular`);
@@ -35,7 +45,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
     }
   });
 
-  const handleShare = (verse: any) => {
+  const handleShare = (verse: Verse) => {
     setActiveVerse(verse);
     setShowShareDialog(true);
   };
@@ -44,7 +54,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
     await navigator.clipboard.writeText(text);
   };
 
-  const renderVerse = (verse: any) => (
+  const renderVerse = (verse: Verse) => (
     <div className="bg-card/5 rounded-lg">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
@@ -78,7 +88,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
           {verse.transliteration}
         </p>
         <p className="text-base leading-relaxed">
-          You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.
+          {verse.tej.ht}
         </p>
       </div>
     </div>
@@ -125,7 +135,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
                 <LoadingSkeleton key={i} />
               ))
             ) : popularVerses ? (
-              popularVerses.map((verse: any) => (
+              popularVerses.map((verse) => (
                 <motion.div
                   key={`${verse.chapter}-${verse.verse}`}
                   initial={{ opacity: 0, y: 20 }}
