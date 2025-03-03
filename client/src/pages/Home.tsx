@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Share2, Book, Heart, Brain, Lightbulb, Target, Users, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { BsWhatsapp } from 'react-icons/bs';
+import VerseOfTheDay from "@/components/VerseOfTheDay"; // Import the new component
 
 interface VerseResponse {
   slok: string;
@@ -208,6 +209,26 @@ export default function Home() {
           {t('home.mood.title')}
         </h2>
         <MoodSelector onSelect={setSelectedMood} selectedMood={selectedMood} />
+      </div>
+
+      {/* Add Today's Verse section */}
+      <div className="container mx-auto max-w-7xl px-4 py-20 sm:px-8 border-t">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="text-center mb-12">
+            <h2 className="font-playfair text-4xl font-semibold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+              {t('home.daily.title')}
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              {t('home.daily.subtitle')}
+            </p>
+          </div>
+          <VerseOfTheDay className="max-w-3xl mx-auto" />
+        </motion.div>
       </div>
 
       <div ref={verseSectionRef} className="container mx-auto max-w-7xl px-4 py-20 sm:px-8">

@@ -42,6 +42,8 @@ const translations = {
     'home.mood.change': 'Choose Another Mood',
     'home.explore': 'Explore More Verses',
     'home.share.text': 'Discover divine wisdom from Bhagavad Gita for your daily challenges at GyanGita! 🕉️\n\nFind spiritual guidance tailored to your emotional state.',
+    'home.daily.title': "Today's Verse",
+    'home.daily.subtitle': 'Start your day with divine wisdom from the Bhagavad Gita',
 
     // Stats
     'stats.chapters': 'Sacred Chapters',
@@ -145,6 +147,8 @@ const translations = {
     'home.mood.change': 'दूसरा भाव चुनें',
     'home.explore': 'और श्लोक खोजें',
     'home.share.text': 'ज्ञानगीता पर अपनी दैनिक चुनौतियों के लिए भगवद्गीता का दिव्य ज्ञान खोजें! 🕉️\n\nअपनी भावनात्मक स्थिति के अनुरूप आध्यात्मिक मार्गदर्शन प्राप्त करें।',
+    'home.daily.title': 'आज का श्लोक',
+    'home.daily.subtitle': 'भगवद्गीता के दिव्य ज्ञान के साथ अपने दिन की शुरुआत करें',
 
     // Stats
     'stats.chapters': 'पवित्र अध्याय',
