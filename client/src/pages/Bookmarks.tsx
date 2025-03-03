@@ -5,6 +5,32 @@ import { BookmarkX } from "lucide-react";
 import VerseCard from "@/components/VerseCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
+import PageLayout from "@/components/PageLayout";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 20
+    }
+  }
+};
 
 export default function Bookmarks() {
   const { t } = useLanguage();
@@ -29,37 +55,37 @@ export default function Bookmarks() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
-        <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-8">
-          <div className="space-y-8">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-[300px] w-full" />
-            ))}
-          </div>
+      <PageLayout
+        title={t('bookmarks.title')}
+        subtitle={t('bookmarks.subtitle')}
+      >
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-[400px] w-full" />
+          ))}
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
-      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-8">
-        <div className="text-center mb-12">
-          <h1 className="font-playfair text-4xl font-bold md:text-5xl mb-4">
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-              {t('bookmarks.title')}
-            </span>
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            {t('bookmarks.subtitle')}
-          </p>
-        </div>
-
-        {favorites?.length ? (
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {favorites.map((favorite: any) => (
+    <PageLayout
+      title={t('bookmarks.title')}
+      subtitle={t('bookmarks.subtitle')}
+    >
+      {favorites?.length ? (
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {favorites.map((favorite: any) => (
+            <motion.div
+              key={favorite.id}
+              variants={itemVariants}
+            >
               <VerseCard
-                key={favorite.id}
                 verse={{
                   chapter: parseInt(favorite.chapter),
                   verse: parseInt(favorite.verse),
@@ -82,19 +108,27 @@ export default function Bookmarks() {
                 isBookmarked={true}
                 showActions={true}
               />
-            ))}
+            </motion.div>
+          ))}
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="text-center py-12"
+        >
+          <div className="mb-4 relative">
+            <div className="absolute inset-0 bg-primary/5 rounded-full blur-xl" />
+            <BookmarkX className="mx-auto h-12 w-12 text-muted-foreground relative" />
           </div>
-        ) : (
-          <div className="text-center py-12">
-            <BookmarkX className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">{t('bookmarks.empty.title')}</h3>
-            <p className="text-muted-foreground mb-6">{t('bookmarks.empty.description')}</p>
-            <Button asChild>
-              <Link href="/browse">{t('bookmarks.empty.action')}</Link>
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
+          <h3 className="text-lg font-medium mb-2">{t('bookmarks.empty.title')}</h3>
+          <p className="text-muted-foreground mb-6">{t('bookmarks.empty.description')}</p>
+          <Button asChild className="transition-transform hover:scale-105">
+            <Link href="/browse">{t('bookmarks.empty.action')}</Link>
+          </Button>
+        </motion.div>
+      )}
+    </PageLayout>
   );
 }
