@@ -13,6 +13,7 @@ import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Bookmarks from "@/pages/Bookmarks";
 import NotFound from "@/pages/not-found";
+import AnimatedLayout from "@/components/AnimatedLayout";
 
 function Router() {
   const [location] = useLocation();
@@ -22,14 +23,16 @@ function Router() {
   }, [location]);
 
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/browse" component={Browse} />
-      <Route path="/bookmarks" component={Bookmarks} />
-      <Route path="/about" component={About} />
-      <Route path="/contact" component={Contact} />
-      <Route component={NotFound} />
-    </Switch>
+    <AnimatedLayout>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/browse" component={Browse} />
+        <Route path="/bookmarks" component={Bookmarks} />
+        <Route path="/about" component={About} />
+        <Route path="/contact" component={Contact} />
+        <Route component={NotFound} />
+      </Switch>
+    </AnimatedLayout>
   );
 }
 
