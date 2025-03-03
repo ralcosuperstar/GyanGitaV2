@@ -27,21 +27,32 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [activeVerse, setActiveVerse] = useState<Verse | null>(null);
 
-  const { data: dailyVerse, isLoading: isDailyLoading } = useQuery<Verse>({
-    queryKey: ['/api/verse/daily'],
+  // Fetch one random verse for Today's Verse
+  const { data: todayVerse, isLoading: isTodayLoading } = useQuery<Verse>({
+    queryKey: ['/api/verse/random'],
     queryFn: async () => {
-      const response = await fetch(`/api/verse/daily`);
-      if (!response.ok) throw new Error('Failed to fetch daily verse');
+      const chapter = Math.floor(Math.random() * 18) + 1;
+      const verse = Math.floor(Math.random() * 30) + 1;
+      const response = await fetch(`/api/verse/${chapter}/${verse}`);
+      if (!response.ok) throw new Error('Failed to fetch verse');
       return response.json();
     }
   });
 
+  // Fetch three random verses for Popular Verses
   const { data: popularVerses, isLoading: isPopularLoading } = useQuery<Verse[]>({
-    queryKey: ['/api/verses/popular'],
+    queryKey: ['/api/verses/random'],
     queryFn: async () => {
-      const response = await fetch(`/api/verses/popular`);
-      if (!response.ok) throw new Error('Failed to fetch popular verses');
-      return response.json();
+      const verses = [];
+      for (let i = 0; i < 3; i++) {
+        const chapter = Math.floor(Math.random() * 18) + 1;
+        const verse = Math.floor(Math.random() * 30) + 1;
+        const response = await fetch(`/api/verse/${chapter}/${verse}`);
+        if (!response.ok) throw new Error('Failed to fetch verse');
+        const data = await response.json();
+        verses.push(data);
+      }
+      return verses;
     }
   });
 
@@ -55,10 +66,10 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
   };
 
   const renderVerse = (verse: Verse) => (
-    <div className="bg-card/5 rounded-lg">
-      <div className="flex items-center justify-between p-4">
+    <div className="bg-muted/50 rounded-lg overflow-hidden">
+      <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2">
-          <span className="text-sm">browse.chapter {verse.chapter}, browse.verse {verse.verse}</span>
+          <span className="text-sm">Chapter {verse.chapter}, Verse {verse.verse}</span>
         </div>
         <div className="flex gap-2">
           <Button
@@ -80,8 +91,8 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
         </div>
       </div>
 
-      <div className="px-4 pb-4 text-center">
-        <p className="text-2xl font-sanskrit leading-relaxed mb-2">
+      <div className="p-6 text-center">
+        <p className="text-2xl font-sanskrit leading-relaxed mb-4">
           {verse.slok}
         </p>
         <p className="text-base italic text-muted-foreground mb-6">
@@ -115,15 +126,15 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
         </TabsList>
 
         <TabsContent value="daily" className="mt-8">
-          {isDailyLoading ? (
+          {isTodayLoading ? (
             <LoadingSkeleton />
-          ) : dailyVerse ? (
+          ) : todayVerse ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              {renderVerse(dailyVerse)}
+              {renderVerse(todayVerse)}
             </motion.div>
           ) : null}
         </TabsContent>
