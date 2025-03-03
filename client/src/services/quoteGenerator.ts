@@ -51,7 +51,7 @@ export function generateQuote(verse: VerseResponse, style: QuoteStyle): Generate
   `;
 
   // Generate social media optimized text (limited to ~200 chars)
-  const socialText = `${mainText.substring(0, 180)}${mainText.length > 180 ? '...' : ''}\n${attribution}\n\nRead on GyanGita`;
+  const socialText = `${mainText.substring(0, 180)}${mainText.length > 180 ? '...' : ''}\n${attribution}\n\nDiscover more on GyanGita`;
 
   return {
     text: textQuote,

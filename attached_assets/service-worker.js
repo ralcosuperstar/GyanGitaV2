@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gyangita-cache-v1';
+const CACHE_NAME = 'bhagavad-gita-cache-v1';
 const urlsToCache = [
     '/',
     '/index.php',
