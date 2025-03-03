@@ -83,7 +83,7 @@ export default function Header() {
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
     >
-      <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-4 sm:px-8">
+      <div className="container mx-auto max-w-7xl flex h-20 items-center justify-between px-4 sm:px-8">
         <div className="flex items-center">
           <MobileMenu />
           <Link href="/">
@@ -97,7 +97,7 @@ export default function Header() {
                 key={brandTitle}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="font-playfair text-xl font-bold leading-relaxed"
+                className="font-playfair text-xl font-bold leading-relaxed py-1"
               >
                 {brandTitle}
               </motion.span>
