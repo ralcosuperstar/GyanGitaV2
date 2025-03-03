@@ -35,7 +35,8 @@ const itemVariants = {
 export default function Bookmarks() {
   const { t } = useLanguage();
 
-  const { data: favorites, isLoading } = useQuery({
+  // First fetch the user's favorites
+  const { data: favorites, isLoading: isLoadingFavorites } = useQuery({
     queryKey: ['/api/user/favorites'],
     queryFn: async () => {
       const response = await fetch('/api/user/favorites', {
@@ -52,6 +53,31 @@ export default function Bookmarks() {
       return response.json();
     }
   });
+
+  // Then fetch complete verse data for each favorite
+  const { data: verseDetails, isLoading: isLoadingVerses } = useQuery({
+    queryKey: ['verse-details', favorites],
+    queryFn: async () => {
+      if (!favorites?.length) return [];
+
+      const versePromises = favorites.map(async (favorite) => {
+        const response = await fetch(`https://vedicscriptures.github.io/slok/${favorite.chapter}/${favorite.verse}`);
+        if (!response.ok) throw new Error(`Failed to fetch verse ${favorite.chapter}:${favorite.verse}`);
+        const verseData = await response.json();
+        return {
+          ...verseData,
+          id: favorite.id,
+          chapter: parseInt(favorite.chapter),
+          verse: parseInt(favorite.verse)
+        };
+      });
+
+      return Promise.all(versePromises);
+    },
+    enabled: !!favorites?.length
+  });
+
+  const isLoading = isLoadingFavorites || isLoadingVerses;
 
   if (isLoading) {
     return (
@@ -73,37 +99,28 @@ export default function Bookmarks() {
       title={t('bookmarks.title')}
       subtitle={t('bookmarks.subtitle')}
     >
-      {favorites?.length ? (
+      {verseDetails?.length ? (
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
         >
-          {favorites.map((favorite: any) => (
+          {verseDetails.map((verse) => (
             <motion.div
-              key={favorite.id}
+              key={verse.id}
               variants={itemVariants}
             >
               <VerseCard
                 verse={{
-                  chapter: parseInt(favorite.chapter),
-                  verse: parseInt(favorite.verse),
-                  slok: favorite.sanskrit || favorite.slok,
-                  transliteration: favorite.transliteration,
-                  tej: {
-                    ht: favorite.translation,
-                    et: favorite.translation_english
-                  },
-                  siva: {
-                    et: favorite.siva_translation
-                  },
-                  purohit: {
-                    et: favorite.purohit_translation
-                  },
-                  chinmay: {
-                    hc: favorite.chinmay_commentary
-                  }
+                  chapter: verse.chapter,
+                  verse: verse.verse,
+                  slok: verse.slok,
+                  transliteration: verse.transliteration,
+                  tej: verse.tej || {},
+                  siva: verse.siva || {},
+                  purohit: verse.purohit || {},
+                  chinmay: verse.chinmay || {}
                 }}
                 isBookmarked={true}
                 showActions={true}
