@@ -47,13 +47,10 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
   };
 
   const renderVerse = (verse: any) => (
-    <div key={`${verse.chapter}-${verse.verse}`} className="bg-card rounded-lg p-6 space-y-6">
-      <div className="flex items-start justify-between">
-        <div className="space-y-1">
-          <h3 className="text-lg font-medium">
-            Chapter {verse.chapter}, Verse {verse.verse}
-          </h3>
-          <p className="text-sm text-muted-foreground">Today's Verse</p>
+    <div className="bg-white/5 backdrop-blur-sm rounded-lg border p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">browse.chapter {verse.chapter}, browse.verse {verse.verse}</span>
         </div>
         <div className="flex gap-2">
           <Button
@@ -75,22 +72,19 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
         </div>
       </div>
 
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <p className="text-xl font-sanskrit leading-relaxed">
+      <div className="text-center space-y-8">
+        <div className="space-y-4">
+          <p className="text-2xl font-sanskrit leading-relaxed">
             {verse.slok}
           </p>
-          <p className="text-sm text-muted-foreground italic">
+          <p className="text-base italic text-muted-foreground">
             {verse.transliteration}
           </p>
         </div>
 
-        <div className="pt-4 border-t space-y-4">
-          <p className="text-base leading-relaxed">
-            {verse.tej?.ht}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {verse.tej?.et}
+        <div className="pt-6 border-t text-left">
+          <p className="text-lg leading-relaxed">
+            You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.
           </p>
         </div>
       </div>
