@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
-import LocomotiveScroll from 'locomotive-scroll';
-import 'locomotive-scroll/dist/locomotive-scroll.css';
+import { type Container } from 'locomotive-scroll';
 
 interface SmoothScrollProps {
   children: React.ReactNode;
@@ -8,37 +7,50 @@ interface SmoothScrollProps {
 }
 
 export default function SmoothScroll({ children, className }: SmoothScrollProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const locomotiveRef = useRef<Container | null>(null);
 
   useEffect(() => {
-    if (!scrollRef.current) return;
+    let instance: Container | null = null;
 
-    const scroll = new LocomotiveScroll({
-      el: scrollRef.current,
-      smooth: true,
-      multiplier: 0.8,
-      class: 'is-revealed',
-      mobile: {
+    const initLocomotiveScroll = async () => {
+      const LocomotiveScroll = (await import('locomotive-scroll')).default;
+
+      if (!containerRef.current) return;
+
+      instance = new LocomotiveScroll({
+        el: containerRef.current,
         smooth: true,
         multiplier: 0.8,
-        breakpoint: 0,
-      },
-      tablet: {
-        smooth: true,
-        multiplier: 0.8,
-        breakpoint: 0,
-      },
-    });
+        class: 'is-revealed',
+        mobile: {
+          smooth: true,
+          multiplier: 0.8,
+          breakpoint: 0,
+        },
+        tablet: {
+          smooth: true,
+          multiplier: 0.8,
+          breakpoint: 0,
+        },
+      });
 
-    // Clean up
+      locomotiveRef.current = instance;
+    };
+
+    initLocomotiveScroll();
+
     return () => {
-      scroll.destroy();
+      if (locomotiveRef.current) {
+        locomotiveRef.current.destroy();
+        locomotiveRef.current = null;
+      }
     };
   }, []);
 
   return (
     <div
-      ref={scrollRef}
+      ref={containerRef}
       data-scroll-container
       className={`min-h-screen relative ${className || ''}`}
     >
