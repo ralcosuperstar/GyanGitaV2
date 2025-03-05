@@ -277,12 +277,6 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               value={activeTab}
               onValueChange={(value) => {
                 setActiveTab(value);
-                if (scrollAreaRef.current) {
-                  const scrollArea = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-                  if (scrollArea) {
-                    scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
-                  }
-                }
               }}
             >
               <TabsList className="w-full h-12 bg-background border-b">
@@ -305,7 +299,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               </TabsList>
 
               <div className="flex-1 overflow-hidden bg-muted/5">
-                <ScrollArea ref={scrollAreaRef} className="h-full scroll-area">
+                <ScrollArea className="h-full max-h-[calc(90vh-12rem)]">
                   <div className="p-4 sm:p-6 space-y-6">
                     <motion.div
                       key={activeTab}
@@ -376,7 +370,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                         )}
                       </TabsContent>
 
-                      <TabsContent value="related" className="mt-0 animate-in fade-in-50">
+                      <TabsContent value="related" className="mt-0 animate-in fade-in-50 pb-12">
                         <div className="space-y-4">
                           <h3 className="font-medium text-primary mb-4">{t('verse.relatedVerses')}</h3>
                           {isLoadingRelated ? (
