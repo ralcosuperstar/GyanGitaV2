@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { type Container } from 'locomotive-scroll';
 
 interface SmoothScrollProps {
   children: React.ReactNode;
@@ -8,50 +7,29 @@ interface SmoothScrollProps {
 
 export default function SmoothScroll({ children, className }: SmoothScrollProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const locomotiveRef = useRef<Container | null>(null);
 
   useEffect(() => {
-    let instance: Container | null = null;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const initLocomotiveScroll = async () => {
-      const LocomotiveScroll = (await import('locomotive-scroll')).default;
+    const handleScroll = () => {
+      const scroll = window.scrollY;
+      const parallaxElements = container.querySelectorAll('.parallax');
 
-      if (!containerRef.current) return;
-
-      instance = new LocomotiveScroll({
-        el: containerRef.current,
-        smooth: true,
-        multiplier: 0.8,
-        class: 'is-revealed',
-        mobile: {
-          smooth: true,
-          multiplier: 0.8,
-          breakpoint: 0,
-        },
-        tablet: {
-          smooth: true,
-          multiplier: 0.8,
-          breakpoint: 0,
-        },
+      parallaxElements.forEach((el) => {
+        const speed = (el as HTMLElement).dataset.speed || '0.5';
+        const yPos = -(scroll * parseFloat(speed));
+        (el as HTMLElement).style.transform = `translate3d(0, ${yPos}px, 0)`;
       });
-
-      locomotiveRef.current = instance;
     };
 
-    initLocomotiveScroll();
-
-    return () => {
-      if (locomotiveRef.current) {
-        locomotiveRef.current.destroy();
-        locomotiveRef.current = null;
-      }
-    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <div
       ref={containerRef}
-      data-scroll-container
       className={`min-h-screen relative ${className || ''}`}
     >
       {children}
