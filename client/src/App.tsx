@@ -14,12 +14,17 @@ import Contact from "@/pages/Contact";
 import Bookmarks from "@/pages/Bookmarks";
 import NotFound from "@/pages/not-found";
 import AnimatedLayout from "@/components/AnimatedLayout";
+import SmoothScroll from "@/components/SmoothScroll";
 
 function Router() {
   const [location] = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Smooth scroll to top on route change
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   }, [location]);
 
   return (
@@ -41,14 +46,16 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="gyangita-theme">
         <LanguageProvider>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-grow">
-              <Router />
-            </main>
-            <Footer />
-          </div>
-          <Toaster />
+          <SmoothScroll className="bg-background">
+            <div className="min-h-screen flex flex-col relative">
+              <Header />
+              <main className="flex-grow relative z-10">
+                <Router />
+              </main>
+              <Footer />
+            </div>
+            <Toaster />
+          </SmoothScroll>
         </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
