@@ -9,28 +9,46 @@ export default function SmoothScroll({ children, className }: SmoothScrollProps)
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    // More performant implementation using requestAnimationFrame
+    // for smooth parallax effects
+    let scrollY = window.scrollY;
+    let rafId: number;
 
     const handleScroll = () => {
-      const scroll = window.scrollY;
-      const parallaxElements = container.querySelectorAll('.parallax');
+      scrollY = window.scrollY;
+      if (!rafId) {
+        rafId = requestAnimationFrame(updateElements);
+      }
+    };
+
+    const updateElements = () => {
+      rafId = 0;
+      if (!containerRef.current) return;
+
+      const parallaxElements = containerRef.current.querySelectorAll('.parallax');
 
       parallaxElements.forEach((el) => {
-        const speed = (el as HTMLElement).dataset.speed || '0.5';
-        const yPos = -(scroll * parseFloat(speed));
-        (el as HTMLElement).style.transform = `translate3d(0, ${yPos}px, 0)`;
+        const htmlEl = el as HTMLElement;
+        const speed = htmlEl.dataset.speed || '0.3';
+        const yPos = -(scrollY * parseFloat(speed));
+        htmlEl.style.transform = `translate3d(0, ${yPos}px, 0)`;
       });
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
   }, []);
 
   return (
     <div
       ref={containerRef}
-      className={`min-h-screen relative ${className || ''}`}
+      className={`relative ${className || ''}`}
     >
       {children}
     </div>

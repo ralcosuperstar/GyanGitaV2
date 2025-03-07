@@ -26,37 +26,50 @@ function MobileMenu() {
     })
   };
 
+  const menuItems = [
+    { href: "/", icon: <Home className="h-4 w-4" />, label: t('nav.home') },
+    { href: "/browse", icon: <Search className="h-4 w-4" />, label: t('nav.browse') },
+    { href: "/bookmarks", icon: <Bookmark className="h-4 w-4" />, label: t('nav.bookmarks') },
+    { href: "/about", label: t('nav.about') },
+    { href: "/contact", label: t('nav.contact') }
+  ];
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="md:hidden"
+          aria-label="Open menu"
+        >
           <Menu className="h-5 w-5" />
-          <span className="sr-only">Menu</span>
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px]">
         <nav className="flex flex-col space-y-4 mt-8">
           <AnimatePresence>
-            {[
-              { href: "/", icon: <Home className="h-4 w-4" />, label: t('nav.home') },
-              { href: "/browse", icon: <Search className="h-4 w-4" />, label: t('nav.browse') },
-              { href: "/bookmarks", icon: <Bookmark className="h-4 w-4" />, label: t('nav.bookmarks') },
-              { href: "/about", label: t('nav.about') },
-              { href: "/contact", label: t('nav.contact') }
-            ].map((item, i) => (
+            {menuItems.map((item, i) => (
               <motion.div
                 key={item.href}
                 custom={i}
                 variants={menuItemVariants}
                 initial="hidden"
                 animate="visible"
+                exit={{ opacity: 0, x: -20 }}
               >
-                <Link href={item.href} onClick={() => setIsOpen(false)}>
-                  <a className="block py-2 px-4 rounded-md transition-colors hover:bg-muted">
-                    {item.icon && <span className="inline-block mr-2">{item.icon}</span>}
-                    {item.label}
-                  </a>
-                </Link>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Link href={item.href}>
+                    <div className="flex items-center">
+                      {item.icon && <span className="mr-2">{item.icon}</span>}
+                      {item.label}
+                    </div>
+                  </Link>
+                </Button>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -83,26 +96,32 @@ export default function Header() {
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
     >
-      <div className="container mx-auto max-w-7xl flex h-24 items-center justify-between px-4 sm:px-8">
+      <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-4 sm:px-8">
         <div className="flex items-center">
           <MobileMenu />
-          <Link href="/">
-            <motion.a
-              className="flex items-center space-x-3 ml-2 md:ml-0"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <OmLogo className="h-8 w-8 text-primary" />
-              <motion.span
-                key={brandTitle}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="font-playfair text-xl font-bold leading-loose py-2"
+          <Button
+            variant="ghost"
+            className="ml-2 md:ml-0"
+            asChild
+          >
+            <Link href="/">
+              <motion.div
+                className="flex items-center space-x-3"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                {brandTitle}
-              </motion.span>
-            </motion.a>
-          </Link>
+                <OmLogo className="h-8 w-8 text-primary" />
+                <motion.span
+                  key={brandTitle}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="font-playfair text-xl font-bold leading-loose"
+                >
+                  {brandTitle}
+                </motion.span>
+              </motion.div>
+            </Link>
+          </Button>
         </div>
 
         <nav className="flex items-center space-x-6">
@@ -114,28 +133,40 @@ export default function Header() {
               { href: "/about", label: t('nav.about') },
               { href: "/contact", label: t('nav.contact') }
             ].map((item) => (
-              <Link key={item.href} href={item.href}>
-                <motion.a
-                  className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2"
-                  variants={navItemVariants}
-                  whileHover="hover"
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {item.icon}
-                  {item.label}
-                </motion.a>
-              </Link>
+              <Button
+                key={item.href}
+                variant="ghost"
+                className="text-sm font-medium transition-colors hover:text-primary"
+                asChild
+              >
+                <Link href={item.href}>
+                  <motion.div
+                    className="flex items-center gap-2"
+                    variants={navItemVariants}
+                    whileHover="hover"
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </motion.div>
+                </Link>
+              </Button>
             ))}
           </div>
 
           <div className="flex items-center space-x-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-9 w-9"
+                  aria-label="Change language"
+                >
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Globe className="h-5 w-5" />
-                  </Button>
-                </motion.div>
+                  </motion.div>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setLanguage('en')}>
@@ -147,12 +178,17 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="h-9 w-9"
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label="Toggle theme"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }}
+                style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}
               >
                 <AnimatePresence mode="wait">
                   {theme === "dark" ? (
@@ -177,9 +213,8 @@ export default function Header() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            </motion.div>
+              </motion.div>
+            </Button>
           </div>
         </nav>
       </div>

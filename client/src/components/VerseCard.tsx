@@ -224,7 +224,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   className="w-full sm:w-auto gap-2 transition-transform"
                 >
                   <Share2 className="h-4 w-4" />
-                  {t('verse.share')}
+                  {t('verse.shareAction')}
                 </Button>
               </motion.div>
             )}
@@ -412,7 +412,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   className="w-full sm:w-auto flex-1 gap-2 transition-transform hover:scale-105"
                 >
                   <Share2 className="h-5 w-5" />
-                  {t('verse.share')}
+                  {t('verse.shareAction')}
                 </Button>
               </div>
             </DialogFooter>
