@@ -13,16 +13,29 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Share2, Book, Grid } from "lucide-react";
+import { Share2, Book, Grid, Search, Filter, BookOpen, Sparkles } from "lucide-react";
 import VerseCard from "@/components/VerseCard";
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+// Define themes for categorization
+const themes = [
+  { id: 'karma', label: 'Karma & Action', icon: '⚡' },
+  { id: 'dharma', label: 'Dharma & Duty', icon: '🎯' },
+  { id: 'devotion', label: 'Devotion & Faith', icon: '🙏' },
+  { id: 'knowledge', label: 'Knowledge & Wisdom', icon: '📚' },
+  { id: 'meditation', label: 'Meditation & Peace', icon: '🧘' },
+  { id: 'purpose', label: 'Purpose & Life', icon: '🌟' },
+];
 
 interface Chapter {
   chapter_number: number;
   name: string;
   name_meaning: string;
   verses_count: number;
+  theme?: string;
+  key_verses?: string[];
 }
 
 interface VerseResponse {
@@ -48,12 +61,13 @@ interface VerseResponse {
 export default function Browse() {
   const [selectedChapter, setSelectedChapter] = useState<string>("");
   const [selectedVerse, setSelectedVerse] = useState<string>("");
-  const [viewMode, setViewMode] = useState<"search" | "grid">("search");
+  const [viewMode, setViewMode] = useState<"chapters" | "themes" | "search">("chapters");
+  const [selectedTheme, setSelectedTheme] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
   const [showVerseModal, setShowVerseModal] = useState(false);
   const { t } = useLanguage();
 
-  // Add effect to scroll to top when chapter changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [selectedGridChapter]);
@@ -81,179 +95,192 @@ export default function Browse() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
-      {/* Stats Section */}
-      <div className="border-b bg-gradient-to-r from-primary/10 to-primary/5">
-        <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-8">
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">18</p>
-              <p className="text-sm text-muted-foreground">{t('stats.chapters')}</p>
-            </div>
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">700</p>
-              <p className="text-sm text-muted-foreground">{t('stats.verses')}</p>
-            </div>
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">15+</p>
-              <p className="text-sm text-muted-foreground">{t('stats.states')}</p>
-            </div>
-            <div className="text-center transform hover:scale-105 transition-transform">
-              <p className="text-4xl font-bold text-primary">5000+</p>
-              <p className="text-sm text-muted-foreground">{t('stats.years')}</p>
-            </div>
+      {/* Enhanced Header Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 to-primary/5 border-b">
+        <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
+          <div className="text-center max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h1 className="text-4xl font-playfair font-bold mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                Explore Sacred Wisdom
+              </h1>
+              <p className="text-lg text-muted-foreground mb-8">
+                Navigate through 18 chapters and 700 verses of timeless knowledge. 
+                Find the guidance you seek through topics, themes, or direct exploration.
+              </p>
+            </motion.div>
+
+            {/* Navigation Tabs */}
+            <Tabs defaultValue="chapters" className="space-y-8">
+              <TabsList className="inline-flex bg-background/50 backdrop-blur-sm p-1 rounded-lg border">
+                <TabsTrigger 
+                  value="chapters" 
+                  className="flex items-center gap-2"
+                  onClick={() => setViewMode("chapters")}
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Chapters
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="themes" 
+                  className="flex items-center gap-2"
+                  onClick={() => setViewMode("themes")}
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Themes
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="search" 
+                  className="flex items-center gap-2"
+                  onClick={() => setViewMode("search")}
+                >
+                  <Search className="h-4 w-4" />
+                  Search
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Search and Filter Bar */}
+              {viewMode === "search" && (
+                <div className="flex gap-4 max-w-2xl mx-auto">
+                  <div className="flex-1">
+                    <Input
+                      placeholder="Search by keywords, topics, or verse numbers..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                  <Button variant="outline" className="gap-2">
+                    <Filter className="h-4 w-4" />
+                    Filters
+                  </Button>
+                </div>
+              )}
+            </Tabs>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-8">
-        <div className="text-center mb-12">
-          <h1 className="font-playfair text-4xl font-bold md:text-5xl mb-4">
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-              {t('browse.title')}
-            </span>
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            {t('browse.subtitle')}
-          </p>
-        </div>
+      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
+        {viewMode === "chapters" && (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {chapters?.map((chapter) => (
+              <motion.div
+                key={chapter.chapter_number}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card
+                  className="cursor-pointer hover:border-primary transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg group relative overflow-hidden"
+                  onClick={() => setSelectedGridChapter(chapter.chapter_number)}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="font-playfair">Chapter {chapter.chapter_number}</CardTitle>
+                      <span className="text-sm text-primary/70">{chapter.verses_count} verses</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <h3 className="font-medium text-lg mb-2 group-hover:text-primary transition-colors">
+                      {chapter.name}
+                    </h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      {chapter.name_meaning}
+                    </p>
+                    <div className="flex items-center text-sm text-primary/70">
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      Explore Chapter
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
-        <div className="flex justify-center gap-4 mb-8">
-          <Button
-            variant={viewMode === "search" ? "default" : "outline"}
-            onClick={() => setViewMode("search")}
-            className="gap-2"
-          >
-            <Book className="w-4 h-4" />
-            {t('browse.search.title')}
-          </Button>
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            onClick={() => setViewMode("grid")}
-            className="gap-2"
-          >
-            <Grid className="w-4 h-4" />
-            {t('browse.chapters.title')}
-          </Button>
-        </div>
+        {viewMode === "themes" && (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {themes.map((theme, index) => (
+              <motion.div
+                key={theme.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card
+                  className="cursor-pointer hover:border-primary transition-all duration-300 transform hover:scale-[1.02] group"
+                  onClick={() => setSelectedTheme(theme.id)}
+                >
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{theme.icon}</span>
+                      <CardTitle>{theme.label}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground text-sm">
+                      Explore verses related to {theme.label.toLowerCase()}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
-        {viewMode === "search" ? (
-          <div className="mx-auto max-w-3xl">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  {t('browse.select.chapter')}
-                </label>
-                {isLoadingChapters ? (
-                  <Skeleton className="h-10 w-full" />
-                ) : (
-                  <Select
-                    value={selectedChapter}
-                    onValueChange={setSelectedChapter}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('browse.select.chapter')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {chapters?.map((chapter) => (
-                        <SelectItem
-                          key={chapter.chapter_number}
-                          value={chapter.chapter_number.toString()}
-                        >
-                          Chapter {chapter.chapter_number}: {chapter.name}
-                          <span className="block text-sm text-muted-foreground">
-                            {chapter.verses_count} {t('browse.verses')}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
+        {selectedGridChapter !== null && (
+          <div>
+            <div className="flex items-center justify-between mb-8">
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => setSelectedGridChapter(null)}
+              >
+                <BookOpen className="h-4 w-4" />
+                All Chapters
+              </Button>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  {t('browse.select.verse')}
-                </label>
-                <Input
-                  type="number"
-                  min="1"
-                  placeholder={t('browse.select.verse')}
-                  value={selectedVerse}
-                  onChange={(e) => setSelectedVerse(e.target.value)}
-                />
+              <div className="text-sm text-muted-foreground">
+                Chapter {selectedGridChapter} • {
+                  chapters?.find(c => c.chapter_number === selectedGridChapter)?.verses_count
+                } verses
               </div>
             </div>
 
-            {selectedChapter && selectedVerse && verse && (
-              <div className="mt-12">
-                <VerseCard verse={verse} />
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-12">
-            {selectedGridChapter === null ? (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {chapters?.map((chapter) => (
-                  <Card
-                    key={chapter.chapter_number}
-                    className="cursor-pointer hover:border-primary transition-colors transform hover:scale-105"
-                    onClick={() => setSelectedGridChapter(chapter.chapter_number)}
-                  >
-                    <CardHeader>
-                      <CardTitle>Chapter {chapter.chapter_number}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <h3 className="font-medium text-lg mb-2">{chapter.name}</h3>
-                      <p className="text-muted-foreground mb-4">{chapter.name_meaning}</p>
-                      <p className="text-sm text-primary">
-                        {chapter.verses_count} {t('browse.verses')}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div>
-                <Button
-                  variant="outline"
-                  className="mb-8"
-                  onClick={() => setSelectedGridChapter(null)}
+            <div className="grid gap-4 grid-cols-6 sm:grid-cols-8 md:grid-cols-10">
+              {Array.from({ length: chapters?.find(c => c.chapter_number === selectedGridChapter)?.verses_count || 0 }).map((_, i) => (
+                <motion.button
+                  key={i + 1}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 17,
+                    delay: i * 0.02
+                  }}
+                  className={cn(
+                    "h-12 w-12 rounded-md border border-input hover:bg-primary/5",
+                    "flex items-center justify-center text-sm font-medium",
+                    "transition-colors hover:border-primary/50"
+                  )}
+                  onClick={() => {
+                    setSelectedChapter(selectedGridChapter.toString());
+                    setSelectedVerse((i + 1).toString());
+                    setShowVerseModal(true);
+                  }}
                 >
-                  {t('browse.back')}
-                </Button>
-
-                <div className="grid gap-4 grid-cols-6 sm:grid-cols-8 md:grid-cols-10">
-                  {Array.from({ length: chapters?.find(c => c.chapter_number === selectedGridChapter)?.verses_count || 0 }).map((_, i) => (
-                    <motion.button
-                      key={i + 1}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 400,
-                        damping: 17,
-                        delay: i * 0.02
-                      }}
-                      className={cn(
-                        "h-12 w-12 rounded-md border border-input hover:bg-primary/5",
-                        "flex items-center justify-center text-sm font-medium",
-                        "transition-colors hover:border-primary/50"
-                      )}
-                      onClick={() => {
-                        setSelectedChapter(selectedGridChapter.toString());
-                        setSelectedVerse((i + 1).toString());
-                        setShowVerseModal(true);
-                      }}
-                    >
-                      {i + 1}
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-            )}
+                  {i + 1}
+                </motion.button>
+              ))}
+            </div>
           </div>
         )}
 
