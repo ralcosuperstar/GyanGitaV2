@@ -33,12 +33,12 @@ export default function About() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="prose prose-lg max-w-none"
+            className="prose prose-lg max-w-none dark:prose-invert"
           >
-            <h2 className="font-playfair text-2xl md:text-3xl font-semibold mb-6 text-center">
+            <h2 className="font-playfair text-2xl md:text-3xl font-semibold mb-6 text-center text-foreground">
               The Story Behind GyanGita
             </h2>
-            <div className="text-muted-foreground leading-relaxed">
+            <div className="text-foreground/90 leading-relaxed">
               <p>
                 In the bustling digital age where anxiety and uncertainty often cloud our minds, 
                 I witnessed a close friend struggling to find clarity and peace. Her journey sparked 
@@ -62,16 +62,16 @@ export default function About() {
             className="relative"
           >
             <div className="absolute -top-4 -left-4">
-              <Quote className="h-8 w-8 text-primary/20" />
+              <Quote className="h-8 w-8 text-primary" />
             </div>
-            <Card className="bg-primary/5 border-primary/10">
+            <Card className="bg-primary/5 border-primary/20">
               <CardContent className="p-8">
-                <blockquote className="text-lg md:text-xl text-primary/90 italic text-balance">
+                <blockquote className="text-lg md:text-xl text-foreground/95 italic text-balance">
                   "When doubts haunt me, when disappointments stare me in the face, and I see not one ray 
                   of hope on the horizon, I turn to Bhagavad-Gita and find a verse to comfort me; and I 
                   immediately begin to smile in the midst of overwhelming sorrow."
                 </blockquote>
-                <footer className="mt-4 text-sm text-muted-foreground">
+                <footer className="mt-4 text-sm text-foreground/75">
                   — Mahatma Gandhi
                 </footer>
               </CardContent>
@@ -86,10 +86,10 @@ export default function About() {
               whileInView="visible"
               viewport={{ once: true }}
             >
-              <Card className="h-full transform hover:scale-105 transition-all duration-300">
+              <Card className="h-full transform hover:scale-105 transition-all duration-300 bg-card/50 backdrop-blur-sm">
                 <CardContent className="p-8">
-                  <h2 className="font-playfair text-2xl font-semibold mb-4">Our Vision</h2>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <h2 className="font-playfair text-2xl font-semibold mb-4 text-foreground">Our Vision</h2>
+                  <p className="text-foreground/90 leading-relaxed">
                     GyanGita envisions a world where ancient wisdom seamlessly integrates with modern life, 
                     providing solace and guidance to those seeking answers. We believe that the Gita's 
                     teachings aren't just philosophical concepts, but practical tools for emotional 
@@ -106,10 +106,10 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="h-full transform hover:scale-105 transition-all duration-300">
+              <Card className="h-full transform hover:scale-105 transition-all duration-300 bg-card/50 backdrop-blur-sm">
                 <CardContent className="p-8">
-                  <h2 className="font-playfair text-2xl font-semibold mb-4">Our Mission</h2>
-                  <p className="text-muted-foreground leading-relaxed">
+                  <h2 className="font-playfair text-2xl font-semibold mb-4 text-foreground">Our Mission</h2>
+                  <p className="text-foreground/90 leading-relaxed">
                     To make the profound wisdom of Bhagavad Gita accessible and relevant to everyone, 
                     helping them navigate life's challenges with clarity, purpose, and inner peace. 
                     We strive to be the bridge between timeless knowledge and contemporary needs.
@@ -127,7 +127,7 @@ export default function About() {
             viewport={{ once: true }}
             className="mt-16"
           >
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden bg-card/50 backdrop-blur-sm">
               <CardContent className="p-0">
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="relative h-[400px] md:h-full">
@@ -138,8 +138,8 @@ export default function About() {
                     />
                   </div>
                   <div className="p-8">
-                    <h2 className="font-playfair text-2xl font-semibold mb-4">Meet the Founder</h2>
-                    <div className="space-y-4 text-muted-foreground">
+                    <h2 className="font-playfair text-2xl font-semibold mb-4 text-foreground">Meet the Founder</h2>
+                    <div className="space-y-4 text-foreground/90">
                       <p>
                         As an entrepreneur who started a digital marketing agency in 2018, I've always been 
                         fascinated by the intersection of technology and human experience. Through my work 
