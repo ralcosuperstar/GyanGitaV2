@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ShareDialog from "@/components/ShareDialog";
 import { motion } from 'framer-motion';
 
+// Component types
 interface VerseCardProps {
   verse: {
     slok: string;
@@ -41,16 +42,28 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("verse");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const tabsListRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
   const queryClient = useQueryClient();
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
   const { toast } = useToast();
 
+  // Reset scroll position when tab changes
   useEffect(() => {
     if (scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
       if (viewport) {
         viewport.scrollTop = 0;
+      }
+    }
+  }, [activeTab]);
+
+  // Handle horizontal scrolling for tabs
+  useEffect(() => {
+    if (tabsListRef.current) {
+      const activeTabElement = tabsListRef.current.querySelector('[data-state="active"]');
+      if (activeTabElement) {
+        activeTabElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       }
     }
   }, [activeTab]);
@@ -64,7 +77,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       }
       return response.json();
     },
-    enabled: showModal
+    enabled: showModal && activeTab === 'related'
   });
 
   const triggerVibration = () => {
@@ -125,7 +138,15 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
   };
 
   const renderVerse = (v: any) => (
-    <div key={`${v.chapter}-${v.verse}`} className="bg-muted/50 p-4 rounded-lg mb-4 hover:bg-muted/70 transition-colors cursor-pointer">
+    <div 
+      key={`${v.chapter}-${v.verse}`} 
+      className="bg-muted/50 p-4 rounded-lg mb-4 hover:bg-muted/70 transition-colors cursor-pointer"
+      onClick={() => {
+        // Update the current verse and reset tab
+        setActiveTab("verse");
+        // Additional logic to update verse if needed
+      }}
+    >
       <h4 className="font-medium mb-2">
         Chapter {v.chapter}, Verse {v.verse}
       </h4>
@@ -133,7 +154,6 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       <p className="text-sm text-foreground/90 leading-relaxed break-words">{v.tej.ht}</p>
     </div>
   );
-
 
   return (
     <>
@@ -242,31 +262,14 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                 <DialogTitle className="font-playfair text-xl sm:text-2xl">
                   {t('verse.verseNumber', { chapter: verse.chapter, verse: verse.verse })}
                 </DialogTitle>
-                <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-1">
-                  {showActions && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleBookmark}
-                      className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
-                      disabled={bookmarkMutation.isPending}
-                    >
-                      {isBookmarked ? (
-                        <BookmarkCheck className="h-5 w-5 text-primary" />
-                      ) : (
-                        <Bookmark className="h-5 w-5" />
-                      )}
-                    </Button>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
-                    onClick={() => setShowModal(false)}
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
+                  onClick={() => setShowModal(false)}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
               </div>
             </div>
 
@@ -276,8 +279,11 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               value={activeTab}
               onValueChange={setActiveTab}
             >
-              <TabsList className="w-full h-12 bg-background border-b flex-shrink-0">
-                <div className="flex w-full">
+              <ScrollArea className="w-full border-b" orientation="horizontal">
+                <TabsList 
+                  ref={tabsListRef}
+                  className="h-12 bg-background flex w-auto min-w-full justify-start px-1"
+                >
                   {[
                     { value: 'verse', key: 'verse.text' },
                     { value: 'translations', key: 'verse.translations' },
@@ -287,13 +293,13 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
-                      className="flex-1 text-xs sm:text-base py-2.5 data-[state=active]:bg-primary/10 rounded-none border-b-2 border-transparent data-[state=active]:border-primary transition-all duration-300 ease-out"
+                      className="flex-none px-4 text-sm sm:text-base py-2.5 data-[state=active]:bg-primary/10 data-[state=active]:text-primary border-b-2 border-transparent data-[state=active]:border-primary transition-all duration-300 ease-out whitespace-nowrap"
                     >
                       {t(tab.key)}
                     </TabsTrigger>
                   ))}
-                </div>
-              </TabsList>
+                </TabsList>
+              </ScrollArea>
 
               <div className="flex-1 min-h-0 bg-muted/5">
                 <ScrollArea 
@@ -368,7 +374,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                         )}
                       </TabsContent>
 
-                      <TabsContent value="related" className="mt-0 animate-in fade-in-50 pb-12">
+                      <TabsContent value="related" className="mt-0 animate-in fade-in-50">
                         <div className="space-y-4">
                           <h3 className="font-medium text-primary mb-4">{t('verse.relatedVerses')}</h3>
                           {isLoadingRelated ? (
