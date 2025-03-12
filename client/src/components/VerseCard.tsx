@@ -36,7 +36,6 @@ interface VerseCardProps {
   isBookmarked?: boolean;
 }
 
-// Add showShareDialog state
 export default function VerseCard({ verse, showActions = true, isBookmarked: initialIsBookmarked = false }: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -46,6 +45,16 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
   const queryClient = useQueryClient();
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
   const { toast } = useToast();
+
+  // Reset scroll position when tab changes
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (viewport) {
+        viewport.scrollTop = 0;
+      }
+    }
+  }, [activeTab]);
 
   const { data: relatedVerses, isLoading: isLoadingRelated } = useQuery({
     queryKey: [`/api/verse/${verse.chapter}/${verse.verse}/related`],
@@ -112,7 +121,6 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
     bookmarkMutation.mutate();
   };
 
-  // Replace the handleShare function
   const handleShare = () => {
     setShowShareDialog(true);
   };
@@ -127,13 +135,6 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
     </div>
   );
 
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      setTimeout(() => {
-        scrollAreaRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 50);
-    }
-  }, [activeTab]);
 
   return (
     <>
@@ -234,8 +235,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent
-          className="sm:max-w-[90%] md:max-w-4xl w-[calc(100%-2rem)] h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl bg-background shadow-lg overflow-hidden border data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]"
-          hideCloseButton
+          className="sm:max-w-[90%] md:max-w-4xl w-[calc(100%-2rem)] h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl bg-background shadow-lg overflow-hidden border"
         >
           <div className="flex flex-col h-full">
             <div className="p-4 sm:p-6 border-b">
@@ -275,9 +275,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               defaultValue="verse"
               className="flex-1 flex flex-col overflow-hidden"
               value={activeTab}
-              onValueChange={(value) => {
-                setActiveTab(value);
-              }}
+              onValueChange={setActiveTab}
             >
               <TabsList className="w-full h-12 bg-background border-b">
                 <div className="flex w-full">
@@ -299,8 +297,12 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               </TabsList>
 
               <div className="flex-1 overflow-hidden bg-muted/5">
-                <ScrollArea className="h-full max-h-[calc(90vh-12rem)]">
-                  <div className="p-4 sm:p-6 space-y-6">
+                <ScrollArea 
+                  ref={scrollAreaRef} 
+                  className="h-full" 
+                  style={{ maxHeight: 'calc(90vh - 13rem)' }}
+                >
+                  <div className="p-4 sm:p-6 space-y-6 pb-20">
                     <motion.div
                       key={activeTab}
                       initial={{ opacity: 0, x: 20 }}
