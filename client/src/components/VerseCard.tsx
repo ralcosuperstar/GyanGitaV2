@@ -1,18 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Share2, Bookmark, BookmarkCheck, X } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
 import ShareDialog from "@/components/ShareDialog";
 import { motion } from 'framer-motion';
 
-// Component types
 interface VerseCardProps {
   verse: {
     slok: string;
@@ -40,45 +37,10 @@ interface VerseCardProps {
 export default function VerseCard({ verse, showActions = true, isBookmarked: initialIsBookmarked = false }: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState("verse");
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const tabsListRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
   const queryClient = useQueryClient();
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
   const { toast } = useToast();
-
-  // Reset scroll position when tab changes
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-      if (viewport) {
-        viewport.scrollTop = 0;
-      }
-    }
-  }, [activeTab]);
-
-  // Handle horizontal scrolling for tabs
-  useEffect(() => {
-    if (tabsListRef.current) {
-      const activeTabElement = tabsListRef.current.querySelector('[data-state="active"]');
-      if (activeTabElement) {
-        activeTabElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-    }
-  }, [activeTab]);
-
-  const { data: relatedVerses, isLoading: isLoadingRelated } = useQuery({
-    queryKey: [`/api/verse/${verse.chapter}/${verse.verse}/related`],
-    queryFn: async () => {
-      const response = await fetch(`/api/verse/${verse.chapter}/${verse.verse}/related`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch related verses');
-      }
-      return response.json();
-    },
-    enabled: showModal && activeTab === 'related'
-  });
 
   const triggerVibration = () => {
     if (window.navigator && window.navigator.vibrate) {
@@ -137,24 +99,6 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
     setShowShareDialog(true);
   };
 
-  const renderVerse = (v: any) => (
-    <div
-      key={`${v.chapter}-${v.verse}`}
-      className="bg-muted/50 p-4 rounded-lg mb-4 hover:bg-muted/70 transition-colors cursor-pointer"
-      onClick={() => {
-        // Update the current verse and reset tab
-        setActiveTab("verse");
-        // Additional logic to update verse if needed
-      }}
-    >
-      <h4 className="font-medium mb-2">
-        Chapter {v.chapter}, Verse {v.verse}
-      </h4>
-      <p className="text-sm font-sanskrit mb-2 leading-relaxed break-words">{v.slok}</p>
-      <p className="text-sm text-foreground/90 leading-relaxed break-words">{v.tej.ht}</p>
-    </div>
-  );
-
   return (
     <>
       <Card className="group h-full flex flex-col transition-all hover:scale-[1.02] duration-200 hover:shadow-lg">
@@ -195,23 +139,39 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mb-6"
+            className="flex-1 space-y-6"
           >
-            <h3 className="font-semibold text-primary mb-3">{t('verse.sanskrit')}</h3>
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <p className="text-lg font-sanskrit leading-relaxed break-words">{verse.slok}</p>
-            </div>
-          </motion.div>
+            {/* English Translation */}
+            {(verse.siva?.et || verse.purohit?.et || verse.tej?.et) && (
+              <div>
+                <h3 className="font-semibold text-primary mb-3">{t('verse.translation')}</h3>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  {verse.siva?.et ? (
+                    <>
+                      <p className="font-medium text-primary/80 text-sm mb-2">Swami Sivananda</p>
+                      <p className="leading-relaxed break-words">{verse.siva.et}</p>
+                    </>
+                  ) : verse.purohit?.et ? (
+                    <>
+                      <p className="font-medium text-primary/80 text-sm mb-2">Shri Purohit Swami</p>
+                      <p className="leading-relaxed break-words">{verse.purohit.et}</p>
+                    </>
+                  ) : verse.tej?.et && (
+                    <>
+                      <p className="font-medium text-primary/80 text-sm mb-2">Swami Tejomayananda</p>
+                      <p className="leading-relaxed break-words">{verse.tej.et}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex-1 mb-6"
-          >
-            <h3 className="font-semibold text-primary mb-3">{t('verse.translation')}</h3>
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <p className="leading-relaxed break-words">{verse.tej.ht}</p>
+            {/* Sanskrit Text (collapsed by default) */}
+            <div className="opacity-70 hover:opacity-100 transition-opacity">
+              <h3 className="font-medium text-sm text-primary/80 mb-2">{t('verse.sanskrit')}</h3>
+              <div className="bg-muted/30 p-4 rounded-lg">
+                <p className="text-sm font-sanskrit leading-relaxed break-words">{verse.slok}</p>
+              </div>
             </div>
           </motion.div>
 
@@ -252,7 +212,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
         </CardContent>
       </Card>
 
-      {/* Verse Detail Dialog Content */}
+      {/* Verse Detail Dialog */}
       {verse && (
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogContent
@@ -298,40 +258,10 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               <div className="flex-1 flex flex-col min-h-0 bg-muted/5">
                 <ScrollArea className="flex-1">
                   <div className="p-4 sm:p-6 pb-32">
-                    {/* Sanskrit Text */}
-                    <div className="mb-8">
-                      <h3 className="font-semibold text-primary mb-3">{t('verse.sanskrit')}</h3>
-                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                        <p className="text-lg sm:text-xl font-sanskrit leading-relaxed break-words">{verse.slok}</p>
-                      </div>
-                    </div>
-
-                    {/* Transliteration */}
-                    <div className="mb-8">
-                      <h3 className="font-semibold text-primary mb-3">{t('verse.transliteration')}</h3>
-                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                        <p className="text-base sm:text-lg leading-relaxed break-words">{verse.transliteration}</p>
-                      </div>
-                    </div>
-
-                    {/* Translations */}
+                    {/* English Translations First */}
                     <div className="mb-8">
                       <h3 className="font-semibold text-primary mb-3">{t('verse.translations')}</h3>
                       <div className="space-y-6">
-                        {verse.tej && (
-                          <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                            <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
-                            <div className="space-y-4">
-                              <p className="leading-relaxed break-words">{verse.tej.ht}</p>
-                              {verse.tej.et && (
-                                <p className="text-muted-foreground leading-relaxed break-words border-t border-border/50 pt-4">
-                                  {verse.tej.et}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
                         {verse.siva?.et && (
                           <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
                             <p className="font-medium text-primary mb-3">Swami Sivananda</p>
@@ -345,6 +275,37 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                             <p className="leading-relaxed break-words">{verse.purohit.et}</p>
                           </div>
                         )}
+
+                        {verse.tej && (
+                          <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                            <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
+                            <div className="space-y-4">
+                              {verse.tej.et && (
+                                <p className="leading-relaxed break-words">{verse.tej.et}</p>
+                              )}
+                              <div className="pt-4 border-t border-border/50">
+                                <p className="text-sm text-muted-foreground mb-2">Hindi Translation</p>
+                                <p className="leading-relaxed break-words">{verse.tej.ht}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Sanskrit Text */}
+                    <div className="mb-8">
+                      <h3 className="font-semibold text-primary mb-3">{t('verse.sanskrit')}</h3>
+                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                        <p className="text-lg sm:text-xl font-sanskrit leading-relaxed break-words">{verse.slok}</p>
+                      </div>
+                    </div>
+
+                    {/* Transliteration */}
+                    <div className="mb-8">
+                      <h3 className="font-semibold text-primary mb-3">{t('verse.transliteration')}</h3>
+                      <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                        <p className="text-base sm:text-lg leading-relaxed break-words">{verse.transliteration}</p>
                       </div>
                     </div>
 
