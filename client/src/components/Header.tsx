@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Search, Globe, Menu, Home, Bookmark } from "lucide-react";
+import { Moon, Sun, Globe, Menu, Home, Bookmark, Book, Info, Mail } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/language-context";
@@ -9,30 +9,17 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { OmLogo } from "./icons/OmLogo";
 
+const NAV_ITEMS = [
+  { href: "/", icon: <Home className="h-4 w-4" />, key: 'nav.home' },
+  { href: "/browse", icon: <Book className="h-4 w-4" />, key: 'nav.browse' },
+  { href: "/bookmarks", icon: <Bookmark className="h-4 w-4" />, key: 'nav.bookmarks' },
+  { href: "/about", icon: <Info className="h-4 w-4" />, key: 'nav.about' },
+  { href: "/contact", icon: <Mail className="h-4 w-4" />, key: 'nav.contact' }
+];
+
 function MobileMenu() {
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
-
-  const menuItemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: (i: number) => ({
-      opacity: 1,
-      x: 0,
-      transition: {
-        delay: i * 0.1,
-        type: "spring",
-        stiffness: 100
-      }
-    })
-  };
-
-  const menuItems = [
-    { href: "/", icon: <Home className="h-4 w-4" />, label: t('nav.home') },
-    { href: "/browse", icon: <Search className="h-4 w-4" />, label: t('nav.browse') },
-    { href: "/bookmarks", icon: <Bookmark className="h-4 w-4" />, label: t('nav.bookmarks') },
-    { href: "/about", label: t('nav.about') },
-    { href: "/contact", label: t('nav.contact') }
-  ];
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -40,34 +27,32 @@ function MobileMenu() {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="md:hidden"
+          className="md:hidden relative"
           aria-label="Open menu"
         >
           <Menu className="h-5 w-5" />
+          <span className="sr-only">Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-        <nav className="flex flex-col space-y-4 mt-8">
+      <SheetContent side="left" className="w-72">
+        <nav className="flex flex-col mt-8">
           <AnimatePresence>
-            {menuItems.map((item, i) => (
+            {NAV_ITEMS.map((item, i) => (
               <motion.div
                 key={item.href}
-                custom={i}
-                variants={menuItemVariants}
-                initial="hidden"
-                animate="visible"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
                 exit={{ opacity: 0, x: -20 }}
               >
                 <Button
                   variant="ghost"
-                  className="w-full justify-start"
+                  className="w-full justify-start mb-2 gap-3"
                   onClick={() => setIsOpen(false)}
                 >
-                  <Link href={item.href}>
-                    <div className="flex items-center">
-                      {item.icon && <span className="mr-2">{item.icon}</span>}
-                      {item.label}
-                    </div>
+                  <Link href={item.href} className="flex items-center gap-3">
+                    {item.icon}
+                    <span className="font-medium">{t(item.key)}</span>
                   </Link>
                 </Button>
               </motion.div>
@@ -82,11 +67,6 @@ function MobileMenu() {
 export default function Header() {
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
-
-  const navItemVariants = {
-    hover: { scale: 1.05, transition: { type: "spring", stiffness: 400 } }
-  };
-
   const brandTitle = language === 'hi' ? 'ज्ञानगीता' : 'GyanGita';
 
   return (
@@ -96,126 +76,111 @@ export default function Header() {
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
     >
-      <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-4 sm:px-8">
-        <div className="flex items-center">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-2">
           <MobileMenu />
-          <Button
-            variant="ghost"
-            className="ml-2 md:ml-0"
-            asChild
-          >
-            <Link href="/">
+          <Link href="/">
+            <Button variant="ghost" className="gap-2 px-0">
               <motion.div
-                className="flex items-center space-x-3"
+                className="flex items-center gap-3"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <OmLogo className="h-8 w-8 text-primary" />
                 <motion.span
                   key={brandTitle}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="font-playfair text-xl font-bold leading-loose"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="font-playfair text-xl font-bold leading-none hidden sm:block"
                 >
                   {brandTitle}
                 </motion.span>
               </motion.div>
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
 
-        <nav className="flex items-center space-x-6">
-          <div className="hidden md:flex items-center space-x-6">
-            {[
-              { href: "/", icon: <Home className="h-4 w-4" />, label: t('nav.home') },
-              { href: "/browse", icon: <Search className="h-4 w-4" />, label: t('nav.browse') },
-              { href: "/bookmarks", icon: <Bookmark className="h-4 w-4" />, label: t('nav.bookmarks') },
-              { href: "/about", label: t('nav.about') },
-              { href: "/contact", label: t('nav.contact') }
-            ].map((item) => (
-              <Button
-                key={item.href}
-                variant="ghost"
-                className="text-sm font-medium transition-colors hover:text-primary"
-                asChild
-              >
-                <Link href={item.href}>
-                  <motion.div
-                    className="flex items-center gap-2"
-                    variants={navItemVariants}
-                    whileHover="hover"
-                    whileTap={{ scale: 0.95 }}
-                  >
+        <nav className="flex items-center gap-2 md:gap-1">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center">
+            {NAV_ITEMS.map((item) => (
+              <Link key={item.href} href={item.href}>
+                <Button
+                  variant="ghost"
+                  className="relative group px-4"
+                >
+                  <span className="flex items-center gap-2">
                     {item.icon}
-                    {item.label}
-                  </motion.div>
-                </Link>
-              </Button>
+                    <span className="font-medium">{t(item.key)}</span>
+                  </span>
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+                </Button>
+              </Link>
             ))}
           </div>
 
-          <div className="flex items-center space-x-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-9 w-9"
-                  aria-label="Change language"
-                >
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Globe className="h-5 w-5" />
-                  </motion.div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setLanguage('en')}>
-                  English {language === 'en' && '✓'}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('hi')}>
-                  हिंदी {language === 'hi' && '✓'}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              aria-label="Toggle theme"
-            >
-              <motion.div 
-                whileHover={{ scale: 1.05 }} 
-                whileTap={{ scale: 0.95 }}
-                style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}
+          {/* Language Selector */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="h-9 w-9"
+                aria-label="Change language"
               >
-                <AnimatePresence mode="wait">
-                  {theme === "dark" ? (
-                    <motion.div
-                      key="moon"
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Moon className="h-5 w-5" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="sun"
-                      initial={{ rotate: 90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: -90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Sun className="h-5 w-5" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </Button>
-          </div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Globe className="h-5 w-5" />
+                </motion.div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem onClick={() => setLanguage('en')} className="cursor-pointer">
+                English {language === 'en' && '✓'}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('hi')} className="cursor-pointer">
+                हिंदी {language === 'hi' && '✓'}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label="Toggle theme"
+          >
+            <motion.div 
+              whileHover={{ scale: 1.05 }} 
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center"
+            >
+              <AnimatePresence mode="wait">
+                {theme === "dark" ? (
+                  <motion.div
+                    key="moon"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Moon className="h-5 w-5" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="sun"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Sun className="h-5 w-5" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </Button>
         </nav>
       </div>
     </motion.header>
