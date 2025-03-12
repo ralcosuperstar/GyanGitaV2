@@ -132,7 +132,7 @@ export default function About() {
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="relative h-[400px] md:h-full">
                     <img 
-                      src="/attached_assets/rajat-udasi.jpg"
+                      src="/assets/rajat-udasi.jpg"
                       alt="Founder"
                       className="absolute inset-0 w-full h-full object-cover"
                     />
