@@ -16,6 +16,7 @@ import { moods } from "@/lib/moods";
 import VerseCard from "./VerseCard";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
+import { SkeletonCard } from "@/components/ui/skeleton-card";
 
 // Types for verse data structure
 interface VerseResponse {
@@ -146,23 +147,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
             >
-              <Card className="overflow-hidden border border-primary/10 backdrop-blur-sm">
-                <CardContent className="p-0">
-                  <div className="p-1 bg-gradient-to-r from-primary/20 to-primary/5"></div>
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Skeleton className="h-4 w-4 rounded-full bg-primary/20" />
-                      <Skeleton className="h-4 w-32 bg-primary/20" />
-                    </div>
-                    <Skeleton className="h-24 w-full bg-primary/10 pulse" />
-                    <Skeleton className="h-16 w-full bg-primary/10" />
-                    <div className="flex justify-between pt-4">
-                      <Skeleton className="h-9 w-24 bg-primary/20 rounded-md" />
-                      <Skeleton className="h-9 w-20 bg-primary/20 rounded-md" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <SkeletonCard variant="verse" />
             </motion.div>
           ))}
         </div>
