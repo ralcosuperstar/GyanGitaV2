@@ -69,7 +69,8 @@ export default function Hero() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentQuote(prev => (prev + 1) % inspirationalQuotes.length);
-    }, 5000);
+    }, 6000); // Increased duration for better readability
+
     return () => clearInterval(interval);
   }, []);
 
@@ -131,14 +132,6 @@ export default function Hero() {
     }
   };
 
-  const quoteContainerStyle = {
-    minHeight: '180px', 
-    position: 'relative' as const,
-    display: 'flex',
-    flexDirection: 'column' as const,
-    justifyContent: 'center' as const
-  };
-
   return (
     <section
       ref={heroRef}
@@ -188,29 +181,49 @@ export default function Hero() {
               </span>
             </h1>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentQuote}
-                initial={{ opacity: 0, y: 20, position: 'absolute' }}
-                animate={{ opacity: 1, y: 0, position: 'relative' }}
-                exit={{ opacity: 0, y: -20, position: 'absolute' }}
-                transition={{ 
-                  duration: 0.5,
-                  ease: [0.4, 0, 0.2, 1]
-                }}
-                className="text-xl md:text-2xl text-primary/80 max-w-3xl mx-auto"
-                style={quoteContainerStyle}
-              >
-                <Quote className="h-6 w-6 mx-auto mb-3 text-primary/50" />
-                <p className="italic">"{inspirationalQuotes[currentQuote].text}"</p>
-                <div className="text-sm text-primary/60 mt-2">
-                  Chapter {inspirationalQuotes[currentQuote].chapter}, 
-                  Verse {inspirationalQuotes[currentQuote].verse}
-                  <span className="mx-2">•</span>
-                  <span className="text-primary/70">{inspirationalQuotes[currentQuote].theme}</span>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+            {/* Quote Container with Fixed Height */}
+            <div className="relative h-[200px] flex items-center justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentQuote}
+                  initial={{ 
+                    opacity: 0,
+                    y: 20,
+                    position: 'absolute',
+                    width: '100%'
+                  }}
+                  animate={{ 
+                    opacity: 1,
+                    y: 0,
+                    position: 'absolute',
+                    width: '100%'
+                  }}
+                  exit={{ 
+                    opacity: 0,
+                    y: -20,
+                    position: 'absolute',
+                    width: '100%'
+                  }}
+                  transition={{ 
+                    type: "tween",
+                    duration: 0.5,
+                    ease: "easeInOut"
+                  }}
+                  className="flex flex-col items-center justify-center"
+                >
+                  <Quote className="h-6 w-6 mb-3 text-primary/50" />
+                  <p className="italic text-xl md:text-2xl text-primary/80 max-w-3xl mx-auto px-4">
+                    "{inspirationalQuotes[currentQuote].text}"
+                  </p>
+                  <div className="text-sm text-primary/60 mt-2">
+                    Chapter {inspirationalQuotes[currentQuote].chapter}, 
+                    Verse {inspirationalQuotes[currentQuote].verse}
+                    <span className="mx-2">•</span>
+                    <span className="text-primary/70">{inspirationalQuotes[currentQuote].theme}</span>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </motion.div>
 
           {/* Feature highlights */}
