@@ -138,8 +138,8 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
   };
 
   const renderVerse = (v: any) => (
-    <div 
-      key={`${v.chapter}-${v.verse}`} 
+    <div
+      key={`${v.chapter}-${v.verse}`}
       className="bg-muted/50 p-4 rounded-lg mb-4 hover:bg-muted/70 transition-colors cursor-pointer"
       onClick={() => {
         // Update the current verse and reset tab
@@ -262,14 +262,31 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                 <DialogTitle className="font-playfair text-xl sm:text-2xl">
                   {t('verse.verseNumber', { chapter: verse.chapter, verse: verse.verse })}
                 </DialogTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
-                  onClick={() => setShowModal(false)}
-                >
-                  <X className="h-5 w-5" />
-                </Button>
+                <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-1">
+                  {showActions && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleBookmark}
+                      className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
+                      disabled={bookmarkMutation.isPending}
+                    >
+                      {isBookmarked ? (
+                        <BookmarkCheck className="h-5 w-5 text-primary" />
+                      ) : (
+                        <Bookmark className="h-5 w-5" />
+                      )}
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-md hover:bg-background/90 transition-all hover:scale-105"
+                    onClick={() => setShowModal(false)}
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -279,8 +296,11 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               value={activeTab}
               onValueChange={setActiveTab}
             >
-              <ScrollArea className="w-full border-b" orientation="horizontal">
-                <TabsList 
+              <ScrollArea
+                className="w-full border-b"
+                orientation="horizontal"
+              >
+                <TabsList
                   ref={tabsListRef}
                   className="h-12 bg-background flex w-auto min-w-full justify-start px-1"
                 >
@@ -302,28 +322,28 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               </ScrollArea>
 
               <div className="flex-1 min-h-0 bg-muted/5">
-                <ScrollArea 
+                <ScrollArea
                   ref={scrollAreaRef}
                   className="h-full"
-                  style={{ height: 'calc(100vh - 16rem)' }}
+                  style={{ height: '100%' }}
                 >
-                  <div className="p-4 sm:p-6 space-y-6 pb-32">
+                  <div className="p-4 sm:p-6 pb-32">
                     <motion.div
                       key={activeTab}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      className="min-h-full"
+                      className="min-h-full space-y-6"
                     >
-                      <TabsContent value="verse" className="mt-0 space-y-6 animate-in fade-in-50">
+                      <TabsContent value="verse" className="mt-0 animate-in fade-in-50">
                         <div>
                           <h3 className="font-semibold mb-3 text-primary">{t('verse.sanskrit')}</h3>
                           <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
                             <p className="text-lg sm:text-xl font-sanskrit leading-relaxed break-words">{verse.slok}</p>
                           </div>
                         </div>
-                        <div>
+                        <div className="mt-6">
                           <h3 className="font-semibold mb-3 text-primary">{t('verse.transliteration')}</h3>
                           <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
                             <p className="text-base sm:text-lg leading-relaxed break-words">{verse.transliteration}</p>
@@ -331,34 +351,36 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                         </div>
                       </TabsContent>
 
-                      <TabsContent value="translations" className="mt-0 space-y-6 animate-in fade-in-50">
-                        {verse.tej && (
-                          <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                            <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
-                            <div className="space-y-4">
-                              <p className="leading-relaxed break-words">{verse.tej.ht}</p>
-                              {verse.tej.et && (
-                                <p className="text-muted-foreground leading-relaxed break-words border-t border-border/50 pt-4">
-                                  {verse.tej.et}
-                                </p>
-                              )}
+                      <TabsContent value="translations" className="mt-0 animate-in fade-in-50">
+                        <div className="space-y-6">
+                          {verse.tej && (
+                            <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                              <p className="font-medium text-primary mb-3">Swami Tejomayananda</p>
+                              <div className="space-y-4">
+                                <p className="leading-relaxed break-words">{verse.tej.ht}</p>
+                                {verse.tej.et && (
+                                  <p className="text-muted-foreground leading-relaxed break-words border-t border-border/50 pt-4">
+                                    {verse.tej.et}
+                                  </p>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {verse.siva?.et && (
-                          <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                            <p className="font-medium text-primary mb-3">Swami Sivananda</p>
-                            <p className="leading-relaxed break-words">{verse.siva.et}</p>
-                          </div>
-                        )}
+                          {verse.siva?.et && (
+                            <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                              <p className="font-medium text-primary mb-3">Swami Sivananda</p>
+                              <p className="leading-relaxed break-words">{verse.siva.et}</p>
+                            </div>
+                          )}
 
-                        {verse.purohit?.et && (
-                          <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
-                            <p className="font-medium text-primary mb-3">Shri Purohit Swami</p>
-                            <p className="leading-relaxed break-words">{verse.purohit.et}</p>
-                          </div>
-                        )}
+                          {verse.purohit?.et && (
+                            <div className="bg-muted/50 p-4 rounded-lg shadow-sm">
+                              <p className="font-medium text-primary mb-3">Shri Purohit Swami</p>
+                              <p className="leading-relaxed break-words">{verse.purohit.et}</p>
+                            </div>
+                          )}
+                        </div>
                       </TabsContent>
 
                       <TabsContent value="commentary" className="mt-0 animate-in fade-in-50">
@@ -396,6 +418,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   </div>
                 </ScrollArea>
               </div>
+
             </Tabs>
 
             <DialogFooter className="p-4 sm:p-6 bg-background border-t mt-auto">
