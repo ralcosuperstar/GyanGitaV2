@@ -255,6 +255,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent
           className="sm:max-w-[90%] md:max-w-4xl w-[calc(100%-2rem)] h-[calc(100vh-2rem)] sm:h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl bg-background shadow-lg overflow-hidden border"
+          hideCloseButton
         >
           <div className="flex flex-col h-full">
             <div className="flex-shrink-0 p-4 sm:p-6 border-b">
@@ -322,10 +323,10 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               </ScrollArea>
 
               <div className="flex-1 min-h-0 bg-muted/5">
-                <ScrollArea
+                <ScrollArea 
                   ref={scrollAreaRef}
                   className="h-full"
-                  style={{ height: '100%' }}
+                  style={{ height: 'calc(100vh - 14rem)' }}
                 >
                   <div className="p-4 sm:p-6 pb-32">
                     <motion.div
@@ -418,10 +419,9 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   </div>
                 </ScrollArea>
               </div>
-
             </Tabs>
 
-            <DialogFooter className="p-4 sm:p-6 bg-background border-t mt-auto">
+            <DialogFooter className="flex-shrink-0 p-4 sm:p-6 bg-background border-t mt-auto">
               <div className="flex flex-col sm:flex-row gap-3 w-full">
                 {showActions && (
                   <Button
