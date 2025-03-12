@@ -179,19 +179,6 @@ export default function Hero() {
                   Timeless Wisdom
                 </span>
               </span>
-
-              {/* Fixed height container for subtitle text */}
-              <div className="relative h-[100px] flex items-center justify-center mt-4">
-                <motion.p 
-                  className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  Eternal Wisdom For Modern Life
-                </motion.p>
-              </div>
-
             </h1>
 
             {/* Quote Container with Fixed Height */}
