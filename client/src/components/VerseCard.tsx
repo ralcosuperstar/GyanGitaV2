@@ -46,7 +46,6 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
   const { toast } = useToast();
 
-  // Reset scroll position when tab changes
   useEffect(() => {
     if (scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -235,10 +234,10 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent
-          className="sm:max-w-[90%] md:max-w-4xl w-[calc(100%-2rem)] h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl bg-background shadow-lg overflow-hidden border"
+          className="sm:max-w-[90%] md:max-w-4xl w-[calc(100%-2rem)] h-[calc(100vh-2rem)] sm:h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl bg-background shadow-lg overflow-hidden border"
         >
           <div className="flex flex-col h-full">
-            <div className="p-4 sm:p-6 border-b">
+            <div className="flex-shrink-0 p-4 sm:p-6 border-b">
               <div className="flex items-center justify-between">
                 <DialogTitle className="font-playfair text-xl sm:text-2xl">
                   {t('verse.verseNumber', { chapter: verse.chapter, verse: verse.verse })}
@@ -273,11 +272,11 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
 
             <Tabs
               defaultValue="verse"
-              className="flex-1 flex flex-col overflow-hidden"
+              className="flex-1 flex flex-col min-h-0"
               value={activeTab}
               onValueChange={setActiveTab}
             >
-              <TabsList className="w-full h-12 bg-background border-b">
+              <TabsList className="w-full h-12 bg-background border-b flex-shrink-0">
                 <div className="flex w-full">
                   {[
                     { value: 'verse', key: 'verse.text' },
@@ -296,23 +295,20 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                 </div>
               </TabsList>
 
-              <div className="flex-1 overflow-hidden bg-muted/5">
+              <div className="flex-1 min-h-0 bg-muted/5">
                 <ScrollArea 
-                  ref={scrollAreaRef} 
-                  className="h-full" 
-                  style={{ maxHeight: 'calc(90vh - 13rem)' }}
+                  ref={scrollAreaRef}
+                  className="h-full"
+                  style={{ height: 'calc(100vh - 16rem)' }}
                 >
-                  <div className="p-4 sm:p-6 space-y-6 pb-20">
+                  <div className="p-4 sm:p-6 space-y-6 pb-32">
                     <motion.div
                       key={activeTab}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 30
-                      }}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      className="min-h-full"
                     >
                       <TabsContent value="verse" className="mt-0 space-y-6 animate-in fade-in-50">
                         <div>
