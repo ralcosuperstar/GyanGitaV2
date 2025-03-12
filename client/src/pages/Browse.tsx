@@ -21,12 +21,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Define themes for categorization
 const themes = [
-  { id: 'karma', label: 'Karma & Action', icon: '⚡', description: 'Understanding action and its fruits' },
-  { id: 'dharma', label: 'Dharma & Duty', icon: '🎯', description: 'Discovering your life purpose' },
-  { id: 'devotion', label: 'Devotion & Faith', icon: '🙏', description: 'Path of divine connection' },
-  { id: 'knowledge', label: 'Knowledge & Wisdom', icon: '📚', description: 'Inner wisdom and realization' },
-  { id: 'meditation', label: 'Meditation & Peace', icon: '🧘', description: 'Techniques for inner peace' },
-  { id: 'purpose', label: 'Purpose & Life', icon: '🌟', description: 'Finding meaning in life' },
+  { id: 'karma', label: 'Karma & Action', icon: '⚡', description: 'Understanding action and its fruits', mood: 'determined' },
+  { id: 'dharma', label: 'Dharma & Duty', icon: '🎯', description: 'Discovering your life purpose', mood: 'purposeful' },
+  { id: 'devotion', label: 'Devotion & Faith', icon: '🙏', description: 'Path of divine connection', mood: 'peaceful' },
+  { id: 'knowledge', label: 'Knowledge & Wisdom', icon: '📚', description: 'Inner wisdom and realization', mood: 'curious' },
+  { id: 'meditation', label: 'Meditation & Peace', icon: '🧘', description: 'Techniques for inner peace', mood: 'calm' },
+  { id: 'purpose', label: 'Purpose & Life', icon: '🌟', description: 'Finding meaning in life', mood: 'seeking' },
 ];
 
 interface Chapter {
@@ -64,6 +64,7 @@ export default function Browse() {
   const [viewMode, setViewMode] = useState<"browse" | "search" | "theme">("browse");
   const [selectedTheme, setSelectedTheme] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
   const { t } = useLanguage();
 
   // Reset scroll position when view changes
@@ -91,6 +92,14 @@ export default function Browse() {
     },
     enabled: !!(selectedChapter && selectedVerse)
   });
+
+  const handleThemeSelect = (themeId: string) => {
+    const selectedThemeData = themes.find(t => t.id === themeId);
+    if (selectedThemeData?.mood) {
+      // Navigate to mood section
+      window.location.href = `/#mood-section?mood=${selectedThemeData.mood}`;
+    }
+  };
 
   const handleVerseSelect = (chapter: string, verse: string) => {
     setSelectedChapter(chapter);
@@ -127,7 +136,10 @@ export default function Browse() {
                 <TabsTrigger 
                   value="browse" 
                   className="flex items-center gap-2"
-                  onClick={() => setViewMode("browse")}
+                  onClick={() => {
+                    setViewMode("browse");
+                    setSelectedGridChapter(null);
+                  }}
                 >
                   <BookOpen className="h-4 w-4" />
                   Browse
@@ -218,21 +230,11 @@ export default function Browse() {
                 />
               </div>
             </div>
-
-            {selectedChapter && selectedVerse && verse && (
-              <motion.div 
-                className="mt-12"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <VerseCard verse={verse} />
-              </motion.div>
-            )}
           </div>
         )}
 
         {/* Browse View */}
-        {viewMode === "browse" && (
+        {viewMode === "browse" && selectedGridChapter === null && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {chapters?.map((chapter) => (
               <motion.div
@@ -243,7 +245,7 @@ export default function Browse() {
               >
                 <Card
                   className="cursor-pointer hover:border-primary transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg group relative overflow-hidden"
-                  onClick={() => handleVerseSelect(chapter.chapter_number.toString(), "1")}
+                  onClick={() => setSelectedGridChapter(chapter.chapter_number)}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <CardHeader>
@@ -270,6 +272,54 @@ export default function Browse() {
           </div>
         )}
 
+        {/* Chapter Grid View */}
+        {viewMode === "browse" && selectedGridChapter !== null && (
+          <div>
+            <div className="flex items-center justify-between mb-8">
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => setSelectedGridChapter(null)}
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Chapters
+              </Button>
+
+              <div className="text-sm text-muted-foreground">
+                Chapter {selectedGridChapter} • {
+                  chapters?.find(c => c.chapter_number === selectedGridChapter)?.verses_count
+                } verses
+              </div>
+            </div>
+
+            <div className="grid gap-4 grid-cols-6 sm:grid-cols-8 md:grid-cols-10">
+              {Array.from({ length: chapters?.find(c => c.chapter_number === selectedGridChapter)?.verses_count || 0 }).map((_, i) => (
+                <motion.button
+                  key={i + 1}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 17,
+                    delay: i * 0.02
+                  }}
+                  className={cn(
+                    "h-12 w-12 rounded-md border border-input hover:bg-primary/5",
+                    "flex items-center justify-center text-sm font-medium",
+                    "transition-colors hover:border-primary/50"
+                  )}
+                  onClick={() => handleVerseSelect(selectedGridChapter.toString(), (i + 1).toString())}
+                >
+                  {i + 1}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Theme View */}
         {viewMode === "theme" && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -282,7 +332,7 @@ export default function Browse() {
               >
                 <Card
                   className="cursor-pointer hover:border-primary transition-all duration-300 transform hover:scale-[1.02] group"
-                  onClick={() => setSelectedTheme(theme.id)}
+                  onClick={() => handleThemeSelect(theme.id)}
                 >
                   <CardHeader>
                     <div className="flex items-center gap-3">
