@@ -232,7 +232,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
               viewport={{ once: true }}
               custom={index}
               whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="flex"
+              className="flex min-h-[420px]"
             >
               <VerseCard verse={verse} />
             </motion.div>

@@ -91,7 +91,7 @@ export default function Header() {
                   key={brandTitle}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="font-playfair text-xl font-bold leading-none hidden sm:block"
+                  className="font-playfair text-xl font-bold leading-none text-foreground"
                 >
                   {brandTitle}
                 </motion.span>

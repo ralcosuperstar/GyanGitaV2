@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Share } from "lucide-react";
 import { BsWhatsapp } from "react-icons/bs";
 import { FaFacebookF, FaLinkedinIn } from "react-icons/fa";
 import { SiX } from "react-icons/si";
@@ -32,28 +32,46 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
     });
   };
 
-  const handleShare = (platform: string) => {
+  const handleShare = async (platform?: string) => {
     const text = activeTab === 'verse' ? generateVerseText() : generateCommentaryText();
     const url = `${window.location.origin}/verse/${verse.chapter}/${verse.verse}`;
-    const shareText = encodeURIComponent(`${text}\n\nShared via GyanGita - ${url}`);
+    const shareText = `${text}\n\nShared via GyanGita - ${url}`;
 
+    // Try native share if available and no platform specified
+    if (!platform && navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Share Bhagavad Gita Verse',
+          text: shareText,
+          url: url
+        });
+        return;
+      } catch (err) {
+        // Fall back to platform sharing if native share fails or is cancelled
+      }
+    }
+
+    const encodedText = encodeURIComponent(shareText);
     let shareUrl = '';
+
     switch (platform) {
       case 'whatsapp':
-        shareUrl = `https://wa.me/?text=${shareText}`;
+        shareUrl = `https://wa.me/?text=${encodedText}`;
         break;
       case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?text=${shareText}`;
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}`;
         break;
       case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${shareText}`;
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
         break;
       case 'linkedin':
         shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
         break;
     }
 
-    window.open(shareUrl, '_blank');
+    if (shareUrl) {
+      window.open(shareUrl, '_blank');
+    }
   };
 
   const generateVerseText = () => {
@@ -84,8 +102,12 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
           onValueChange={setActiveTab}
         >
           <TabsList className="w-full grid grid-cols-2 p-1 bg-muted/5 border-b">
-            <TabsTrigger value="verse">Verse & Translation</TabsTrigger>
-            <TabsTrigger value="commentary">With Commentary</TabsTrigger>
+            <TabsTrigger value="verse" className="data-[state=active]:bg-primary/10">
+              Verse & Translation
+            </TabsTrigger>
+            <TabsTrigger value="commentary" className="data-[state=active]:bg-primary/10">
+              With Commentary
+            </TabsTrigger>
           </TabsList>
 
           <div className="flex-1 overflow-hidden">
@@ -120,7 +142,17 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
 
           <DialogFooter className="p-4 sm:p-6 border-t mt-auto bg-background">
             <div className="w-full space-y-4">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
+                {/* Native Share Button - Only shown if supported */}
+                {navigator.share && (
+                  <Button
+                    className="col-span-2 sm:col-span-1 gap-2"
+                    onClick={() => handleShare()}
+                  >
+                    <Share className="h-4 w-4" />
+                    <span className="hidden sm:inline">Share</span>
+                  </Button>
+                )}
                 <Button
                   className="gap-2 bg-[#25D366] hover:bg-[#25D366]/90 text-white"
                   size="sm"
