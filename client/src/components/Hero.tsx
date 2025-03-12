@@ -131,6 +131,14 @@ export default function Hero() {
     }
   };
 
+  const quoteContainerStyle = {
+    minHeight: '180px', 
+    position: 'relative' as const,
+    display: 'flex',
+    flexDirection: 'column' as const,
+    justifyContent: 'center' as const
+  };
+
   return (
     <section
       ref={heroRef}
@@ -183,10 +191,15 @@ export default function Hero() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentQuote}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, y: 20, position: 'absolute' }}
+                animate={{ opacity: 1, y: 0, position: 'relative' }}
+                exit={{ opacity: 0, y: -20, position: 'absolute' }}
+                transition={{ 
+                  duration: 0.5,
+                  ease: [0.4, 0, 0.2, 1]
+                }}
                 className="text-xl md:text-2xl text-primary/80 max-w-3xl mx-auto"
+                style={quoteContainerStyle}
               >
                 <Quote className="h-6 w-6 mx-auto mb-3 text-primary/50" />
                 <p className="italic">"{inspirationalQuotes[currentQuote].text}"</p>
