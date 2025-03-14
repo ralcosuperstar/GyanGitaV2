@@ -20,7 +20,6 @@ function Router() {
   const [location] = useLocation();
 
   useEffect(() => {
-    // Smooth scroll to top on route change
     window.scrollTo({
       top: 0,
       behavior: "smooth"
@@ -44,7 +43,7 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="gyangita-theme">
+      <ThemeProvider storageKey="gyangita-theme">
         <LanguageProvider>
           <SmoothScroll className="bg-background">
             <div className="min-h-screen flex flex-col relative">

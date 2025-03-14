@@ -181,7 +181,7 @@ export default function Hero() {
             </p>
 
             {/* Quote Container with Fixed Height */}
-            <div className="relative h-[200px] flex items-center justify-center">
+            <div className="relative h-[160px] sm:h-[140px] flex items-center justify-center overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentQuote}
@@ -208,10 +208,10 @@ export default function Hero() {
                     duration: 0.5,
                     ease: "easeInOut"
                   }}
-                  className="flex flex-col items-center justify-center"
+                  className="flex flex-col items-center justify-center px-6"
                 >
                   <Quote className="h-6 w-6 mb-3 text-primary/50" />
-                  <p className="italic text-xl md:text-2xl text-primary/80 max-w-3xl mx-auto px-4">
+                  <p className="italic text-xl md:text-2xl text-primary/80 max-w-3xl mx-auto text-center min-h-[3em]">
                     "{inspirationalQuotes[currentQuote].text}"
                   </p>
                   <div className="text-sm text-primary/60 mt-2">

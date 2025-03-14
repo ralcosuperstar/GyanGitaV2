@@ -1,7 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Globe, Menu, Home, Bookmark, Book, Info, Mail } from "lucide-react";
-import { useTheme } from "@/hooks/use-theme";
+import { Globe, Menu, Home, Bookmark, Book, Info, Mail } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/language-context";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -45,16 +44,18 @@ function MobileMenu() {
                 transition={{ delay: i * 0.1 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start mb-2 gap-3"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Link href={item.href} className="flex items-center gap-3">
-                    {item.icon}
-                    <span className="font-medium">{t(item.key)}</span>
-                  </Link>
-                </Button>
+                <Link href={item.href}>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start mb-2 gap-3 p-6"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span className="flex items-center gap-3">
+                      {item.icon}
+                      <span className="font-medium">{t(item.key)}</span>
+                    </span>
+                  </Button>
+                </Link>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -65,7 +66,6 @@ function MobileMenu() {
 }
 
 export default function Header() {
-  const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const brandTitle = language === 'hi' ? 'ज्ञानगीता' : 'GyanGita';
 
@@ -107,7 +107,7 @@ export default function Header() {
               <Link key={item.href} href={item.href}>
                 <Button
                   variant="ghost"
-                  className="relative group px-4"
+                  className="relative group px-6"
                 >
                   <span className="flex items-center gap-2">
                     {item.icon}
@@ -142,45 +142,6 @@ export default function Header() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label="Toggle theme"
-          >
-            <motion.div 
-              whileHover={{ scale: 1.05 }} 
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center justify-center"
-            >
-              <AnimatePresence mode="wait">
-                {theme === "dark" ? (
-                  <motion.div
-                    key="moon"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Moon className="h-5 w-5" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="sun"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Sun className="h-5 w-5" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </Button>
         </nav>
       </div>
     </motion.header>
