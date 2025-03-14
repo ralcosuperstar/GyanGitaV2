@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share2, Copy, Check, Book } from "lucide-react";
+import { Share2, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { Verse } from "@/lib/data";
@@ -44,8 +44,8 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-          <div className="px-6 py-8 space-y-8">
+        <DialogContent className="sm:max-w-3xl mx-auto max-h-[90vh] overflow-y-auto">
+          <div className="px-4 sm:px-8 py-8 space-y-8">
             <DialogHeader className="space-y-3">
               <DialogTitle className="text-2xl font-playfair text-foreground">
                 Chapter {verse.chapter}, Verse {verse.verse}
@@ -54,7 +54,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
 
             <div className="space-y-8">
               {/* English Translation Section */}
-              <div className="bg-card rounded-lg p-8 space-y-4">
+              <div className="bg-card rounded-lg p-6 sm:p-8 space-y-4">
                 <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                   <span className="w-2 h-2 rounded-full bg-primary"></span>
                   English Translation
@@ -65,7 +65,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
               </div>
 
               {/* Sanskrit Text */}
-              <div className="bg-card rounded-lg p-8 space-y-4">
+              <div className="bg-card rounded-lg p-6 sm:p-8 space-y-4">
                 <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                   <span className="w-2 h-2 rounded-full bg-primary"></span>
                   Sanskrit Text
