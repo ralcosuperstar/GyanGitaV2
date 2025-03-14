@@ -238,6 +238,9 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
           const verseId = `${verse.chapter}-${verse.verse}`;
           const isCopied = copiedVerseId === verseId;
 
+          // Get the best available English translation
+          const englishTranslation = verse.tej.et || verse.siva?.et || verse.purohit?.et || verse.tej.ht;
+
           return (
             <motion.div
               key={verseId}
@@ -248,66 +251,23 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
               custom={index}
               className="flex"
             >
-              <Card className="w-full overflow-hidden bg-card/50 backdrop-blur-sm border-primary/10 hover:border-primary/20 transition-all duration-300 hover:shadow-lg">
+              <Card className="w-full overflow-hidden bg-card/50 backdrop-blur-sm border-primary/10 hover:border-primary/20 transition-all duration-300 hover:shadow-xl relative group">
                 <CardContent className="p-6 flex flex-col h-full">
-                  {/* English Translation - Primary Focus */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-3">
-                      <span className="px-3 py-1.5 rounded-full bg-primary/5">
-                        Ch {verse.chapter}
-                      </span>
-                      <span className="px-3 py-1.5 rounded-full bg-primary/5">
-                        V {verse.verse}
-                      </span>
+                  {/* Chapter and Verse Info */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
+                      Ch {verse.chapter}
                     </div>
-                    <p className="text-xl sm:text-2xl leading-relaxed text-foreground">
-                      {verse.tej.et || verse.tej.ht}
-                    </p>
+                    <div className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
+                      V {verse.verse}
+                    </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="grid grid-cols-3 gap-2 mb-4">
-                    <motion.button
-                      variants={buttonVariants}
-                      whileHover="hover"
-                      whileTap="tap"
-                      onClick={() => handleCopy(verse)}
-                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
-                      title="Copy verse"
-                    >
-                      {isCopied ? (
-                        <>
-                          <Check className="h-4 w-4 text-green-500" />
-                          <span className="text-green-500">Copied</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4" />
-                          <span>Copy</span>
-                        </>
-                      )}
-                    </motion.button>
-                    <motion.button
-                      variants={buttonVariants}
-                      whileHover="hover"
-                      whileTap="tap"
-                      onClick={() => handleShare(verse)}
-                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
-                      title="Share verse"
-                    >
-                      <Share2 className="h-4 w-4" />
-                      <span>Share</span>
-                    </motion.button>
-                    <motion.button
-                      variants={buttonVariants}
-                      whileHover="hover"
-                      whileTap="tap"
-                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
-                      title="Bookmark verse"
-                    >
-                      <Bookmark className="h-4 w-4" />
-                      <span>Save</span>
-                    </motion.button>
+                  {/* English Translation - Primary Focus */}
+                  <div className="flex-grow mb-6">
+                    <p className="text-xl sm:text-2xl leading-relaxed text-foreground">
+                      {englishTranslation}
+                    </p>
                   </div>
 
                   {/* Sanskrit Text */}
@@ -320,23 +280,63 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                     </p>
                   </div>
 
-                  {/* Read More Button */}
-                  <motion.div
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    className="mt-6"
-                  >
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full bg-primary/5 hover:bg-primary/10 border-primary/20 font-medium"
-                      onClick={() => setSelectedVerse(verse)}
-                    >
-                      <Book className="h-4 w-4 mr-2" />
-                      Read More
-                    </Button>
-                  </motion.div>
+                  {/* Actions Footer */}
+                  <div className="pt-6 mt-4 border-t border-primary/10">
+                    <div className="grid grid-cols-4 gap-3">
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={() => handleCopy(verse)}
+                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-primary/10 transition-colors"
+                        title="Copy verse"
+                      >
+                        {isCopied ? (
+                          <>
+                            <Check className="h-5 w-5 text-green-500 mb-1" />
+                            <span className="text-xs font-medium text-green-500">Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-5 w-5 mb-1" />
+                            <span className="text-xs font-medium">Copy</span>
+                          </>
+                        )}
+                      </motion.button>
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={() => handleShare(verse)}
+                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-primary/10 transition-colors"
+                        title="Share verse"
+                      >
+                        <Share2 className="h-5 w-5 mb-1" />
+                        <span className="text-xs font-medium">Share</span>
+                      </motion.button>
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-primary/10 transition-colors"
+                        title="Bookmark verse"
+                      >
+                        <Bookmark className="h-5 w-5 mb-1" />
+                        <span className="text-xs font-medium">Save</span>
+                      </motion.button>
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={() => setSelectedVerse(verse)}
+                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-primary/10 transition-colors bg-primary/5"
+                        title="Read full verse"
+                      >
+                        <Book className="h-5 w-5 mb-1" />
+                        <span className="text-xs font-medium">Read</span>
+                      </motion.button>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
