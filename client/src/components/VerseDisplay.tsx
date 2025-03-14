@@ -17,6 +17,12 @@ import VerseCard from "./VerseCard";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 // Types for verse data structure
 interface VerseResponse {
@@ -232,9 +238,58 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
               viewport={{ once: true }}
               custom={index}
               whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="flex min-h-[420px]"
+              className="flex"
             >
-              <VerseCard verse={verse} />
+              <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-6">
+                  <div className="mb-4 text-sm text-muted-foreground">
+                    Chapter {verse.chapter}, Verse {verse.verse}
+                  </div>
+
+                  {/* Sanskrit Text */}
+                  <div className="mb-6">
+                    <p className="text-xl font-sanskrit leading-relaxed mb-2">{verse.slok}</p>
+                    <p className="text-sm italic text-muted-foreground">{verse.transliteration}</p>
+                  </div>
+
+                  {/* Primary Translation */}
+                  <div className="mb-6">
+                    <h4 className="text-lg font-medium mb-2">Translation</h4>
+                    <p className="text-base leading-relaxed">{verse.tej.ht}</p>
+                    {verse.tej.et && (
+                      <p className="text-sm text-muted-foreground mt-2">{verse.tej.et}</p>
+                    )}
+                  </div>
+
+                  {/* Additional Translations & Commentary */}
+                  <Accordion type="single" collapsible className="w-full">
+                    {verse.siva?.et && (
+                      <AccordionItem value="siva">
+                        <AccordionTrigger className="text-sm">Additional Translation</AccordionTrigger>
+                        <AccordionContent>
+                          <p className="text-sm text-muted-foreground">{verse.siva.et}</p>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
+                    {verse.purohit?.et && (
+                      <AccordionItem value="purohit">
+                        <AccordionTrigger className="text-sm">Alternative Translation</AccordionTrigger>
+                        <AccordionContent>
+                          <p className="text-sm text-muted-foreground">{verse.purohit.et}</p>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
+                    {verse.chinmay?.hc && (
+                      <AccordionItem value="commentary">
+                        <AccordionTrigger className="text-sm">Commentary</AccordionTrigger>
+                        <AccordionContent>
+                          <p className="text-sm text-muted-foreground">{verse.chinmay.hc}</p>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
+                  </Accordion>
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </div>

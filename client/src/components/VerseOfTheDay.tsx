@@ -8,6 +8,12 @@ import ShareDialog from "@/components/ShareDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { getRandomVerse, type Verse } from "@/lib/data";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface VerseOfTheDayProps {
   className?: string;
@@ -103,7 +109,8 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
           </div>
         </div>
 
-        <div className="p-6 space-y-6 text-center">
+        <div className="p-6 space-y-6">
+          {/* Sanskrit Text */}
           <div className="space-y-4">
             <p className="text-2xl font-sanskrit leading-relaxed">
               {verse.slok}
@@ -113,7 +120,9 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
             </p>
           </div>
 
+          {/* Primary Translation */}
           <div className="space-y-4 pt-4 border-t">
+            <h4 className="text-lg font-medium">Translation</h4>
             <p className="text-lg leading-relaxed">
               {verse.tej.ht}
             </p>
@@ -124,13 +133,33 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
             )}
           </div>
 
-          {verse.siva?.et && (
-            <div className="pt-4 border-t text-sm">
-              <p className="leading-relaxed text-muted-foreground">
-                {verse.siva.et}
-              </p>
-            </div>
-          )}
+          {/* Additional Translations & Commentary */}
+          <Accordion type="single" collapsible className="w-full pt-4 border-t">
+            {verse.siva?.et && (
+              <AccordionItem value="siva">
+                <AccordionTrigger className="text-sm">Additional Translation</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm text-muted-foreground">{verse.siva.et}</p>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+            {verse.purohit?.et && (
+              <AccordionItem value="purohit">
+                <AccordionTrigger className="text-sm">Alternative Translation</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm text-muted-foreground">{verse.purohit.et}</p>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+            {verse.chinmay?.hc && (
+              <AccordionItem value="commentary">
+                <AccordionTrigger className="text-sm">Commentary</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm text-muted-foreground">{verse.chinmay.hc}</p>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+          </Accordion>
         </div>
       </div>
     );
