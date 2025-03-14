@@ -185,29 +185,30 @@ export default function Hero() {
               </p>
             </div>
 
+            {/* Fixed height container for Eternal Wisdom section */}
+            <div className="h-[120px] flex flex-col items-center justify-center">
+              <h2 className="text-2xl md:text-3xl font-playfair mb-2">
+                Eternal Wisdom For Modern Life
+              </h2>
+              <p className="text-md text-muted-foreground">
+                The timeless teachings of the Bhagavad Gita offer guidance that transcends centuries
+              </p>
+            </div>
+
             {/* Quote Container with Fixed Height */}
             <div className="h-[180px] relative flex items-center justify-center overflow-hidden">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentQuote}
-                  initial={{ 
-                    opacity: 0,
-                    y: 20
-                  }}
-                  animate={{ 
-                    opacity: 1,
-                    y: 0
-                  }}
-                  exit={{ 
-                    opacity: 0,
-                    y: -20
-                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
                   transition={{ 
                     type: "tween",
                     duration: 0.4,
                     ease: "easeInOut"
                   }}
-                  className="w-full px-6 flex flex-col items-center justify-center"
+                  className="w-full px-6 flex flex-col items-center justify-center absolute inset-0"
                 >
                   <Quote className="h-6 w-6 mb-3 text-primary/50" />
                   <div className="h-[80px] flex items-center justify-center">
