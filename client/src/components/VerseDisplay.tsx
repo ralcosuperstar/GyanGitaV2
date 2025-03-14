@@ -3,26 +3,24 @@
  * 
  * Displays Bhagavad Gita verses based on selected mood with optimized animations,
  * loading states, and accessibility features.
- * 
- * @component
  */
 
-import { useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Book } from "lucide-react";
 import { moods } from "@/lib/moods";
-import VerseCard from "./VerseCard";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Types for verse data structure
 interface VerseResponse {
@@ -88,6 +86,7 @@ const cardVariants = {
 };
 
 export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
+  const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
   const selectedMoodData = moods.find(m => m.id === selectedMood);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -115,7 +114,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       ease: "sine.inOut"
     });
 
-    // Cleanup function to prevent memory leaks
     return () => {
       tl.kill();
       gsap.killTweensOf(".verses-container");
@@ -192,7 +190,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
     );
   }
 
-  // Main content with verses
   return (
     <div ref={containerRef} className="verses-container relative" role="region" aria-label="Verse recommendations">
       {/* Decorative background elements */}
@@ -246,54 +243,98 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                     Chapter {verse.chapter}, Verse {verse.verse}
                   </div>
 
-                  {/* Sanskrit Text */}
+                  {/* English Translation First */}
                   <div className="mb-6">
-                    <p className="text-xl font-sanskrit leading-relaxed mb-2">{verse.slok}</p>
+                    <p className="text-lg leading-relaxed">{verse.tej.et || verse.tej.ht}</p>
+                  </div>
+
+                  {/* Sanskrit Text */}
+                  <div className="mb-6 pt-4 border-t">
+                    <p className="text-base font-sanskrit leading-relaxed mb-2">{verse.slok}</p>
                     <p className="text-sm italic text-muted-foreground">{verse.transliteration}</p>
                   </div>
 
-                  {/* Primary Translation */}
-                  <div className="mb-6">
-                    <h4 className="text-lg font-medium mb-2">Translation</h4>
-                    <p className="text-base leading-relaxed">{verse.tej.ht}</p>
-                    {verse.tej.et && (
-                      <p className="text-sm text-muted-foreground mt-2">{verse.tej.et}</p>
-                    )}
-                  </div>
-
-                  {/* Additional Translations & Commentary */}
-                  <Accordion type="single" collapsible className="w-full">
-                    {verse.siva?.et && (
-                      <AccordionItem value="siva">
-                        <AccordionTrigger className="text-sm">Additional Translation</AccordionTrigger>
-                        <AccordionContent>
-                          <p className="text-sm text-muted-foreground">{verse.siva.et}</p>
-                        </AccordionContent>
-                      </AccordionItem>
-                    )}
-                    {verse.purohit?.et && (
-                      <AccordionItem value="purohit">
-                        <AccordionTrigger className="text-sm">Alternative Translation</AccordionTrigger>
-                        <AccordionContent>
-                          <p className="text-sm text-muted-foreground">{verse.purohit.et}</p>
-                        </AccordionContent>
-                      </AccordionItem>
-                    )}
-                    {verse.chinmay?.hc && (
-                      <AccordionItem value="commentary">
-                        <AccordionTrigger className="text-sm">Commentary</AccordionTrigger>
-                        <AccordionContent>
-                          <p className="text-sm text-muted-foreground">{verse.chinmay.hc}</p>
-                        </AccordionContent>
-                      </AccordionItem>
-                    )}
-                  </Accordion>
+                  {/* View More Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-2"
+                    onClick={() => setSelectedVerse(verse)}
+                  >
+                    <Book className="w-4 h-4 mr-2" />
+                    View More Translations
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
         </div>
       </div>
+
+      {/* Translations Modal */}
+      <Dialog open={!!selectedVerse} onOpenChange={() => setSelectedVerse(null)}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              Chapter {selectedVerse?.chapter}, Verse {selectedVerse?.verse}
+            </DialogTitle>
+            <DialogDescription>
+              Multiple translations and interpretations
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            {/* English Translations */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-medium">English Translations</h4>
+              {selectedVerse?.tej.et && (
+                <div className="p-4 rounded-lg bg-muted/50">
+                  <p className="text-base">{selectedVerse.tej.et}</p>
+                  <p className="text-sm text-muted-foreground mt-2">- Tejomay Translation</p>
+                </div>
+              )}
+              {selectedVerse?.siva?.et && (
+                <div className="p-4 rounded-lg bg-muted/50">
+                  <p className="text-base">{selectedVerse.siva.et}</p>
+                  <p className="text-sm text-muted-foreground mt-2">- Sivananda Translation</p>
+                </div>
+              )}
+              {selectedVerse?.purohit?.et && (
+                <div className="p-4 rounded-lg bg-muted/50">
+                  <p className="text-base">{selectedVerse.purohit.et}</p>
+                  <p className="text-sm text-muted-foreground mt-2">- Purohit Translation</p>
+                </div>
+              )}
+            </div>
+
+            {/* Sanskrit and Hindi */}
+            <div className="space-y-4 pt-6 border-t">
+              <h4 className="text-lg font-medium">Original Text</h4>
+              <div className="p-4 rounded-lg bg-muted/50">
+                <p className="text-lg font-sanskrit mb-2">{selectedVerse?.slok}</p>
+                <p className="text-sm italic">{selectedVerse?.transliteration}</p>
+              </div>
+              {selectedVerse?.tej.ht && (
+                <div className="p-4 rounded-lg bg-muted/50">
+                  <p className="text-base">{selectedVerse.tej.ht}</p>
+                  <p className="text-sm text-muted-foreground mt-2">- Hindi Translation</p>
+                </div>
+              )}
+            </div>
+
+            {/* Commentary */}
+            {selectedVerse?.chinmay?.hc && (
+              <div className="space-y-4 pt-6 border-t">
+                <h4 className="text-lg font-medium">Commentary</h4>
+                <div className="p-4 rounded-lg bg-muted/50">
+                  <p className="text-base">{selectedVerse.chinmay.hc}</p>
+                  <p className="text-sm text-muted-foreground mt-2">- Chinmaya Commentary</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
