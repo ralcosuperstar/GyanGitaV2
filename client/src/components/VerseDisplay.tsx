@@ -316,7 +316,11 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
               className="flex"
             >
               <Card className="w-full overflow-hidden bg-card/50 backdrop-blur-sm border-primary/10 hover:border-primary/20 transition-all duration-300 hover:shadow-xl relative group">
-                <CardContent className="p-6 flex flex-col h-full">
+                <CardContent className="p-6 flex flex-col h-full relative">
+                  {/* Decorative border effect */}
+                  <div className="absolute inset-0 border border-primary/10 rounded-lg pointer-events-none"></div>
+                  <div className="absolute inset-[1px] border border-primary/5 rounded-lg pointer-events-none"></div>
+
                   {/* Chapter and Verse Info */}
                   <div className="flex items-center gap-2 mb-4">
                     <div className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
@@ -336,10 +340,10 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
                   {/* Sanskrit Text */}
                   <div className="pt-4 border-t border-primary/10">
-                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1 text-foreground/80">
+                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1 text-foreground">
                       {verse.slok}
                     </p>
-                    <p className="text-sm italic text-foreground/60 line-clamp-1">
+                    <p className="text-sm italic text-foreground opacity-90 line-clamp-1">
                       {verse.transliteration}
                     </p>
                   </div>
