@@ -88,29 +88,26 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
 
   // Comprehensive mood-verse mappings based on themes and emotional context
   const moodVerses = {
-    anxiety: [[2, 47], [18, 66], [2, 14], [2, 48], [6, 35], [18, 58]], // Focus on duty and letting go of outcomes
-    peace: [[2, 48], [5, 12], [6, 27], [2, 70], [6, 7], [18, 62]], // Verses about inner peace
-    peaceful: [[2, 48], [5, 12], [6, 27], [2, 70], [6, 7], [18, 62]], // Same as peace
-    depression: [[2, 14], [2, 22], [2, 30], [2, 47], [18, 66], [6, 5]], // Verses about hope and eternal nature of soul
-    anger: [[2, 62], [2, 63], [5, 23], [16, 1], [16, 2], [16, 3]], // Verses about controlling anger
-    confusion: [[4, 42], [18, 63], [2, 7], [4, 35], [10, 10], [18, 73]], // Guidance in times of doubt
-    fear: [[2, 45], [2, 40], [4, 10], [18, 66], [2, 30], [6, 35]], // Overcoming fear
-    grief: [[2, 11], [2, 13], [2, 27], [2, 20], [2, 22], [18, 66]], // Dealing with loss
-    loneliness: [[9, 29], [7, 14], [4, 35], [6, 30], [13, 28], [15, 15]], // Divine companionship
-    stress: [[2, 48], [5, 12], [18, 58], [2, 47], [6, 27], [18, 66]], // Stress relief through detachment
-    happiness: [[5, 21], [14, 20], [2, 66], [4, 39], [5, 23], [18, 36]], // Path to true happiness
-    discriminated: [[5, 18], [9, 29], [6, 32], [5, 19], [9, 32], [13, 28]], // Equality and universal vision
-    forgiveness: [[16, 1], [16, 2], [16, 3], [16, 4], [12, 13], [12, 14]], // Divine qualities and forgiveness
-    envy: [[3, 37], [16, 1], [16, 2], [14, 17], [16, 21], [18, 53]], // Overcoming negative emotions
-    lust: [[3, 37], [3, 43], [5, 21], [3, 41], [16, 21], [2, 62]], // Controlling desires
-    "losing hope": [[2, 14], [2, 22], [2, 30], [2, 47], [18, 66], [6, 5]], // Same as depression
-    "losing_hope": [[2, 14], [2, 22], [2, 30], [2, 47], [18, 66], [6, 5]], // Alternative format
-    demotivated: [[2, 47], [18, 66], [2, 14], [6, 35], [18, 58], [2, 48]], // Similar to anxiety
-    forgetfulness: [[15, 15], [10, 10], [4, 35], [6, 35], [8, 7], [9, 34]], // Mindfulness and remembrance
-    "uncontrolled mind": [[6, 26], [6, 35], [2, 67], [6, 36], [17, 16], [6, 6]], // Mind control
-    "uncontrolled_mind": [[6, 26], [6, 35], [2, 67], [6, 36], [17, 16], [6, 6]], // Alternative format
-    greed: [[16, 21], [16, 22], [14, 17], [16, 1], [16, 2], [16, 3]], // Overcoming material attachment
-    temptation: [[3, 37], [3, 43], [5, 21], [3, 41], [16, 21], [2, 62]] // Same as lust
+    anger: [[2, 56], [2, 62], [2, 63], [5, 26], [16, 1], [16, 2], [16, 3], [16, 21]],
+    "feeling sinful": [[4, 36], [4, 37], [5, 10], [9, 30], [10, 3], [14, 6], [18, 66]],
+    forgiveness: [[11, 44], [12, 13], [12, 14], [16, 1], [16, 2], [16, 3]],
+    pride: [[16, 14], [16, 13], [16, 15], [18, 26], [18, 58]],
+    "death of a loved one": [[2, 13], [2, 20], [2, 22], [2, 25], [2, 27]],
+    "seeking peace": [[2, 66], [2, 71], [4, 39], [5, 29], [8, 28]],
+    lust: [[3, 37], [3, 41], [3, 43], [5, 22], [16, 21]],
+    "uncontrolled mind": [[6, 5], [6, 6], [6, 26], [6, 35]],
+    "dealing with envy": [[12, 13], [12, 14], [16, 19], [18, 71]],
+    discriminated: [[5, 18], [5, 19], [6, 32], [9, 29]],
+    laziness: [[3, 8], [3, 20], [6, 16], [18, 39]],
+    loneliness: [[6, 30], [9, 29], [13, 16], [13, 18]],
+    depression: [[2, 3], [2, 14], [5, 21]],
+    confusion: [[2, 7], [3, 2], [18, 61]],
+    fear: [[4, 10], [11, 50], [18, 30]],
+    greed: [[14, 17], [16, 21], [17, 25]],
+    demotivated: [[11, 33], [18, 48], [18, 78]],
+    temptation: [[2, 60], [2, 61], [2, 70], [7, 14]],
+    forgetfulness: [[15, 15], [18, 61]],
+    "losing hope": [[4, 11], [9, 22], [9, 34], [18, 66], [18, 78]]
   };
 
   // Normalize the mood string to lowercase and handle special characters
