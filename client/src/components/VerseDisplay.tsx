@@ -28,7 +28,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Animation variants refined for smoother transitions
 const cardVariants = {
@@ -100,6 +100,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
   const selectedMoodData = moods.find(m => m.id === selectedMood);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Fetch user's bookmarks
   const { data: userBookmarks } = useQuery({
@@ -166,14 +167,16 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
           'Authorization': 'Bearer dummy-token' // In real app, use actual auth token
         },
         body: JSON.stringify({
-          chapter: verse.chapter,
-          verse: verse.verse
+          chapter: Number(verse.chapter),
+          verse: Number(verse.verse)
         })
       });
 
-      if (!response.ok) throw new Error('Failed to update bookmark');
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
 
-      // Update local state
+      // Update local state optimistically
       const newBookmarks = new Set(bookmarkedVerses);
       if (isCurrentlyBookmarked) {
         newBookmarks.delete(verseId);
@@ -182,12 +185,16 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       }
       setBookmarkedVerses(newBookmarks);
 
+      // Invalidate queries to refetch bookmarks
+      queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
+
       toast({
         title: isCurrentlyBookmarked ? "Removed from bookmarks" : "Added to bookmarks",
         description: isCurrentlyBookmarked ? "Verse removed from your bookmarks" : "Verse saved to your bookmarks",
         duration: 2000,
       });
     } catch (err) {
+      console.error('Bookmark error:', err);
       toast({
         title: "Action failed",
         description: "Please try again later",

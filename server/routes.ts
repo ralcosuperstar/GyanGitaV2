@@ -6,8 +6,8 @@ import { z } from "zod";
 // Create schema with proper number types
 const insertBookmarkSchema = z.object({
   user_id: z.number(),
-  chapter: z.number(),
-  verse: z.number()
+  chapter: z.coerce.number(),
+  verse: z.coerce.number()
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -29,8 +29,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const bookmarkData = insertBookmarkSchema.parse({
         user_id: userId,
-        chapter: Number(req.body.chapter),
-        verse: Number(req.body.verse)
+        chapter: req.body.chapter,
+        verse: req.body.verse
       });
 
       const bookmark = await storage.createBookmark(bookmarkData);
@@ -39,6 +39,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error creating bookmark:', error);
       if (error instanceof z.ZodError) {
         res.status(400).json({ error: 'Invalid data format' });
+      } else if (error instanceof Error && error.message === 'Verse is already bookmarked') {
+        res.status(409).json({ error: error.message });
       } else {
         res.status(500).json({ error: 'Failed to save bookmark' });
       }
@@ -50,12 +52,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // In a real app, get user_id from the auth token
       const userId = 1; // Temporary for testing
 
-      const { chapter, verse } = req.body;
-      await storage.removeBookmark(userId, Number(chapter), Number(verse));
+      const { chapter, verse } = insertBookmarkSchema.parse({
+        user_id: userId,
+        chapter: req.body.chapter,
+        verse: req.body.verse
+      });
+
+      await storage.removeBookmark(userId, chapter, verse);
       res.json({ success: true });
     } catch (error) {
       console.error('Error removing bookmark:', error);
-      res.status(500).json({ error: 'Failed to remove bookmark' });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: 'Invalid data format' });
+      } else {
+        res.status(500).json({ error: 'Failed to remove bookmark' });
+      }
     }
   });
 
