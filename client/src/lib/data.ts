@@ -22,21 +22,20 @@ export interface Verse {
   verse: number;
 }
 
-export interface Chapter {
-  chapter_number: number;
-  verses_count: number;
-  name: string;
-  translation: string;
-  transliteration: string;
-  meaning: {
-    en: string;
-    hi: string;
-  };
-  summary: {
-    en: string;
-    hi: string;
-  };
-}
+// Function to get a specific verse by chapter and verse number
+export const getVerseByChapterAndNumber = async (chapter: number, verseNumber: number): Promise<Verse | null> => {
+  try {
+    const verseData = await import(`@/assets/data/slok/${chapter}/${verseNumber}/index.json`);
+    return {
+      ...verseData.default,
+      chapter,
+      verse: verseNumber
+    };
+  } catch (error) {
+    console.error(`Error loading verse ${chapter}:${verseNumber}:`, error);
+    return null;
+  }
+};
 
 // Load all chapters
 export const getChapters = (): Chapter[] => {
@@ -68,6 +67,22 @@ export const getVerse = async (chapterNumber: number, verseNumber: number): Prom
     return undefined;
   }
 };
+
+export interface Chapter {
+  chapter_number: number;
+  verses_count: number;
+  name: string;
+  translation: string;
+  transliteration: string;
+  meaning: {
+    en: string;
+    hi: string;
+  };
+  summary: {
+    en: string;
+    hi: string;
+  };
+}
 
 // Get random verse
 export const getRandomVerse = async (): Promise<Verse | undefined> => {

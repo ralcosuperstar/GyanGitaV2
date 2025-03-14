@@ -8,17 +8,46 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import CallToAction from "@/components/CallToAction";
 import MoodSelector from "@/components/MoodSelector";
 import VerseDisplay from "@/components/VerseDisplay";
+import VerseModal from "@/components/VerseModal";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, RefreshCw } from "lucide-react";
 import VerseOfTheDay from "@/components/VerseOfTheDay";
-import { getVersesByMood, type Verse } from "@/lib/data";
+import { getVersesByMood, getVerseByChapterAndNumber, type Verse } from "@/lib/data";
 
 export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [deepLinkedVerse, setDeepLinkedVerse] = useState<Verse | null>(null);
+  const [showVerseModal, setShowVerseModal] = useState(false);
   const verseSectionRef = useRef<HTMLDivElement>(null);
   const [, setLocation] = useLocation();
   const { t } = useLanguage();
+
+  // Check for verse-specific hash in URL
+  useEffect(() => {
+    const handleHashChange = async () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#/verse/')) {
+        const [, , chapter, verse] = hash.split('/');
+        if (chapter && verse) {
+          try {
+            const verseData = await getVerseByChapterAndNumber(parseInt(chapter), parseInt(verse));
+            if (verseData) {
+              setDeepLinkedVerse(verseData);
+              setShowVerseModal(true);
+            }
+          } catch (error) {
+            console.error('Error loading verse:', error);
+          }
+        }
+      }
+    };
+
+    // Check hash on initial load and when it changes
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   const { data: verses = null, isLoading, error } = useQuery<Verse[]>({
     queryKey: ['mood-verses', selectedMood],
@@ -120,17 +149,17 @@ export default function Home() {
 
       {/* Selected Verses Section */}
       {selectedMood && (
-        <section 
-          ref={verseSectionRef} 
+        <section
+          ref={verseSectionRef}
           className="py-20 bg-gradient-to-b from-muted/5 via-background to-background"
         >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {error ? (
               <div className="text-center py-12 bg-destructive/10 rounded-lg max-w-lg mx-auto">
                 <p className="text-destructive font-medium">Error loading verses. Please try again.</p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => window.location.reload()} 
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.reload()}
                   className="mt-4"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
@@ -142,7 +171,7 @@ export default function Home() {
             )}
 
             {selectedMood && verses && verses.length > 0 && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mt-16 flex flex-col sm:flex-row justify-center gap-4"
@@ -169,6 +198,13 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Deep-linked Verse Modal */}
+      <VerseModal
+        verse={deepLinkedVerse}
+        open={showVerseModal}
+        onOpenChange={setShowVerseModal}
+      />
 
       {/* Call to Action Section */}
       <CallToAction />
