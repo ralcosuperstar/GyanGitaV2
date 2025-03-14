@@ -28,6 +28,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { useQuery } from '@tanstack/react-query';
 
 // Animation variants refined for smoother transitions
 const cardVariants = {
@@ -95,9 +96,27 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
+  const [favoriteVerses, setFavoriteVerses] = useState<Set<string>>(new Set());
   const selectedMoodData = moods.find(m => m.id === selectedMood);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Fetch user's favorites
+  const { data: userFavorites } = useQuery({
+    queryKey: ['favorites'],
+    queryFn: async () => {
+      const response = await fetch('/api/user/favorites');
+      if (!response.ok) throw new Error('Failed to fetch favorites');
+      const data = await response.json();
+      return new Set(data.map((f: any) => `${f.chapter}-${f.verse}`));
+    }
+  });
+
+  useEffect(() => {
+    if (userFavorites) {
+      setFavoriteVerses(userFavorites);
+    }
+  }, [userFavorites]);
 
   const handleShare = (verse: VerseResponse) => {
     setSelectedVerse(verse);
@@ -106,7 +125,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
   const handleCopy = async (verse: VerseResponse) => {
     const verseId = `${verse.chapter}-${verse.verse}`;
-    const textToCopy = `${verse.tej.et || verse.tej.ht}\n\n${verse.slok}\n\n${verse.transliteration}`;
+    const textToCopy = `${verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht}\n\n${verse.slok}\n\n${verse.transliteration}`;
 
     try {
       await navigator.clipboard.writeText(textToCopy);
@@ -124,6 +143,49 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       toast({
         title: "Failed to copy",
         description: "Please try again",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  };
+
+  const handleBookmark = async (verse: VerseResponse) => {
+    const verseId = `${verse.chapter}-${verse.verse}`;
+    const isCurrentlyFavorited = favoriteVerses.has(verseId);
+
+    try {
+      const response = await fetch('/api/favorites', {
+        method: isCurrentlyFavorited ? 'DELETE' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer dummy-token' // In real app, use actual auth token
+        },
+        body: JSON.stringify({
+          chapter: verse.chapter,
+          verse: verse.verse
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to update favorite');
+
+      // Update local state
+      const newFavorites = new Set(favoriteVerses);
+      if (isCurrentlyFavorited) {
+        newFavorites.delete(verseId);
+      } else {
+        newFavorites.add(verseId);
+      }
+      setFavoriteVerses(newFavorites);
+
+      toast({
+        title: isCurrentlyFavorited ? "Removed from favorites" : "Added to favorites",
+        description: isCurrentlyFavorited ? "Verse removed from your favorites" : "Verse saved to your favorites",
+        duration: 2000,
+      });
+    } catch (err) {
+      toast({
+        title: "Action failed",
+        description: "Please try again later",
         variant: "destructive",
         duration: 2000,
       });
@@ -175,10 +237,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
     return (
       <motion.div 
         className="text-center py-16 px-6 rounded-xl bg-muted/30 border border-primary/10 max-w-xl mx-auto"
-        variants={contentVariants}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
       >
         <div className="mb-6 text-primary/60">
           <svg className="w-16 h-16 mx-auto" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -237,9 +295,10 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         {verses.map((verse, index) => {
           const verseId = `${verse.chapter}-${verse.verse}`;
           const isCopied = copiedVerseId === verseId;
+          const isFavorited = favoriteVerses.has(verseId);
 
-          // Get the best available English translation
-          const englishTranslation = verse.tej.et || verse.siva?.et || verse.purohit?.et || verse.tej.ht;
+          // Get the best available English translation, prioritizing Purohit's
+          const englishTranslation = verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht;
 
           return (
             <motion.div
@@ -272,7 +331,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
                   {/* Sanskrit Text */}
                   <div className="pt-4 border-t border-primary/10">
-                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-2 text-foreground/80">
+                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1 text-foreground/80">
                       {verse.slok}
                     </p>
                     <p className="text-sm italic text-foreground/60 line-clamp-1">
@@ -282,24 +341,49 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
                   {/* Actions Footer */}
                   <div className="pt-6 mt-4 border-t border-primary/10">
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={() => setSelectedVerse(verse)}
+                        className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-sm font-medium"
+                      >
+                        <Book className="h-4 w-4" />
+                        Read More
+                      </motion.button>
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={() => handleBookmark(verse)}
+                        className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg transition-colors text-sm font-medium ${
+                          isFavorited 
+                            ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+                            : 'bg-primary/10 hover:bg-primary/20'
+                        }`}
+                      >
+                        <Bookmark className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+                        {isFavorited ? 'Saved' : 'Save'}
+                      </motion.button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
                       <motion.button
                         variants={buttonVariants}
                         whileHover="hover"
                         whileTap="tap"
                         onClick={() => handleCopy(verse)}
-                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-primary/10 transition-colors"
-                        title="Copy verse"
+                        className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
                       >
                         {isCopied ? (
                           <>
-                            <Check className="h-5 w-5 text-green-500 mb-1" />
-                            <span className="text-xs font-medium text-green-500">Copied</span>
+                            <Check className="h-4 w-4 text-green-500" />
+                            <span className="text-green-500">Copied</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="h-5 w-5 mb-1" />
-                            <span className="text-xs font-medium">Copy</span>
+                            <Copy className="h-4 w-4" />
+                            <span>Copy</span>
                           </>
                         )}
                       </motion.button>
@@ -308,32 +392,10 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                         whileHover="hover"
                         whileTap="tap"
                         onClick={() => handleShare(verse)}
-                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-primary/10 transition-colors"
-                        title="Share verse"
+                        className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
                       >
-                        <Share2 className="h-5 w-5 mb-1" />
-                        <span className="text-xs font-medium">Share</span>
-                      </motion.button>
-                      <motion.button
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-primary/10 transition-colors"
-                        title="Bookmark verse"
-                      >
-                        <Bookmark className="h-5 w-5 mb-1" />
-                        <span className="text-xs font-medium">Save</span>
-                      </motion.button>
-                      <motion.button
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        onClick={() => setSelectedVerse(verse)}
-                        className="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-primary/10 transition-colors bg-primary/5"
-                        title="Read full verse"
-                      >
-                        <Book className="h-5 w-5 mb-1" />
-                        <span className="text-xs font-medium">Read</span>
+                        <Share2 className="h-4 w-4" />
+                        <span>Share</span>
                       </motion.button>
                     </div>
                   </div>
