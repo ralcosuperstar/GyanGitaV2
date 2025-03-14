@@ -98,7 +98,10 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     loneliness: [[9, 29], [7, 14], [4, 35]], // Divine companionship
     stress: [[2, 48], [5, 12], [18, 58]], // Stress relief through detachment
     happiness: [[5, 21], [14, 20], [2, 66]], // Path to true happiness
-    // Add more mood mappings as needed
+    discriminated: [[5, 18], [9, 29], [6, 32]], // Equality and universal vision
+    forgiveness: [[16, 1], [16, 2], [16, 3]], // Divine qualities and forgiveness
+    envy: [[3, 37], [16, 1], [16, 2]], // Overcoming negative emotions
+    lust: [[3, 37], [3, 43], [5, 21]] // Controlling desires
   };
 
   // Normalize the mood string to lowercase for case-insensitive matching

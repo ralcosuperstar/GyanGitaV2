@@ -35,6 +35,14 @@ export default function Home() {
     }
   }, [selectedMood]);
 
+  const handleResetMood = () => {
+    setSelectedMood(null);
+    const moodSection = document.getElementById('mood-section');
+    if (moodSection) {
+      moodSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -143,11 +151,7 @@ export default function Home() {
                   variant="outline"
                   size="lg"
                   className="h-14 w-full sm:w-auto group"
-                  onClick={() => {
-                    setSelectedMood(null);
-                    const moodSection = document.getElementById('mood-section');
-                    moodSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }}
+                  onClick={handleResetMood}
                 >
                   <RefreshCw className="h-4 w-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
                   {t('home.mood.change')}
