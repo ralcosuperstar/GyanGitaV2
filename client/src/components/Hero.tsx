@@ -133,7 +133,7 @@ export default function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden py-16 sm:py-24"
       aria-label="Welcome to GyanGita"
     >
-      {/* Enhanced background effects */}
+      {/* Background effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background z-0" aria-hidden="true" />
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <motion.div
@@ -149,7 +149,7 @@ export default function Hero() {
       {/* Main content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-5xl mx-auto text-center">
-          {/* Engaging hero badge */}
+          {/* Hero badge */}
           <motion.div
             className="hero-badge inline-flex items-center px-6 py-2 mb-8 border border-primary/20 rounded-full text-sm font-medium bg-primary/5 backdrop-blur-sm shadow-xl"
             initial={{ opacity: 0, y: -20 }}
@@ -160,36 +160,34 @@ export default function Hero() {
             <span className="text-primary/90">Stop Scrolling, Start Healing</span>
           </motion.div>
 
-          {/* Main title and subtitle with fixed heights */}
+          {/* Main title and subtitle with fixed heights and improved spacing */}
           <motion.div
-            className="hero-title"
+            className="hero-title space-y-8 sm:space-y-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            {/* Title section */}
-            <div className="h-[160px] sm:h-[200px] flex flex-col items-center justify-center">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair tracking-tight">
-                <span className="block text-balance leading-tight">
+            {/* Title section with explicit height constraints */}
+            <div className="min-h-[200px] sm:min-h-[240px] flex flex-col items-center justify-center">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-playfair tracking-tight">
+                <span className="block text-balance leading-tight mb-6">
                   Tired of Endless Scrolling
-                  <br className="hidden sm:block" />
-                  <span className="block mt-4 sm:mt-0 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                    But Still Feeling Empty?
-                  </span>
+                </span>
+                <span className="block mt-4 sm:mt-6 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  But Still Feeling Empty?
                 </span>
               </h1>
             </div>
 
-            {/* Description section */}
-            <div className="h-[100px] flex items-center justify-center">
-              <p className="text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto px-4">
+            {/* Description section with proper spacing */}
+            <div className="min-h-[80px] sm:min-h-[100px] flex items-center justify-center px-4">
+              <p className="text-base sm:text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto leading-relaxed">
                 Discover ancient wisdom that actually helps with modern struggles - 
                 anxiety, loneliness, and the constant pressure to "have it all figured out"
               </p>
             </div>
 
-            {/* Quote Container with Fixed Height */}
-            <div className="w-full relative" style={{ height: '240px' }}>
-              {/* Container for quotes with fixed dimensions */}
+            {/* Quote Container with Fixed Height and Improved Spacing */}
+            <div className="w-full relative min-h-[280px] sm:min-h-[240px] mt-8">
               <div className="absolute inset-0 flex items-center justify-center">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
@@ -205,15 +203,13 @@ export default function Hero() {
                     className="absolute inset-0 flex items-center justify-center"
                   >
                     <div className="w-full max-w-3xl mx-auto px-6">
-                      <div className="flex flex-col items-center">
-                        <Quote className="h-6 w-6 mb-4 text-primary/50" />
-                        {/* Fixed height container for quote text */}
-                        <div className="h-32 flex items-center justify-center">
-                          <p className="italic text-xl md:text-2xl text-primary/80 text-center">
+                      <div className="flex flex-col items-center space-y-6">
+                        <Quote className="h-6 w-6 text-primary/50" />
+                        <div className="min-h-[120px] flex items-center justify-center px-4">
+                          <p className="italic text-lg sm:text-xl md:text-2xl text-primary/80 text-center leading-relaxed">
                             "{inspirationalQuotes[currentQuote].text}"
                           </p>
                         </div>
-                        {/* Fixed height container for theme text */}
                         <div className="h-8 flex items-center justify-center">
                           <span className="text-sm text-primary/70">
                             {inspirationalQuotes[currentQuote].theme}
@@ -227,8 +223,8 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Feature highlights */}
-          <div className="hero-features grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+          {/* Feature highlights with improved spacing */}
+          <div className="hero-features grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12 mt-12">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}

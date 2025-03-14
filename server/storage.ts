@@ -1,25 +1,39 @@
-import { moodVerses, type MoodVerse, type InsertMoodVerse, favorites, type Favorite, type InsertFavorite } from "@shared/schema";
+import { moodVerses, type MoodVerse, type InsertMoodVerse } from "@shared/schema";
+
+interface Bookmark {
+  id: number;
+  user_id: number;
+  chapter: number;
+  verse: number;
+  created_at: Date;
+}
+
+interface InsertBookmark {
+  user_id: number;
+  chapter: number;
+  verse: number;
+}
 
 export interface IStorage {
   getMoodVerses(mood: string): Promise<MoodVerse[]>;
   insertMoodVerse(moodVerse: InsertMoodVerse): Promise<MoodVerse>;
-  createFavorite(favorite: InsertFavorite): Promise<Favorite>;
-  getUserFavorites(userId: number): Promise<Favorite[]>;
-  removeFavorite(userId: number, chapter: string, verse: string): Promise<void>;
+  createBookmark(bookmark: InsertBookmark): Promise<Bookmark>;
+  getUserBookmarks(userId: number): Promise<Bookmark[]>;
+  removeBookmark(userId: number, chapter: number, verse: number): Promise<void>;
   getAllVerses(): Promise<{ chapter: string; verse: string; }[]>;
 }
 
 export class MemStorage implements IStorage {
   private moodVersesMap: Map<string, MoodVerse[]>;
-  private favoritesMap: Map<number, Favorite[]>;
+  private bookmarksMap: Map<number, Bookmark[]>;
   currentId: number;
-  favoriteId: number;
+  bookmarkId: number;
 
   constructor() {
     this.moodVersesMap = new Map();
-    this.favoritesMap = new Map();
+    this.bookmarksMap = new Map();
     this.currentId = 1;
-    this.favoriteId = 1;
+    this.bookmarkId = 1;
     this.initializeMoodVerses();
   }
 
@@ -131,7 +145,7 @@ export class MemStorage implements IStorage {
     const allVerses: { chapter: string; verse: string; }[] = [];
     this.moodVersesMap.forEach((verses) => {
       verses.forEach((v) => {
-        if (!allVerses.some(existing => 
+        if (!allVerses.some(existing =>
           existing.chapter === v.chapter && existing.verse === v.verse
         )) {
           allVerses.push({
@@ -154,44 +168,43 @@ export class MemStorage implements IStorage {
     return newMoodVerse;
   }
 
-  async createFavorite(favorite: InsertFavorite): Promise<Favorite> {
-    const id = this.favoriteId++;
-    const newFavorite: Favorite = { 
-      ...favorite, 
+  async createBookmark(bookmark: InsertBookmark): Promise<Bookmark> {
+    const id = this.bookmarkId++;
+    const newBookmark: Bookmark = {
+      ...bookmark,
       id,
-      saved_at: new Date(),
-      notes: favorite.notes || null
+      created_at: new Date()
     };
 
-    const userFavorites = this.favoritesMap.get(favorite.user_id) || [];
+    const userBookmarks = this.bookmarksMap.get(bookmark.user_id) || [];
 
-    // Check if verse is already favorited
-    const exists = userFavorites.some(
-      f => f.chapter === favorite.chapter && f.verse === favorite.verse
+    // Check if verse is already bookmarked
+    const exists = userBookmarks.some(
+      b => b.chapter === bookmark.chapter && b.verse === bookmark.verse
     );
 
     if (exists) {
-      throw new Error('Verse is already in favorites');
+      throw new Error('Verse is already bookmarked');
     }
 
-    this.favoritesMap.set(
-      favorite.user_id, 
-      [...userFavorites, newFavorite]
+    this.bookmarksMap.set(
+      bookmark.user_id,
+      [...userBookmarks, newBookmark]
     );
 
-    return newFavorite;
+    return newBookmark;
   }
 
-  async getUserFavorites(userId: number): Promise<Favorite[]> {
-    return this.favoritesMap.get(userId) || [];
+  async getUserBookmarks(userId: number): Promise<Bookmark[]> {
+    return this.bookmarksMap.get(userId) || [];
   }
 
-  async removeFavorite(userId: number, chapter: string, verse: string): Promise<void> {
-    const userFavorites = this.favoritesMap.get(userId) || [];
-    const updatedFavorites = userFavorites.filter(
-      f => f.chapter !== chapter || f.verse !== verse
+  async removeBookmark(userId: number, chapter: number, verse: number): Promise<void> {
+    const userBookmarks = this.bookmarksMap.get(userId) || [];
+    const updatedBookmarks = userBookmarks.filter(
+      b => b.chapter !== chapter || b.verse !== verse
     );
-    this.favoritesMap.set(userId, updatedFavorites);
+    this.bookmarksMap.set(userId, updatedBookmarks);
   }
 }
 
