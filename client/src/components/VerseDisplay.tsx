@@ -96,27 +96,27 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
-  const [favoriteVerses, setFavoriteVerses] = useState<Set<string>>(new Set());
+  const [bookmarkedVerses, setBookmarkedVerses] = useState<Set<string>>(new Set());
   const selectedMoodData = moods.find(m => m.id === selectedMood);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  // Fetch user's favorites
-  const { data: userFavorites } = useQuery({
-    queryKey: ['favorites'],
+  // Fetch user's bookmarks
+  const { data: userBookmarks } = useQuery({
+    queryKey: ['bookmarks'],
     queryFn: async () => {
-      const response = await fetch('/api/user/favorites');
-      if (!response.ok) throw new Error('Failed to fetch favorites');
+      const response = await fetch('/api/user/bookmarks');
+      if (!response.ok) throw new Error('Failed to fetch bookmarks');
       const data = await response.json();
-      return new Set(data.map((f: any) => `${f.chapter}-${f.verse}`));
+      return new Set(data.map((b: any) => `${b.chapter}-${b.verse}`));
     }
   });
 
   useEffect(() => {
-    if (userFavorites) {
-      setFavoriteVerses(userFavorites);
+    if (userBookmarks) {
+      setBookmarkedVerses(userBookmarks);
     }
-  }, [userFavorites]);
+  }, [userBookmarks]);
 
   const handleShare = (verse: VerseResponse) => {
     setSelectedVerse(verse);
@@ -151,11 +151,16 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
   const handleBookmark = async (verse: VerseResponse) => {
     const verseId = `${verse.chapter}-${verse.verse}`;
-    const isCurrentlyFavorited = favoriteVerses.has(verseId);
+    const isCurrentlyBookmarked = bookmarkedVerses.has(verseId);
 
     try {
-      const response = await fetch('/api/favorites', {
-        method: isCurrentlyFavorited ? 'DELETE' : 'POST',
+      // Trigger vibration feedback if available
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+
+      const response = await fetch('/api/bookmarks', {
+        method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer dummy-token' // In real app, use actual auth token
@@ -166,20 +171,20 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         })
       });
 
-      if (!response.ok) throw new Error('Failed to update favorite');
+      if (!response.ok) throw new Error('Failed to update bookmark');
 
       // Update local state
-      const newFavorites = new Set(favoriteVerses);
-      if (isCurrentlyFavorited) {
-        newFavorites.delete(verseId);
+      const newBookmarks = new Set(bookmarkedVerses);
+      if (isCurrentlyBookmarked) {
+        newBookmarks.delete(verseId);
       } else {
-        newFavorites.add(verseId);
+        newBookmarks.add(verseId);
       }
-      setFavoriteVerses(newFavorites);
+      setBookmarkedVerses(newBookmarks);
 
       toast({
-        title: isCurrentlyFavorited ? "Removed from favorites" : "Added to favorites",
-        description: isCurrentlyFavorited ? "Verse removed from your favorites" : "Verse saved to your favorites",
+        title: isCurrentlyBookmarked ? "Removed from bookmarks" : "Added to bookmarks",
+        description: isCurrentlyBookmarked ? "Verse removed from your bookmarks" : "Verse saved to your bookmarks",
         duration: 2000,
       });
     } catch (err) {
@@ -295,7 +300,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         {verses.map((verse, index) => {
           const verseId = `${verse.chapter}-${verse.verse}`;
           const isCopied = copiedVerseId === verseId;
-          const isFavorited = favoriteVerses.has(verseId);
+          const isBookmarked = bookmarkedVerses.has(verseId);
 
           // Get the best available English translation, prioritizing Purohit's
           const englishTranslation = verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht;
@@ -358,13 +363,13 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                         whileTap="tap"
                         onClick={() => handleBookmark(verse)}
                         className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg transition-colors text-sm font-medium ${
-                          isFavorited 
+                          isBookmarked 
                             ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
                             : 'bg-primary/10 hover:bg-primary/20'
                         }`}
                       >
-                        <Bookmark className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
-                        {isFavorited ? 'Saved' : 'Save'}
+                        <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                        {isBookmarked ? 'Bookmarked' : 'Bookmark'}
                       </motion.button>
                     </div>
                     <div className="grid grid-cols-2 gap-3">

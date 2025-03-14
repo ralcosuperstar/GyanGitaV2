@@ -44,15 +44,15 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-3xl mx-auto max-h-[90vh] overflow-y-auto">
-          <div className="px-4 sm:px-8 py-8 space-y-8">
-            <DialogHeader className="space-y-3">
-              <DialogTitle className="text-2xl font-playfair text-foreground">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-3xl mx-auto my-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
+          <div className="px-6 sm:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+            <DialogHeader className="space-y-4">
+              <DialogTitle className="text-xl sm:text-2xl font-playfair text-foreground">
                 Chapter {verse.chapter}, Verse {verse.verse}
               </DialogTitle>
             </DialogHeader>
 
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               {/* English Translation Section */}
               <div className="bg-card rounded-lg p-6 sm:p-8 space-y-4">
                 <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
@@ -79,7 +79,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
               </div>
 
               {/* Actions */}
-              <div className="flex gap-4 pt-4">
+              <div className="flex gap-4 pt-2">
                 <Button
                   className="flex-1 bg-primary/10 hover:bg-primary/20"
                   onClick={() => setShowShareDialog(true)}
@@ -110,6 +110,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
         </DialogContent>
       </Dialog>
 
+      {/* Share Dialog */}
       <ShareDialog
         verse={verse}
         open={showShareDialog}
