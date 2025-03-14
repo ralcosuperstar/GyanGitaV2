@@ -188,35 +188,42 @@ export default function Hero() {
             </div>
 
             {/* Quote Container with Fixed Height */}
-            <div className="hero-quote-container h-[200px] w-full relative">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={currentQuote}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ 
-                    type: "tween",
-                    duration: 0.4,
-                    ease: "easeInOut"
-                  }}
-                  className="absolute inset-0"
-                >
-                  <div className="flex flex-col items-center justify-center h-full">
-                    <Quote className="h-6 w-6 mb-3 text-primary/50" />
-                    <div className="h-[100px] w-full max-w-3xl mx-auto px-6 flex items-center justify-center">
-                      <p className="italic text-xl md:text-2xl text-primary/80 text-center">
-                        "{inspirationalQuotes[currentQuote].text}"
-                      </p>
+            <div className="w-full relative" style={{ height: '240px' }}>
+              {/* Container for quotes with fixed dimensions */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={currentQuote}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ 
+                      type: "tween",
+                      duration: 0.4,
+                      ease: "easeInOut"
+                    }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <div className="w-full max-w-3xl mx-auto px-6">
+                      <div className="flex flex-col items-center">
+                        <Quote className="h-6 w-6 mb-4 text-primary/50" />
+                        {/* Fixed height container for quote text */}
+                        <div className="h-32 flex items-center justify-center">
+                          <p className="italic text-xl md:text-2xl text-primary/80 text-center">
+                            "{inspirationalQuotes[currentQuote].text}"
+                          </p>
+                        </div>
+                        {/* Fixed height container for theme text */}
+                        <div className="h-8 flex items-center justify-center">
+                          <span className="text-sm text-primary/70">
+                            {inspirationalQuotes[currentQuote].theme}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="h-[40px] flex items-center justify-center">
-                      <span className="text-sm text-primary/70">
-                        {inspirationalQuotes[currentQuote].theme}
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
           </motion.div>
 
