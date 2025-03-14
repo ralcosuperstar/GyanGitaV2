@@ -2,17 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const testimonials = [
   {
     quote: "Whatever happened, happened for the good. Whatever is happening, is happening for the good. Whatever will happen, will also happen for the good.",
     author: "Bhagavad Gita",
     chapter: "Chapter 2",
-    image: "/assets/profile1.jpg" // These would be placeholder images
+    image: "/assets/profile1.jpg"
   },
   {
     quote: "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.",
@@ -36,7 +32,7 @@ const testimonials = [
 
 export default function TestimonialsSection() {
   const [current, setCurrent] = useState(0);
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const next = () => {
     setCurrent((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
@@ -47,51 +43,20 @@ export default function TestimonialsSection() {
   };
 
   useEffect(() => {
-    if (!sectionRef.current) return;
-    
-    // Subtle floating animation for the decorative elements
-    gsap.to(".quote-bg-1", {
-      y: -20,
-      x: 10,
-      rotation: 5,
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 1
-      }
-    });
-    
-    gsap.to(".quote-bg-2", {
-      y: 20,
-      x: -15,
-      rotation: -3,
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 1.5
-      }
-    });
-    
-    // Auto advance slides every 6 seconds
-    const interval = setInterval(() => {
-      next();
-    }, 6000);
-    
+    const interval = setInterval(next, 6000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <section 
-      ref={sectionRef}
+      ref={containerRef}
       className="py-24 sm:py-32 relative overflow-hidden bg-primary/5"
     >
       {/* Background decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="quote-bg-1 absolute right-10 top-10 w-[600px] h-[600px] rounded-full bg-primary/3 blur-[130px] opacity-70"></div>
-        <div className="quote-bg-2 absolute -left-20 bottom-0 w-[500px] h-[500px] rounded-full bg-primary/3 blur-[100px] opacity-50"></div>
-        
+        <div className="absolute right-10 top-10 w-[600px] h-[600px] rounded-full bg-primary/3 blur-[130px] opacity-70"></div>
+        <div className="absolute -left-20 bottom-0 w-[500px] h-[500px] rounded-full bg-primary/3 blur-[100px] opacity-50"></div>
+
         <motion.div
           className="absolute top-10 left-10 text-primary/5 w-40 h-40"
           initial={{ opacity: 0, scale: 0.8 }}
@@ -100,7 +65,7 @@ export default function TestimonialsSection() {
         >
           <Quote size={160} />
         </motion.div>
-        
+
         <motion.div
           className="absolute bottom-10 right-10 text-primary/5 w-40 h-40 rotate-180"
           initial={{ opacity: 0, scale: 0.8 }}
@@ -110,7 +75,7 @@ export default function TestimonialsSection() {
           <Quote size={160} />
         </motion.div>
       </div>
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -127,9 +92,10 @@ export default function TestimonialsSection() {
               The timeless teachings of the Bhagavad Gita offer guidance that transcends centuries
             </p>
           </motion.div>
-          
-          <div className="relative flex flex-col items-center">
-            <div className="w-full max-w-4xl mx-auto">
+
+          <div className="relative">
+            {/* Fixed height container to prevent layout shifts */}
+            <div className="w-full max-w-4xl mx-auto min-h-[400px] relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={current}
@@ -142,9 +108,9 @@ export default function TestimonialsSection() {
                     damping: 30,
                     duration: 0.4
                   }}
-                  className="bg-background/80 backdrop-blur-sm rounded-2xl p-8 sm:p-10 border border-primary/10 shadow-lg"
+                  className="absolute inset-0 bg-background/80 backdrop-blur-sm rounded-2xl p-8 sm:p-10 border border-primary/10 shadow-lg"
                 >
-                  <div className="flex flex-col items-center text-center">
+                  <div className="flex flex-col items-center text-center h-full justify-center">
                     <Quote className="h-12 w-12 text-primary/50 mb-6" />
                     <p className="text-xl md:text-2xl font-medium leading-relaxed text-foreground mb-8 max-w-3xl">
                       "{testimonials[current].quote}"
@@ -157,7 +123,7 @@ export default function TestimonialsSection() {
                 </motion.div>
               </AnimatePresence>
             </div>
-            
+
             <div className="flex items-center justify-center mt-8 gap-4">
               <Button
                 variant="outline"
@@ -167,7 +133,7 @@ export default function TestimonialsSection() {
               >
                 <ChevronLeft className="h-5 w-5" />
               </Button>
-              
+
               <div className="flex space-x-2">
                 {testimonials.map((_, i) => (
                   <button
@@ -180,7 +146,7 @@ export default function TestimonialsSection() {
                   />
                 ))}
               </div>
-              
+
               <Button
                 variant="outline"
                 size="icon"
