@@ -90,6 +90,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   const moodVerses = {
     anxiety: [[2, 47], [18, 66], [2, 14]], // Focus on duty and letting go of outcomes
     peace: [[2, 48], [5, 12], [6, 27]], // Verses about inner peace
+    peaceful: [[2, 48], [5, 12], [6, 27]], // Same as peace
     depression: [[2, 14], [2, 22], [2, 30]], // Verses about hope and eternal nature of soul
     anger: [[2, 62], [2, 63], [5, 23]], // Verses about controlling anger
     confusion: [[4, 42], [18, 63], [2, 7]], // Guidance in times of doubt
@@ -101,15 +102,27 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     discriminated: [[5, 18], [9, 29], [6, 32]], // Equality and universal vision
     forgiveness: [[16, 1], [16, 2], [16, 3]], // Divine qualities and forgiveness
     envy: [[3, 37], [16, 1], [16, 2]], // Overcoming negative emotions
-    lust: [[3, 37], [3, 43], [5, 21]] // Controlling desires
+    lust: [[3, 37], [3, 43], [5, 21]], // Controlling desires
+    "losing hope": [[2, 14], [2, 22], [2, 30]], // Same as depression
+    "losing_hope": [[2, 14], [2, 22], [2, 30]], // Alternative format
+    demotivated: [[2, 47], [18, 66], [2, 14]], // Similar to anxiety
+    forgetfulness: [[15, 15], [10, 10], [4, 35]], // Mindfulness and remembrance
+    "uncontrolled mind": [[6, 26], [6, 35], [2, 67]], // Mind control
+    "uncontrolled_mind": [[6, 26], [6, 35], [2, 67]], // Alternative format
+    greed: [[16, 21], [16, 22], [14, 17]], // Overcoming material attachment
+    temptation: [[3, 37], [3, 43], [5, 21]] // Same as lust
   };
 
-  // Normalize the mood string to lowercase for case-insensitive matching
-  const normalizedMood = mood.toLowerCase().trim();
+  // Normalize the mood string to lowercase and handle special characters
+  const normalizedMood = mood.toLowerCase()
+    .trim()
+    .replace(/[_\s]+/g, ' '); // Convert underscores and multiple spaces to single space
+
   console.log('Normalized mood:', normalizedMood);
 
   // Get verses for the selected mood
-  const versesForMood = moodVerses[normalizedMood as keyof typeof moodVerses];
+  const versesForMood = moodVerses[normalizedMood as keyof typeof moodVerses] ||
+                       moodVerses[normalizedMood.replace(/\s+/g, '_') as keyof typeof moodVerses];
 
   if (!versesForMood || !versesForMood.length) {
     console.log(`No verses mapped for mood: ${mood}`);
