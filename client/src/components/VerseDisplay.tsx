@@ -250,66 +250,72 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
             >
               <Card className="w-full overflow-hidden bg-card/50 backdrop-blur-sm border-primary/10 hover:border-primary/20 transition-all duration-300 hover:shadow-lg">
                 <CardContent className="p-6 flex flex-col h-full">
-                  {/* English Translation First - Most prominent */}
-                  <div className="flex-grow mb-6">
-                    <p className="text-xl sm:text-2xl leading-relaxed text-foreground font-medium">
+                  {/* English Translation - Primary Focus */}
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-3">
+                      <span className="px-3 py-1.5 rounded-full bg-primary/5">
+                        Ch {verse.chapter}
+                      </span>
+                      <span className="px-3 py-1.5 rounded-full bg-primary/5">
+                        V {verse.verse}
+                      </span>
+                    </div>
+                    <p className="text-xl sm:text-2xl leading-relaxed text-foreground">
                       {verse.tej.et || verse.tej.ht}
                     </p>
                   </div>
 
-                  {/* Meta Information and Actions */}
-                  <div className="flex items-center justify-between py-4 border-y border-primary/10">
-                    <div className="flex items-center gap-2">
-                      <span className="px-3 py-1.5 rounded-full bg-primary/5 text-sm font-medium text-primary/80">
-                        Ch {verse.chapter}
-                      </span>
-                      <span className="px-3 py-1.5 rounded-full bg-primary/5 text-sm font-medium text-primary/80">
-                        V {verse.verse}
-                      </span>
-                    </div>
-                    <div className="grid grid-flow-col gap-1.5">
-                      <motion.button
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        onClick={() => handleCopy(verse)}
-                        className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
-                        title="Copy verse"
-                      >
-                        {isCopied ? (
+                  {/* Action Buttons */}
+                  <div className="grid grid-cols-3 gap-2 mb-4">
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      onClick={() => handleCopy(verse)}
+                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
+                      title="Copy verse"
+                    >
+                      {isCopied ? (
+                        <>
                           <Check className="h-4 w-4 text-green-500" />
-                        ) : (
+                          <span className="text-green-500">Copied</span>
+                        </>
+                      ) : (
+                        <>
                           <Copy className="h-4 w-4" />
-                        )}
-                      </motion.button>
-                      <motion.button
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        onClick={() => handleShare(verse)}
-                        className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
-                        title="Share verse"
-                      >
-                        <Share2 className="h-4 w-4" />
-                      </motion.button>
-                      <motion.button
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
-                        title="Bookmark verse"
-                      >
-                        <Bookmark className="h-4 w-4" />
-                      </motion.button>
-                    </div>
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </motion.button>
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      onClick={() => handleShare(verse)}
+                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
+                      title="Share verse"
+                    >
+                      <Share2 className="h-4 w-4" />
+                      <span>Share</span>
+                    </motion.button>
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
+                      title="Bookmark verse"
+                    >
+                      <Bookmark className="h-4 w-4" />
+                      <span>Save</span>
+                    </motion.button>
                   </div>
 
-                  {/* Sanskrit Preview */}
-                  <div className="mt-4 text-muted-foreground/90">
-                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1.5">
+                  {/* Sanskrit Text */}
+                  <div className="pt-4 border-t border-primary/10">
+                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-2 text-foreground/80">
                       {verse.slok}
                     </p>
-                    <p className="text-sm italic text-muted-foreground/70 line-clamp-1">
+                    <p className="text-sm italic text-foreground/60 line-clamp-1">
                       {verse.transliteration}
                     </p>
                   </div>
@@ -327,7 +333,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                       className="w-full bg-primary/5 hover:bg-primary/10 border-primary/20 font-medium"
                       onClick={() => setSelectedVerse(verse)}
                     >
-                      <Book className="w-4 h-4 mr-2" />
+                      <Book className="h-4 w-4 mr-2" />
                       Read More
                     </Button>
                   </motion.div>
@@ -350,36 +356,34 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       {/* Enhanced Modal Dialog */}
       <Dialog open={!!selectedVerse && !showShareDialog} onOpenChange={() => setSelectedVerse(null)}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="space-y-2">
-            <DialogTitle className="flex items-center justify-between">
-              <span className="text-2xl font-playfair">
-                Chapter {selectedVerse?.chapter}, Verse {selectedVerse?.verse}
-              </span>
+          <DialogHeader className="space-y-3">
+            <DialogTitle className="text-2xl font-playfair text-foreground">
+              Chapter {selectedVerse?.chapter}, Verse {selectedVerse?.verse}
             </DialogTitle>
             <DialogDescription>
               <div className="flex gap-2">
-                <span className="px-3 py-1 rounded-full bg-primary/5 text-sm">
+                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
                   English
                 </span>
-                <span className="px-3 py-1 rounded-full bg-primary/5 text-sm">
+                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
                   Sanskrit
                 </span>
-                <span className="px-3 py-1 rounded-full bg-primary/5 text-sm">
+                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
                   Commentary
                 </span>
               </div>
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mt-6 space-y-8">
+          <div className="mt-8 space-y-8">
             {/* English Translation Section */}
             <div className="space-y-6">
               <div className="bg-card rounded-lg p-6 space-y-4">
-                <h3 className="text-lg font-medium flex items-center gap-2">
+                <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                   <span className="w-2 h-2 rounded-full bg-primary"></span>
                   English Translation
                 </h3>
-                <p className="text-xl leading-relaxed">
+                <p className="text-xl leading-relaxed text-foreground">
                   {selectedVerse?.tej.et}
                 </p>
               </div>
@@ -387,15 +391,15 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
               {(selectedVerse?.siva?.et || selectedVerse?.purohit?.et) && (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {selectedVerse?.siva?.et && (
-                    <div className="bg-muted/50 rounded-lg p-4">
-                      <p className="text-base">{selectedVerse.siva.et}</p>
-                      <p className="text-sm text-muted-foreground mt-2">- Sivananda Translation</p>
+                    <div className="bg-card rounded-lg p-4">
+                      <p className="text-base text-foreground mb-2">{selectedVerse.siva.et}</p>
+                      <p className="text-sm text-primary font-medium">Sivananda Translation</p>
                     </div>
                   )}
                   {selectedVerse?.purohit?.et && (
-                    <div className="bg-muted/50 rounded-lg p-4">
-                      <p className="text-base">{selectedVerse.purohit.et}</p>
-                      <p className="text-sm text-muted-foreground mt-2">- Purohit Translation</p>
+                    <div className="bg-card rounded-lg p-4">
+                      <p className="text-base text-foreground mb-2">{selectedVerse.purohit.et}</p>
+                      <p className="text-sm text-primary font-medium">Purohit Translation</p>
                     </div>
                   )}
                 </div>
@@ -404,15 +408,15 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
             {/* Sanskrit Text Section */}
             <div className="bg-card rounded-lg p-6 space-y-4">
-              <h3 className="text-lg font-medium flex items-center gap-2">
+              <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                 <span className="w-2 h-2 rounded-full bg-primary"></span>
                 Sanskrit Text
               </h3>
               <div className="space-y-4">
-                <p className="text-2xl font-sanskrit leading-relaxed">
+                <p className="text-2xl font-sanskrit leading-relaxed text-foreground">
                   {selectedVerse?.slok}
                 </p>
-                <p className="text-lg italic text-muted-foreground">
+                <p className="text-lg italic text-foreground/80">
                   {selectedVerse?.transliteration}
                 </p>
               </div>
@@ -421,12 +425,12 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
             {/* Commentary Section */}
             {selectedVerse?.chinmay?.hc && (
               <div className="bg-card rounded-lg p-6 space-y-4">
-                <h3 className="text-lg font-medium flex items-center gap-2">
+                <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                   <span className="w-2 h-2 rounded-full bg-primary"></span>
                   Commentary
                 </h3>
                 <div className="prose prose-lg max-w-none">
-                  <p className="text-base whitespace-pre-wrap">
+                  <p className="text-base text-foreground whitespace-pre-wrap">
                     {selectedVerse.chinmay.hc}
                   </p>
                 </div>
@@ -436,11 +440,11 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
             {/* Hindi Translation */}
             {selectedVerse?.tej.ht && (
               <div className="bg-card rounded-lg p-6 space-y-4">
-                <h3 className="text-lg font-medium flex items-center gap-2">
+                <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                   <span className="w-2 h-2 rounded-full bg-primary"></span>
                   Hindi Translation
                 </h3>
-                <p className="text-lg">
+                <p className="text-lg text-foreground">
                   {selectedVerse.tej.ht}
                 </p>
               </div>
