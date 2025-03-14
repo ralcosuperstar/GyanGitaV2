@@ -166,9 +166,10 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="h-[120px] sm:h-[160px] flex flex-col items-center justify-center">
+            {/* Title section */}
+            <div className="h-[160px] sm:h-[200px] flex flex-col items-center justify-center">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair tracking-tight">
-                <span className="block text-balance leading-tight space-y-4">
+                <span className="block text-balance leading-tight">
                   Tired of Endless Scrolling
                   <br className="hidden sm:block" />
                   <span className="block mt-4 sm:mt-0 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
@@ -178,25 +179,26 @@ export default function Hero() {
               </h1>
             </div>
 
-            <div className="h-[80px] flex items-center justify-center">
+            {/* Description section */}
+            <div className="h-[100px] flex items-center justify-center">
               <p className="text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto px-4">
                 Discover ancient wisdom that actually helps with modern struggles - 
                 anxiety, loneliness, and the constant pressure to "have it all figured out"
               </p>
             </div>
 
-            {/* Fixed height container for Eternal Wisdom section */}
-            <div className="h-[120px] flex flex-col items-center justify-center">
-              <h2 className="text-2xl md:text-3xl font-playfair mb-2">
+            {/* Eternal Wisdom section with fixed height */}
+            <div className="h-[100px] flex flex-col items-center justify-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-playfair">
                 Eternal Wisdom For Modern Life
               </h2>
-              <p className="text-md text-muted-foreground">
+              <p className="text-md text-muted-foreground mt-2">
                 The timeless teachings of the Bhagavad Gita offer guidance that transcends centuries
               </p>
             </div>
 
             {/* Quote Container with Fixed Height */}
-            <div className="h-[180px] relative flex items-center justify-center overflow-hidden">
+            <div className="h-[200px] relative overflow-hidden">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentQuote}
@@ -208,10 +210,10 @@ export default function Hero() {
                     duration: 0.4,
                     ease: "easeInOut"
                   }}
-                  className="w-full px-6 flex flex-col items-center justify-center absolute inset-0"
+                  className="absolute inset-0 flex flex-col items-center justify-center px-6"
                 >
                   <Quote className="h-6 w-6 mb-3 text-primary/50" />
-                  <div className="h-[80px] flex items-center justify-center">
+                  <div className="h-[100px] flex items-center justify-center">
                     <p className="italic text-xl md:text-2xl text-primary/80 max-w-3xl mx-auto text-center">
                       "{inspirationalQuotes[currentQuote].text}"
                     </p>
