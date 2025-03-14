@@ -1,8 +1,8 @@
 /**
  * Hero Component
  * 
- * An engaging and interactive hero section that creates immediate emotional 
- * connection while maintaining visual clarity and user focus.
+ * Creates an immediate emotional connection through relatable modern challenges
+ * while presenting ancient wisdom as practical solutions.
  */
 
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
@@ -10,50 +10,50 @@ import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Heart, Quote, ArrowDown, Space } from "lucide-react";
+import { Sparkles, Heart, Quote, ArrowDown } from "lucide-react";
 import { BsWhatsapp } from "react-icons/bs";
 import { useLanguage } from "@/contexts/language-context";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Engaging quotes that resonate with modern life challenges
+// Relatable quotes that connect ancient wisdom to modern challenges
 const inspirationalQuotes = [
   { 
-    text: "You have the right to work, but never to the fruit of work",
+    text: "Your anxiety about the future is useless. Focus on what you can control in this moment.",
     chapter: 2,
     verse: 47,
-    theme: "Success & Career"
+    theme: "Anxiety & Overthinking"
   },
   { 
-    text: "The mind is restless and difficult to control, but it can be conquered through regular practice and detachment",
+    text: "Social media likes won't fill the void within. True peace comes from understanding your inner self.",
     chapter: 6,
     verse: 35,
-    theme: "Mental Peace"
+    theme: "Social Media Anxiety"
   },
   { 
-    text: "Change is the law of the universe. You can be a millionaire or a pauper in an instant",
+    text: "Stop comparing your chapter 1 to someone else's chapter 20. Your journey is uniquely yours.",
     chapter: 2,
     verse: 22,
-    theme: "Adaptability"
+    theme: "Self-Worth"
   }
 ];
 
-// Value propositions that highlight unique benefits
+// Value propositions targeting modern challenges
 const features = [
   {
     icon: "🎯",
-    title: "Personalized Guidance",
-    description: "Verses matched to your emotional state"
+    title: "Personalized Wisdom",
+    description: "Get ancient solutions for your modern struggles"
   },
   {
     icon: "🌟",
-    title: "Modern Context",
-    description: "Ancient wisdom for today's challenges"
+    title: "Instant Relief",
+    description: "Find clarity when anxiety hits"
   },
   {
     icon: "💫",
-    title: "Daily Growth",
-    description: "Progressive spiritual development"
+    title: "Real Growth",
+    description: "Build lasting mental strength"
   }
 ];
 
@@ -65,16 +65,13 @@ export default function Hero() {
   const fadeOpacity = useTransform(scrollY, [0, 300], [1, 0]);
   const [currentQuote, setCurrentQuote] = useState(0);
 
-  // Rotate through quotes with crossfade animation
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentQuote(prev => (prev + 1) % inspirationalQuotes.length);
-    }, 6000); // Increased duration for better readability
-
+    }, 6000);
     return () => clearInterval(interval);
   }, []);
 
-  // Enhanced animations with GSAP
   useEffect(() => {
     if (!heroRef.current) return;
 
@@ -88,7 +85,6 @@ export default function Hero() {
       }
     });
 
-    // Sequence of engaging animations
     tl.fromTo(
       ".hero-badge",
       { opacity: 0, y: -20, scale: 0.9 },
@@ -118,7 +114,6 @@ export default function Hero() {
       "-=0.2"
     );
 
-    // Clean up animations
     return () => {
       tl.kill();
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -138,7 +133,7 @@ export default function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden py-16 sm:py-24"
       aria-label="Welcome to GyanGita"
     >
-      {/* Dynamic background effects */}
+      {/* Enhanced background effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background z-0" aria-hidden="true" />
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <motion.div
@@ -162,7 +157,7 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             <Heart className="h-4 w-4 mr-2 text-primary animate-pulse" />
-            <span className="text-primary/90">Find Peace in Ancient Wisdom</span>
+            <span className="text-primary/90">Stop Scrolling, Start Healing</span>
           </motion.div>
 
           {/* Main title and subtitle */}
@@ -172,17 +167,17 @@ export default function Hero() {
             animate={{ opacity: 1 }}
           >
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair mb-6 tracking-tight">
-              <span className="block text-balance leading-tight space-y-2">
-                Feeling Lost in Life's
+              <span className="block text-balance leading-tight space-y-4">
+                Tired of Endless Scrolling
                 <br className="hidden sm:block" />
-                <span className="block mt-2 sm:mt-0 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  Chaos & Confusion?
+                <span className="block mt-4 sm:mt-0 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  But Still Feeling Empty?
                 </span>
               </span>
             </h1>
             <p className="text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto mb-8 px-4">
-              Discover timeless Bhagavad Gita wisdom tailored to your emotional state. 
-              Get instant guidance for modern challenges through ancient teachings.
+              Discover ancient wisdom that actually helps with modern struggles - 
+              anxiety, loneliness, and the constant pressure to "have it all figured out"
             </p>
 
             {/* Quote Container with Fixed Height */}
@@ -220,9 +215,6 @@ export default function Hero() {
                     "{inspirationalQuotes[currentQuote].text}"
                   </p>
                   <div className="text-sm text-primary/60 mt-2">
-                    Chapter {inspirationalQuotes[currentQuote].chapter}, 
-                    Verse {inspirationalQuotes[currentQuote].verse}
-                    <span className="mx-2">•</span>
                     <span className="text-primary/70">{inspirationalQuotes[currentQuote].theme}</span>
                   </div>
                 </motion.div>
@@ -261,7 +253,7 @@ export default function Hero() {
               <div className="absolute inset-0 bg-primary/10 transform rotate-45 translate-x-3/4 transition-transform group-hover:translate-x-1/4" />
               <span className="relative flex items-center">
                 <Sparkles className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
-                Find Your Inner Peace Now
+                Find Your Peace Today
               </span>
             </Button>
 
@@ -271,7 +263,7 @@ export default function Hero() {
               onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(t('home.share.text') + '\n\n' + window.location.origin)}`, '_blank')}
             >
               <BsWhatsapp className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
-              Share with a Friend
+              Share with Someone Who Needs This
             </Button>
           </motion.div>
         </div>
