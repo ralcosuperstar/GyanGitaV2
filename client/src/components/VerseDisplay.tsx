@@ -9,11 +9,13 @@ import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Book } from "lucide-react";
+import { RefreshCw, Book, Share2, Copy, Bookmark, Check } from "lucide-react";
 import { moods } from "@/lib/moods";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
+import { useToast } from "@/hooks/use-toast";
+import ShareDialog from "@/components/ShareDialog";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +23,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 // Types for verse data structure
 interface VerseResponse {
@@ -87,8 +95,42 @@ const cardVariants = {
 
 export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
   const selectedMoodData = moods.find(m => m.id === selectedMood);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  const handleShare = (verse: VerseResponse) => {
+    setSelectedVerse(verse);
+    setShowShareDialog(true);
+  };
+
+  const handleCopy = async (verse: VerseResponse) => {
+    const verseId = `${verse.chapter}-${verse.verse}`;
+    const textToCopy = `${verse.tej.et || verse.tej.ht}\n\n${verse.slok}\n\n${verse.transliteration}`;
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopiedVerseId(verseId);
+      toast({
+        title: "Copied!",
+        description: "Verse has been copied to clipboard",
+        duration: 2000,
+      });
+
+      setTimeout(() => {
+        setCopiedVerseId(null);
+      }, 2000);
+    } catch (err) {
+      toast({
+        title: "Failed to copy",
+        description: "Please try again",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  };
 
   useEffect(() => {
     if (!containerRef.current || !verses?.length) return;
@@ -226,113 +268,179 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         </AnimatePresence>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {verses.map((verse, index) => (
-            <motion.div 
-              key={`${verse.chapter}-${verse.verse}-${index}`}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={index}
-              whileHover={{ y: -8, transition: { duration: 0.3 } }}
-              className="flex"
-            >
-              <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <CardContent className="p-6">
-                  <div className="mb-4 text-sm text-muted-foreground">
-                    Chapter {verse.chapter}, Verse {verse.verse}
-                  </div>
+          {verses.map((verse, index) => {
+            const verseId = `${verse.chapter}-${verse.verse}`;
+            const isCopied = copiedVerseId === verseId;
 
-                  {/* English Translation First */}
-                  <div className="mb-6">
-                    <p className="text-lg leading-relaxed">{verse.tej.et || verse.tej.ht}</p>
-                  </div>
+            return (
+              <motion.div 
+                key={`${verse.chapter}-${verse.verse}-${index}`}
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                custom={index}
+                whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                className="flex"
+              >
+                <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm text-muted-foreground">
+                        Chapter {verse.chapter}, Verse {verse.verse}
+                      </span>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCopy(verse)}
+                          className="h-8 w-8 p-0"
+                        >
+                          {isCopied ? (
+                            <Check className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleShare(verse)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Share2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                        >
+                          <Bookmark className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
 
-                  {/* Sanskrit Text */}
-                  <div className="mb-6 pt-4 border-t">
-                    <p className="text-base font-sanskrit leading-relaxed mb-2">{verse.slok}</p>
-                    <p className="text-sm italic text-muted-foreground">{verse.transliteration}</p>
-                  </div>
+                    {/* English Translation First */}
+                    <div className="mb-6">
+                      <p className="text-lg leading-relaxed">
+                        {verse.tej.et || verse.tej.ht}
+                      </p>
+                    </div>
 
-                  {/* View More Button */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full mt-2"
-                    onClick={() => setSelectedVerse(verse)}
-                  >
-                    <Book className="w-4 h-4 mr-2" />
-                    View More Translations
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                    {/* Preview of Sanskrit Text */}
+                    <div className="mb-4 pt-4 border-t">
+                      <p className="text-base font-sanskrit line-clamp-2">{verse.slok}</p>
+                      <p className="text-sm italic text-muted-foreground line-clamp-1">{verse.transliteration}</p>
+                    </div>
+
+                    {/* View More Button */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full mt-2"
+                      onClick={() => setSelectedVerse(verse)}
+                    >
+                      <Book className="w-4 w-4 mr-2" />
+                      Read More
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Translations Modal */}
-      <Dialog open={!!selectedVerse} onOpenChange={() => setSelectedVerse(null)}>
+      {/* Share Dialog */}
+      {selectedVerse && (
+        <ShareDialog
+          verse={selectedVerse}
+          open={showShareDialog}
+          onOpenChange={setShowShareDialog}
+        />
+      )}
+
+      {/* Detailed Verse Modal */}
+      <Dialog open={!!selectedVerse && !showShareDialog} onOpenChange={() => setSelectedVerse(null)}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>
               Chapter {selectedVerse?.chapter}, Verse {selectedVerse?.verse}
             </DialogTitle>
             <DialogDescription>
-              Multiple translations and interpretations
+              Translations and Commentary
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6">
-            {/* English Translations */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-medium">English Translations</h4>
-              {selectedVerse?.tej.et && (
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-base">{selectedVerse.tej.et}</p>
-                  <p className="text-sm text-muted-foreground mt-2">- Tejomay Translation</p>
-                </div>
-              )}
-              {selectedVerse?.siva?.et && (
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-base">{selectedVerse.siva.et}</p>
-                  <p className="text-sm text-muted-foreground mt-2">- Sivananda Translation</p>
-                </div>
-              )}
-              {selectedVerse?.purohit?.et && (
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-base">{selectedVerse.purohit.et}</p>
-                  <p className="text-sm text-muted-foreground mt-2">- Purohit Translation</p>
-                </div>
-              )}
-            </div>
+          <Tabs defaultValue="translations" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="translations">Translations</TabsTrigger>
+              <TabsTrigger value="commentary">Commentary & Notes</TabsTrigger>
+            </TabsList>
 
-            {/* Sanskrit and Hindi */}
-            <div className="space-y-4 pt-6 border-t">
-              <h4 className="text-lg font-medium">Original Text</h4>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-lg font-sanskrit mb-2">{selectedVerse?.slok}</p>
-                <p className="text-sm italic">{selectedVerse?.transliteration}</p>
+            <TabsContent value="translations" className="space-y-6">
+              {/* English Translation */}
+              <div className="space-y-4">
+                <h4 className="text-lg font-medium">English Translation</h4>
+                <div className="p-4 rounded-lg bg-muted/50">
+                  <p className="text-lg">{selectedVerse?.tej.et}</p>
+                </div>
               </div>
+
+              {/* Original Sanskrit */}
+              <div className="space-y-4 pt-4 border-t">
+                <h4 className="text-lg font-medium">Sanskrit Text</h4>
+                <div className="p-4 rounded-lg bg-muted/50">
+                  <p className="text-xl font-sanskrit mb-2">{selectedVerse?.slok}</p>
+                  <p className="text-base italic">{selectedVerse?.transliteration}</p>
+                </div>
+              </div>
+
+              {/* Additional Translations */}
+              {(selectedVerse?.siva?.et || selectedVerse?.purohit?.et) && (
+                <div className="space-y-4 pt-4 border-t">
+                  <h4 className="text-lg font-medium">Additional Translations</h4>
+                  {selectedVerse?.siva?.et && (
+                    <div className="p-4 rounded-lg bg-muted/50">
+                      <p className="text-base">{selectedVerse.siva.et}</p>
+                      <p className="text-sm text-muted-foreground mt-2">- Sivananda Translation</p>
+                    </div>
+                  )}
+                  {selectedVerse?.purohit?.et && (
+                    <div className="p-4 rounded-lg bg-muted/50 mt-4">
+                      <p className="text-base">{selectedVerse.purohit.et}</p>
+                      <p className="text-sm text-muted-foreground mt-2">- Purohit Translation</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Hindi Translation */}
               {selectedVerse?.tej.ht && (
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-base">{selectedVerse.tej.ht}</p>
-                  <p className="text-sm text-muted-foreground mt-2">- Hindi Translation</p>
+                <div className="space-y-4 pt-4 border-t">
+                  <h4 className="text-lg font-medium">Hindi Translation</h4>
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <p className="text-base">{selectedVerse.tej.ht}</p>
+                  </div>
                 </div>
               )}
-            </div>
+            </TabsContent>
 
-            {/* Commentary */}
-            {selectedVerse?.chinmay?.hc && (
-              <div className="space-y-4 pt-6 border-t">
-                <h4 className="text-lg font-medium">Commentary</h4>
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-base">{selectedVerse.chinmay.hc}</p>
-                  <p className="text-sm text-muted-foreground mt-2">- Chinmaya Commentary</p>
+            <TabsContent value="commentary" className="space-y-6">
+              {selectedVerse?.chinmay?.hc ? (
+                <div className="space-y-4">
+                  <h4 className="text-lg font-medium">Chinmaya Commentary</h4>
+                  <div className="p-4 rounded-lg bg-muted/50">
+                    <p className="text-base whitespace-pre-wrap">{selectedVerse.chinmay.hc}</p>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No additional commentary available for this verse.
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
     </div>
