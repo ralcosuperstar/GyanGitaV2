@@ -251,7 +251,7 @@ export default function Hero() {
               onClick={handleScrollToMood}
             >
               <div className="absolute inset-0 bg-primary/10 transform rotate-45 translate-x-3/4 transition-transform group-hover:translate-x-1/4" />
-              <span className="relative flex items-center">
+              <span className="relative flex items-center justify-center w-full">
                 <Sparkles className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
                 Find Your Peace Today
               </span>
@@ -262,8 +262,10 @@ export default function Hero() {
               className="w-full sm:w-auto px-8 py-6 text-lg border-primary/20 hover:bg-primary/5 hover:text-primary group backdrop-blur-sm"
               onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(t('home.share.text') + '\n\n' + window.location.origin)}`, '_blank')}
             >
-              <BsWhatsapp className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
-              Share with Someone Who Needs This
+              <span className="relative flex items-center justify-center w-full">
+                <BsWhatsapp className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                Share with Someone Who Needs This
+              </span>
             </Button>
           </motion.div>
         </div>
