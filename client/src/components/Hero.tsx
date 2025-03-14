@@ -16,7 +16,7 @@ import { useLanguage } from "@/contexts/language-context";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Relatable quotes that connect ancient wisdom to modern challenges
+// Update inspirationalQuotes array to have similar length quotes for consistency
 const inspirationalQuotes = [
   { 
     text: "Your anxiety about the future is useless. Focus on what you can control in this moment.",
@@ -160,62 +160,68 @@ export default function Hero() {
             <span className="text-primary/90">Stop Scrolling, Start Healing</span>
           </motion.div>
 
-          {/* Main title and subtitle */}
+          {/* Main title and subtitle with fixed heights */}
           <motion.div
             className="hero-title mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair mb-6 tracking-tight">
-              <span className="block text-balance leading-tight space-y-4">
-                Tired of Endless Scrolling
-                <br className="hidden sm:block" />
-                <span className="block mt-4 sm:mt-0 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  But Still Feeling Empty?
+            <div className="min-h-[120px] sm:min-h-[160px] flex flex-col items-center justify-center">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair tracking-tight">
+                <span className="block text-balance leading-tight space-y-4">
+                  Tired of Endless Scrolling
+                  <br className="hidden sm:block" />
+                  <span className="block mt-4 sm:mt-0 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                    But Still Feeling Empty?
+                  </span>
                 </span>
-              </span>
-            </h1>
-            <p className="text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto mb-8 px-4">
-              Discover ancient wisdom that actually helps with modern struggles - 
-              anxiety, loneliness, and the constant pressure to "have it all figured out"
-            </p>
+              </h1>
+            </div>
+
+            <div className="min-h-[80px] flex items-center justify-center">
+              <p className="text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto px-4">
+                Discover ancient wisdom that actually helps with modern struggles - 
+                anxiety, loneliness, and the constant pressure to "have it all figured out"
+              </p>
+            </div>
 
             {/* Quote Container with Fixed Height */}
-            <div className="relative h-[160px] sm:h-[140px] flex items-center justify-center overflow-hidden">
-              <AnimatePresence mode="wait">
+            <div className="relative h-[180px] flex items-center justify-center overflow-hidden">
+              <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentQuote}
                   initial={{ 
                     opacity: 0,
                     y: 20,
-                    position: 'absolute',
-                    width: '100%'
+                    position: 'absolute'
                   }}
                   animate={{ 
                     opacity: 1,
                     y: 0,
-                    position: 'absolute',
-                    width: '100%'
+                    position: 'absolute'
                   }}
                   exit={{ 
                     opacity: 0,
                     y: -20,
-                    position: 'absolute',
-                    width: '100%'
+                    position: 'absolute'
                   }}
                   transition={{ 
                     type: "tween",
-                    duration: 0.5,
+                    duration: 0.4,
                     ease: "easeInOut"
                   }}
-                  className="flex flex-col items-center justify-center px-6"
+                  className="w-full px-6 flex flex-col items-center justify-center"
                 >
                   <Quote className="h-6 w-6 mb-3 text-primary/50" />
-                  <p className="italic text-xl md:text-2xl text-primary/80 max-w-3xl mx-auto text-center min-h-[3em]">
-                    "{inspirationalQuotes[currentQuote].text}"
-                  </p>
-                  <div className="text-sm text-primary/60 mt-2">
-                    <span className="text-primary/70">{inspirationalQuotes[currentQuote].theme}</span>
+                  <div className="min-h-[80px] flex items-center justify-center">
+                    <p className="italic text-xl md:text-2xl text-primary/80 max-w-3xl mx-auto text-center">
+                      "{inspirationalQuotes[currentQuote].text}"
+                    </p>
+                  </div>
+                  <div className="h-[40px] flex items-center justify-center">
+                    <span className="text-sm text-primary/70">
+                      {inspirationalQuotes[currentQuote].theme}
+                    </span>
                   </div>
                 </motion.div>
               </AnimatePresence>
