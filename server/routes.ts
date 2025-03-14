@@ -1,7 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertFavoriteSchema } from "@shared/schema";
+import { z } from "zod";
+
+// Create schema with proper number types
+const insertFavoriteSchema = z.object({
+  user_id: z.number(),
+  chapter: z.number(),
+  verse: z.number()
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth check middleware
@@ -22,15 +29,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const favoriteData = insertFavoriteSchema.parse({
         user_id: userId,
-        chapter: req.body.chapter,
-        verse: req.body.verse
+        chapter: Number(req.body.chapter),
+        verse: Number(req.body.verse)
       });
 
       const favorite = await storage.createFavorite(favoriteData);
       res.json(favorite);
     } catch (error) {
       console.error('Error creating favorite:', error);
-      res.status(500).json({ error: 'Failed to save favorite' });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: 'Invalid data format' });
+      } else {
+        res.status(500).json({ error: 'Failed to save favorite' });
+      }
     }
   });
 
@@ -40,7 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = 1; // Temporary for testing
 
       const { chapter, verse } = req.body;
-      await storage.removeFavorite(userId, chapter, verse);
+      await storage.removeFavorite(userId, Number(chapter), Number(verse));
       res.json({ success: true });
     } catch (error) {
       console.error('Error removing favorite:', error);
