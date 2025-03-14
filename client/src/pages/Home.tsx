@@ -4,7 +4,6 @@ import { useLocation } from "wouter";
 import { useLanguage } from "@/contexts/language-context";
 import Hero from "@/components/Hero";
 import FeaturesSection from "@/components/FeaturesSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
 import CallToAction from "@/components/CallToAction";
 import MoodSelector from "@/components/MoodSelector";
 import VerseDisplay from "@/components/VerseDisplay";
@@ -82,9 +81,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
-      {/* Testimonials Section */}
-      <TestimonialsSection />
 
       {/* Mood-Based Recommendation Section */}
       <section id="mood-section" className="py-24 bg-muted/5">
