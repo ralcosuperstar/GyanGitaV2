@@ -41,28 +41,34 @@ export default function Footer() {
             <h3 className="font-playfair text-lg font-semibold gradient-heading">Contact</h3>
             <ul className="space-y-2">
               <li>
-                <motion.a 
-                  href="mailto:support@gyangita.com" 
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group w-fit"
+                <motion.div 
                   variants={linkVariants}
                   whileHover="hover"
                   whileTap="tap"
                 >
-                  support@gyangita.com
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </motion.a>
+                  <a 
+                    href="mailto:support@gyangita.com" 
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group w-fit"
+                  >
+                    support@gyangita.com
+                    <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                </motion.div>
               </li>
               <li>
-                <motion.a 
-                  href="tel:+919370922063" 
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group w-fit"
+                <motion.div
                   variants={linkVariants}
                   whileHover="hover"
                   whileTap="tap"
                 >
-                  +91 9370922063
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </motion.a>
+                  <a 
+                    href="tel:+919370922063" 
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group w-fit"
+                  >
+                    +91 9370922063
+                    <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                </motion.div>
               </li>
             </ul>
           </div>
@@ -72,38 +78,38 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/browse">
-                  <motion.a 
+                  <motion.div 
                     className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                     variants={linkVariants}
                     whileHover="hover"
                     whileTap="tap"
                   >
                     Browse Verses
-                  </motion.a>
+                  </motion.div>
                 </Link>
               </li>
               <li>
                 <Link href="/about">
-                  <motion.a 
+                  <motion.div 
                     className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                     variants={linkVariants}
                     whileHover="hover"
                     whileTap="tap"
                   >
                     About Us
-                  </motion.a>
+                  </motion.div>
                 </Link>
               </li>
               <li>
                 <Link href="/contact">
-                  <motion.a 
+                  <motion.div 
                     className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                     variants={linkVariants}
                     whileHover="hover"
                     whileTap="tap"
                   >
                     Contact Us
-                  </motion.a>
+                  </motion.div>
                 </Link>
               </li>
             </ul>
@@ -116,18 +122,22 @@ export default function Footer() {
               variants={footerVariants}
             >
               API provided by{" "}
-              <motion.a
-                href="https://github.com/vedicscriptures"
-                className="text-primary hover:text-primary/80 transition-colors flex items-center gap-1 group w-fit"
-                target="_blank"
-                rel="noopener noreferrer"
+              <motion.span
+                className="inline-block"
                 variants={linkVariants}
                 whileHover="hover"
                 whileTap="tap"
               >
-                Pt. Prashant Tripathi & Team
-                <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </motion.a>
+                <a
+                  href="https://github.com/vedicscriptures"
+                  className="text-primary hover:text-primary/80 transition-colors flex items-center gap-1 group w-fit"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Pt. Prashant Tripathi & Team
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </motion.span>
             </motion.p>
           </div>
         </div>
