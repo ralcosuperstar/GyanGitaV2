@@ -187,19 +187,6 @@ export default function Hero() {
               </p>
             </div>
 
-            {/* Eternal Wisdom section with fixed height and absolute positioning */}
-            <div className="relative h-[140px] mb-8">
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-center max-w-3xl mx-auto px-4">
-                  <h2 className="text-2xl md:text-3xl font-playfair">
-                    Eternal Wisdom For Modern Life
-                  </h2>
-                  <p className="text-md text-muted-foreground mt-2">
-                    The timeless teachings of the Bhagavad Gita offer guidance that transcends centuries
-                  </p>
-                </div>
-              </div>
-            </div>
 
             {/* Quote Container with Fixed Height */}
             <div className="h-[200px] relative overflow-hidden">
