@@ -187,9 +187,8 @@ export default function Hero() {
               </p>
             </div>
 
-
             {/* Quote Container with Fixed Height */}
-            <div className="h-[200px] relative overflow-hidden">
+            <div className="hero-quote-container h-[200px] w-full relative">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentQuote}
@@ -201,18 +200,20 @@ export default function Hero() {
                     duration: 0.4,
                     ease: "easeInOut"
                   }}
-                  className="absolute inset-0 flex flex-col items-center justify-center px-6"
+                  className="absolute inset-0"
                 >
-                  <Quote className="h-6 w-6 mb-3 text-primary/50" />
-                  <div className="h-[100px] flex items-center justify-center">
-                    <p className="italic text-xl md:text-2xl text-primary/80 max-w-3xl mx-auto text-center">
-                      "{inspirationalQuotes[currentQuote].text}"
-                    </p>
-                  </div>
-                  <div className="h-[40px] flex items-center justify-center">
-                    <span className="text-sm text-primary/70">
-                      {inspirationalQuotes[currentQuote].theme}
-                    </span>
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <Quote className="h-6 w-6 mb-3 text-primary/50" />
+                    <div className="h-[100px] w-full max-w-3xl mx-auto px-6 flex items-center justify-center">
+                      <p className="italic text-xl md:text-2xl text-primary/80 text-center">
+                        "{inspirationalQuotes[currentQuote].text}"
+                      </p>
+                    </div>
+                    <div className="h-[40px] flex items-center justify-center">
+                      <span className="text-sm text-primary/70">
+                        {inspirationalQuotes[currentQuote].theme}
+                      </span>
+                    </div>
                   </div>
                 </motion.div>
               </AnimatePresence>
