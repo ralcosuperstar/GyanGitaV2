@@ -12,26 +12,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, RefreshCw } from "lucide-react";
 import VerseOfTheDay from "@/components/VerseOfTheDay";
-
-interface Verse {
-  slok: string;
-  transliteration: string;
-  tej: {
-    ht: string;
-    et: string;
-  };
-  siva?: {
-    et: string;
-  };
-  purohit?: {
-    et: string;
-  };
-  chinmay?: {
-    hc: string;
-  };
-  chapter: number;
-  verse: number;
-}
+import { getVersesByMood, type Verse } from "@/lib/data";
 
 export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
@@ -40,14 +21,10 @@ export default function Home() {
   const { t } = useLanguage();
 
   const { data: verses = null, isLoading, error } = useQuery<Verse[]>({
-    queryKey: ['/api/mood', selectedMood],
+    queryKey: ['mood-verses', selectedMood],
     queryFn: async () => {
       if (!selectedMood) return null;
-      const response = await fetch(`/api/mood/${selectedMood}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch verses');
-      }
-      return response.json();
+      return getVersesByMood(selectedMood);
     },
     enabled: !!selectedMood
   });
@@ -140,19 +117,6 @@ export default function Home() {
           className="py-20 bg-gradient-to-b from-muted/5 via-background to-background"
         >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-16 text-center"
-            >
-              <h3 className="text-3xl font-playfair font-medium mb-4">
-                Verses for when you feel <span className="text-primary font-semibold">{selectedMood}</span>
-              </h3>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Here are the verses from the Bhagavad Gita that offer guidance and perspective for your current mood
-              </p>
-            </motion.div>
-
             {error ? (
               <div className="text-center py-12 bg-destructive/10 rounded-lg max-w-lg mx-auto">
                 <p className="text-destructive font-medium">Error loading verses. Please try again.</p>
