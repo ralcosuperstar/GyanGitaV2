@@ -86,27 +86,70 @@ export const getRandomVerse = async (): Promise<Verse | undefined> => {
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   console.log('Getting verses for mood:', mood);
 
-  // Comprehensive mood-verse mappings based on themes and emotional context
+  // Comprehensive mood-verse mappings from Extracted Text.docx
   const moodVerses = {
+    // ANGER
     anger: [[2, 56], [2, 62], [2, 63], [5, 26], [16, 1], [16, 2], [16, 3], [16, 21]],
+
+    // FEELING SINFUL
     "feeling sinful": [[4, 36], [4, 37], [5, 10], [9, 30], [10, 3], [14, 6], [18, 66]],
+
+    // PRACTICING FORGIVENESS
     forgiveness: [[11, 44], [12, 13], [12, 14], [16, 1], [16, 2], [16, 3]],
+    "practicing forgiveness": [[11, 44], [12, 13], [12, 14], [16, 1], [16, 2], [16, 3]],
+
+    // PRIDE
     pride: [[16, 14], [16, 13], [16, 15], [18, 26], [18, 58]],
+
+    // DEATH OF A LOVED ONE
     "death of a loved one": [[2, 13], [2, 20], [2, 22], [2, 25], [2, 27]],
+    grief: [[2, 13], [2, 20], [2, 22], [2, 25], [2, 27]], // Alternative name
+
+    // SEEKING PEACE
     "seeking peace": [[2, 66], [2, 71], [4, 39], [5, 29], [8, 28]],
+    peace: [[2, 66], [2, 71], [4, 39], [5, 29], [8, 28]], // Alternative name
+
+    // LUST
     lust: [[3, 37], [3, 41], [3, 43], [5, 22], [16, 21]],
+
+    // UNCONTROLLED MIND
     "uncontrolled mind": [[6, 5], [6, 6], [6, 26], [6, 35]],
+
+    // DEALING WITH ENVY
     "dealing with envy": [[12, 13], [12, 14], [16, 19], [18, 71]],
+    envy: [[12, 13], [12, 14], [16, 19], [18, 71]], // Alternative name
+
+    // DISCRIMINATED
     discriminated: [[5, 18], [5, 19], [6, 32], [9, 29]],
+
+    // LAZINESS
     laziness: [[3, 8], [3, 20], [6, 16], [18, 39]],
+
+    // LONELINESS
     loneliness: [[6, 30], [9, 29], [13, 16], [13, 18]],
+
+    // DEPRESSION
     depression: [[2, 3], [2, 14], [5, 21]],
+
+    // CONFUSION
     confusion: [[2, 7], [3, 2], [18, 61]],
+
+    // FEAR
     fear: [[4, 10], [11, 50], [18, 30]],
+
+    // GREED
     greed: [[14, 17], [16, 21], [17, 25]],
+
+    // DEMOTIVATED
     demotivated: [[11, 33], [18, 48], [18, 78]],
+
+    // TEMPTATION
     temptation: [[2, 60], [2, 61], [2, 70], [7, 14]],
+
+    // FORGETFULNESS
     forgetfulness: [[15, 15], [18, 61]],
+
+    // LOSING HOPE
     "losing hope": [[4, 11], [9, 22], [9, 34], [18, 66], [18, 78]]
   };
 
