@@ -202,12 +202,14 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
   }
 
   return (
-    <div ref={containerRef} className="verses-container relative px-4 sm:px-6" role="region" aria-label="Verse recommendations">
+    <div ref={containerRef} className="verses-container relative px-4 sm:px-6 max-w-[1920px] mx-auto" role="region" aria-label="Verse recommendations">
+      {/* Background gradients */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: "1s" }}></div>
       </div>
 
+      {/* Header Section */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -230,6 +232,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         </p>
       </motion.div>
 
+      {/* Verses Grid */}
       <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
         {verses.map((verse, index) => {
           const verseId = `${verse.chapter}-${verse.verse}`;
@@ -245,13 +248,19 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
               custom={index}
               className="flex"
             >
-              <Card className="w-full overflow-hidden bg-card/50 backdrop-blur-sm border-primary/10 hover:border-primary/20 transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Chapter {verse.chapter}, Verse {verse.verse}
-                    </span>
-                    <div className="flex gap-2">
+              <Card className="w-full overflow-hidden bg-card/50 backdrop-blur-sm border-primary/10 hover:border-primary/20 transition-all duration-300 hover:shadow-lg">
+                <CardContent className="p-6 flex flex-col h-full">
+                  {/* Header with Chapter Info and Action Buttons */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center space-x-2">
+                      <span className="px-3 py-1 rounded-full bg-primary/5 text-sm font-medium text-primary/80">
+                        Ch {verse.chapter}
+                      </span>
+                      <span className="px-3 py-1 rounded-full bg-primary/5 text-sm font-medium text-primary/80">
+                        V {verse.verse}
+                      </span>
+                    </div>
+                    <div className="grid grid-flow-col gap-2">
                       <motion.button
                         variants={buttonVariants}
                         whileHover="hover"
@@ -285,26 +294,32 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                     </div>
                   </div>
 
-                  <div className="mb-6">
-                    <p className="text-lg sm:text-xl leading-relaxed">
-                      {verse.tej.et || verse.tej.ht}
-                    </p>
+                  {/* Main Content Area */}
+                  <div className="flex-grow">
+                    {/* English Translation */}
+                    <div className="mb-6">
+                      <p className="text-lg sm:text-xl leading-relaxed text-foreground">
+                        {verse.tej.et || verse.tej.ht}
+                      </p>
+                    </div>
+
+                    {/* Sanskrit Preview */}
+                    <div className="pt-4 border-t border-primary/10">
+                      <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1 text-muted-foreground">
+                        {verse.slok}
+                      </p>
+                      <p className="text-sm italic text-muted-foreground/80 line-clamp-1">
+                        {verse.transliteration}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="pt-4 border-t border-primary/10">
-                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1">
-                      {verse.slok}
-                    </p>
-                    <p className="text-sm italic text-muted-foreground line-clamp-1">
-                      {verse.transliteration}
-                    </p>
-                  </div>
-
+                  {/* Read More Button */}
                   <motion.div
                     variants={buttonVariants}
                     whileHover="hover"
                     whileTap="tap"
-                    className="mt-4"
+                    className="mt-6"
                   >
                     <Button
                       variant="outline"
@@ -323,6 +338,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         })}
       </div>
 
+      {/* Share Dialog */}
       {selectedVerse && (
         <ShareDialog
           verse={selectedVerse}
@@ -331,82 +347,105 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         />
       )}
 
+      {/* Enhanced Modal Dialog */}
       <Dialog open={!!selectedVerse && !showShareDialog} onOpenChange={() => setSelectedVerse(null)}>
-        <DialogContent className="sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
-              Chapter {selectedVerse?.chapter}, Verse {selectedVerse?.verse}
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="space-y-2">
+            <DialogTitle className="flex items-center justify-between">
+              <span className="text-2xl font-playfair">
+                Chapter {selectedVerse?.chapter}, Verse {selectedVerse?.verse}
+              </span>
             </DialogTitle>
             <DialogDescription>
-              Translations and Commentary
+              <div className="flex gap-2">
+                <span className="px-3 py-1 rounded-full bg-primary/5 text-sm">
+                  English
+                </span>
+                <span className="px-3 py-1 rounded-full bg-primary/5 text-sm">
+                  Sanskrit
+                </span>
+                <span className="px-3 py-1 rounded-full bg-primary/5 text-sm">
+                  Commentary
+                </span>
+              </div>
             </DialogDescription>
           </DialogHeader>
 
-          <Tabs defaultValue="translations" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="translations">Translations</TabsTrigger>
-              <TabsTrigger value="commentary">Commentary & Notes</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="translations" className="space-y-6">
-              <div className="space-y-4">
-                <h4 className="text-lg font-medium">English Translation</h4>
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-lg">{selectedVerse?.tej.et}</p>
-                </div>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t">
-                <h4 className="text-lg font-medium">Sanskrit Text</h4>
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-xl font-sanskrit mb-2">{selectedVerse?.slok}</p>
-                  <p className="text-base italic">{selectedVerse?.transliteration}</p>
-                </div>
+          <div className="mt-6 space-y-8">
+            {/* English Translation Section */}
+            <div className="space-y-6">
+              <div className="bg-card rounded-lg p-6 space-y-4">
+                <h3 className="text-lg font-medium flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary"></span>
+                  English Translation
+                </h3>
+                <p className="text-xl leading-relaxed">
+                  {selectedVerse?.tej.et}
+                </p>
               </div>
 
               {(selectedVerse?.siva?.et || selectedVerse?.purohit?.et) && (
-                <div className="space-y-4 pt-4 border-t">
-                  <h4 className="text-lg font-medium">Additional Translations</h4>
+                <div className="grid gap-4 sm:grid-cols-2">
                   {selectedVerse?.siva?.et && (
-                    <div className="p-4 rounded-lg bg-muted/50">
+                    <div className="bg-muted/50 rounded-lg p-4">
                       <p className="text-base">{selectedVerse.siva.et}</p>
                       <p className="text-sm text-muted-foreground mt-2">- Sivananda Translation</p>
                     </div>
                   )}
                   {selectedVerse?.purohit?.et && (
-                    <div className="p-4 rounded-lg bg-muted/50 mt-4">
+                    <div className="bg-muted/50 rounded-lg p-4">
                       <p className="text-base">{selectedVerse.purohit.et}</p>
                       <p className="text-sm text-muted-foreground mt-2">- Purohit Translation</p>
                     </div>
                   )}
                 </div>
               )}
+            </div>
 
-              {selectedVerse?.tej.ht && (
-                <div className="space-y-4 pt-4 border-t">
-                  <h4 className="text-lg font-medium">Hindi Translation</h4>
-                  <div className="p-4 rounded-lg bg-muted/50">
-                    <p className="text-base">{selectedVerse.tej.ht}</p>
-                  </div>
-                </div>
-              )}
-            </TabsContent>
+            {/* Sanskrit Text Section */}
+            <div className="bg-card rounded-lg p-6 space-y-4">
+              <h3 className="text-lg font-medium flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary"></span>
+                Sanskrit Text
+              </h3>
+              <div className="space-y-4">
+                <p className="text-2xl font-sanskrit leading-relaxed">
+                  {selectedVerse?.slok}
+                </p>
+                <p className="text-lg italic text-muted-foreground">
+                  {selectedVerse?.transliteration}
+                </p>
+              </div>
+            </div>
 
-            <TabsContent value="commentary" className="space-y-6">
-              {selectedVerse?.chinmay?.hc ? (
-                <div className="space-y-4">
-                  <h4 className="text-lg font-medium">Chinmaya Commentary</h4>
-                  <div className="p-4 rounded-lg bg-muted/50">
-                    <p className="text-base whitespace-pre-wrap">{selectedVerse.chinmay.hc}</p>
-                  </div>
+            {/* Commentary Section */}
+            {selectedVerse?.chinmay?.hc && (
+              <div className="bg-card rounded-lg p-6 space-y-4">
+                <h3 className="text-lg font-medium flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary"></span>
+                  Commentary
+                </h3>
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-base whitespace-pre-wrap">
+                    {selectedVerse.chinmay.hc}
+                  </p>
                 </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No additional commentary available for this verse.
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+              </div>
+            )}
+
+            {/* Hindi Translation */}
+            {selectedVerse?.tej.ht && (
+              <div className="bg-card rounded-lg p-6 space-y-4">
+                <h3 className="text-lg font-medium flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary"></span>
+                  Hindi Translation
+                </h3>
+                <p className="text-lg">
+                  {selectedVerse.tej.ht}
+                </p>
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
