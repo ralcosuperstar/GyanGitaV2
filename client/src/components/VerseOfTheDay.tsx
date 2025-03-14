@@ -1,3 +1,9 @@
+/**
+ * VerseDisplay Component
+ * 
+ * Displays Bhagavad Gita verses with improved readability and contrast
+ */
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -137,10 +143,10 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
 
             {/* Sanskrit Text */}
             <div className="pt-4 border-t border-primary/10">
-              <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-2 text-foreground/80">
+              <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-2 text-foreground">
                 {verse.slok}
               </p>
-              <p className="text-sm italic text-foreground/60 line-clamp-1">
+              <p className="text-base italic text-foreground opacity-90 line-clamp-1">
                 {verse.transliteration}
               </p>
             </div>
@@ -148,7 +154,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
 
           {/* Read More Button */}
           <Button
-            className="w-full mt-6 bg-primary/10 hover:bg-primary/20 text-primary font-medium"
+            className="w-full mt-6 bg-primary/20 hover:bg-primary/30 text-primary font-medium text-base"
             onClick={() => handleShowDetails(verse)}
           >
             <Book className="h-4 w-4 mr-2" />
@@ -244,7 +250,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
       <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-playfair">
+            <DialogTitle className="text-2xl font-playfair text-foreground">
               Chapter {activeVerse?.chapter}, Verse {activeVerse?.verse}
             </DialogTitle>
             <DialogDescription>
@@ -266,7 +272,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
             {/* English Translation Section */}
             <div className="space-y-6">
               <div className="bg-card rounded-lg p-6 space-y-4">
-                <h3 className="text-lg font-medium flex items-center gap-2">
+                <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                   <span className="w-2 h-2 rounded-full bg-primary"></span>
                   English Translation
                 </h3>
@@ -277,14 +283,14 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
 
               {/* Sanskrit Text */}
               <div className="bg-card rounded-lg p-6 space-y-4">
-                <h3 className="text-lg font-medium flex items-center gap-2">
+                <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                   <span className="w-2 h-2 rounded-full bg-primary"></span>
                   Sanskrit Text
                 </h3>
-                <p className="text-2xl font-sanskrit leading-relaxed">
+                <p className="text-2xl font-sanskrit leading-relaxed text-foreground">
                   {activeVerse?.slok}
                 </p>
-                <p className="text-lg italic text-foreground/80">
+                <p className="text-lg italic text-foreground opacity-90">
                   {activeVerse?.transliteration}
                 </p>
               </div>
@@ -292,12 +298,12 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
               {/* Commentary Section */}
               {activeVerse?.chinmay?.hc && (
                 <div className="bg-card rounded-lg p-6 space-y-4">
-                  <h3 className="text-lg font-medium flex items-center gap-2">
+                  <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                     <span className="w-2 h-2 rounded-full bg-primary"></span>
                     Commentary
                   </h3>
                   <div className="prose prose-lg max-w-none">
-                    <p className="text-base whitespace-pre-wrap">
+                    <p className="text-base text-foreground whitespace-pre-wrap">
                       {activeVerse.chinmay.hc}
                     </p>
                   </div>
