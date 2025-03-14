@@ -242,29 +242,29 @@ export default function Hero() {
 
           {/* Call to action buttons */}
           <motion.div 
-            className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center max-w-xl mx-auto mb-16"
+            className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center items-center max-w-xl mx-auto mb-16"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <Button
-              className="relative w-full sm:w-auto px-8 py-6 text-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all group overflow-hidden"
+              className="relative w-full sm:w-auto sm:min-w-[200px] px-6 py-6 text-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all group overflow-hidden"
               onClick={handleScrollToMood}
             >
               <div className="absolute inset-0 bg-primary/10 transform rotate-45 translate-x-3/4 transition-transform group-hover:translate-x-1/4" />
-              <span className="relative flex items-center">
+              <span className="relative flex items-center justify-center">
                 <Sparkles className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
-                Find Your Peace Today
+                Find Peace Today
               </span>
             </Button>
 
             <Button
               variant="outline"
-              className="w-full sm:w-auto px-8 py-6 text-lg border-primary/20 hover:bg-primary/5 hover:text-primary group backdrop-blur-sm"
+              className="w-full sm:w-auto sm:min-w-[200px] px-6 py-6 text-lg border-primary/20 hover:bg-primary/5 hover:text-primary group backdrop-blur-sm"
               onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(t('home.share.text') + '\n\n' + window.location.origin)}`, '_blank')}
             >
-              <span className="relative flex items-center">
+              <span className="relative flex items-center justify-center">
                 <BsWhatsapp className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
-                Share with Someone Who Needs This
+                Share With Others
               </span>
             </Button>
           </motion.div>
