@@ -82,16 +82,29 @@ export const getRandomVerse = async (): Promise<Verse | undefined> => {
   return undefined;
 };
 
-// Get verses for a specific mood - simulating the previous API endpoint
+// Get verses for a specific mood - using local data
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
-  // This is a simplified version - you'll need to add mood-verse mappings
+  // Comprehensive mood-verse mappings based on themes and emotional context
   const moodVerses = {
-    anxiety: [[1, 1], [2, 47], [18, 66]],
-    peace: [[2, 48], [5, 12], [6, 27]],
-    // Add more mood-verse mappings as needed
+    anxiety: [[2, 47], [18, 66], [2, 14]], // Focus on duty and letting go of outcomes
+    peace: [[2, 48], [5, 12], [6, 27]], // Verses about inner peace
+    depression: [[2, 14], [2, 22], [2, 30]], // Verses about hope and eternal nature of soul
+    anger: [[2, 62], [2, 63], [5, 23]], // Verses about controlling anger
+    confusion: [[4, 42], [18, 63], [2, 7]], // Guidance in times of doubt
+    fear: [[2, 45], [2, 40], [4, 10]], // Overcoming fear
+    grief: [[2, 11], [2, 13], [2, 27]], // Dealing with loss
+    loneliness: [[9, 29], [7, 14], [4, 35]], // Divine companionship
+    stress: [[2, 48], [5, 12], [18, 58]], // Stress relief through detachment
+    happiness: [[5, 21], [14, 20], [2, 66]] // Path to true happiness
   };
 
-  const versesForMood = moodVerses[mood as keyof typeof moodVerses] || [];
+  const versesForMood = moodVerses[mood.toLowerCase() as keyof typeof moodVerses] || [];
+
+  if (!versesForMood.length) {
+    console.log(`No verses mapped for mood: ${mood}`);
+    return [];
+  }
+
   const verses = await Promise.all(
     versesForMood.map(async ([chapter, verse]) => {
       const verseData = await getVerse(chapter, verse);
