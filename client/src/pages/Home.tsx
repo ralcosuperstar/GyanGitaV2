@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { useLanguage } from "@/contexts/language-context";
 import Hero from "@/components/Hero";
 import FeaturesSection from "@/components/FeaturesSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
 import CallToAction from "@/components/CallToAction";
 import MoodSelector from "@/components/MoodSelector";
 import VerseDisplay from "@/components/VerseDisplay";
@@ -22,7 +23,7 @@ export default function Home() {
   const { data: verses = null, isLoading, error } = useQuery<Verse[]>({
     queryKey: ['mood-verses', selectedMood],
     queryFn: async () => {
-      if (!selectedMood) return null;
+      if (!selectedMood) return [];
       return getVersesByMood(selectedMood);
     },
     enabled: !!selectedMood
@@ -49,6 +50,9 @@ export default function Home() {
 
       {/* Features Section */}
       <FeaturesSection />
+
+      {/* Testimonials Section */}
+      <TestimonialsSection />
 
       {/* Verse of the Day Section */}
       <section className="py-24 bg-gradient-to-b from-background via-muted/5 to-background">
