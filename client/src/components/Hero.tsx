@@ -10,7 +10,7 @@ import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Heart, Quote, ArrowDown } from "lucide-react";
+import { Sparkles, Heart, Quote, ArrowDown, Space } from "lucide-react";
 import { BsWhatsapp } from "react-icons/bs";
 import { useLanguage } from "@/contexts/language-context";
 
@@ -172,15 +172,15 @@ export default function Hero() {
             animate={{ opacity: 1 }}
           >
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair mb-6 tracking-tight">
-              <span className="block text-balance leading-tight">
+              <span className="block text-balance leading-tight space-y-2">
                 Feeling Lost in Life's
                 <br className="hidden sm:block" />
-                <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                <span className="block mt-2 sm:mt-0 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   Chaos & Confusion?
                 </span>
               </span>
             </h1>
-            <p className="text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto mb-8">
+            <p className="text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto mb-8 px-4">
               Discover timeless Bhagavad Gita wisdom tailored to your emotional state. 
               Get instant guidance for modern challenges through ancient teachings.
             </p>
