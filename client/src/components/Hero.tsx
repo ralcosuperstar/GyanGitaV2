@@ -162,11 +162,11 @@ export default function Hero() {
 
           {/* Main title and subtitle with fixed heights */}
           <motion.div
-            className="hero-title mb-8"
+            className="hero-title"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="min-h-[120px] sm:min-h-[160px] flex flex-col items-center justify-center">
+            <div className="h-[120px] sm:h-[160px] flex flex-col items-center justify-center">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair tracking-tight">
                 <span className="block text-balance leading-tight space-y-4">
                   Tired of Endless Scrolling
@@ -178,7 +178,7 @@ export default function Hero() {
               </h1>
             </div>
 
-            <div className="min-h-[80px] flex items-center justify-center">
+            <div className="h-[80px] flex items-center justify-center">
               <p className="text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto px-4">
                 Discover ancient wisdom that actually helps with modern struggles - 
                 anxiety, loneliness, and the constant pressure to "have it all figured out"
@@ -186,24 +186,21 @@ export default function Hero() {
             </div>
 
             {/* Quote Container with Fixed Height */}
-            <div className="relative h-[180px] flex items-center justify-center overflow-hidden">
+            <div className="h-[180px] relative flex items-center justify-center overflow-hidden">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentQuote}
                   initial={{ 
                     opacity: 0,
-                    y: 20,
-                    position: 'absolute'
+                    y: 20
                   }}
                   animate={{ 
                     opacity: 1,
-                    y: 0,
-                    position: 'absolute'
+                    y: 0
                   }}
                   exit={{ 
                     opacity: 0,
-                    y: -20,
-                    position: 'absolute'
+                    y: -20
                   }}
                   transition={{ 
                     type: "tween",
@@ -213,7 +210,7 @@ export default function Hero() {
                   className="w-full px-6 flex flex-col items-center justify-center"
                 >
                   <Quote className="h-6 w-6 mb-3 text-primary/50" />
-                  <div className="min-h-[80px] flex items-center justify-center">
+                  <div className="h-[80px] flex items-center justify-center">
                     <p className="italic text-xl md:text-2xl text-primary/80 max-w-3xl mx-auto text-center">
                       "{inspirationalQuotes[currentQuote].text}"
                     </p>
