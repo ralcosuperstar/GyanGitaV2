@@ -13,16 +13,76 @@ export const moods: Mood[] = [
     icon: "😠"
   },
   {
-    id: "peaceful",
+    id: "feeling_sinful",
+    label: "Feeling Sinful",
+    description: "Verses offering guidance for guilt and redemption",
+    icon: "😔"
+  },
+  {
+    id: "practicing_forgiveness",
+    label: "Practicing Forgiveness",
+    description: "Verses about forgiveness and compassion",
+    icon: "🙏"
+  },
+  {
+    id: "pride",
+    label: "Pride",
+    description: "Verses about humility and overcoming ego",
+    icon: "😤"
+  },
+  {
+    id: "death_of_loved_one",
+    label: "Death of a Loved One",
+    description: "Verses offering solace in times of loss",
+    icon: "💔"
+  },
+  {
+    id: "seeking_peace",
     label: "Seeking Peace",
     description: "Verses for finding inner peace and tranquility",
     icon: "😌"
   },
   {
+    id: "lust",
+    label: "Lust",
+    description: "Verses about transcending physical desires",
+    icon: "💖"
+  },
+  {
+    id: "uncontrolled_mind",
+    label: "Uncontrolled Mind",
+    description: "Verses about mental discipline and control",
+    icon: "🧠"
+  },
+  {
+    id: "dealing_with_envy",
+    label: "Dealing with Envy",
+    description: "Verses about overcoming jealousy",
+    icon: "😒"
+  },
+  {
+    id: "discriminated",
+    label: "Discriminated",
+    description: "Verses about equality and universal vision",
+    icon: "🤝"
+  },
+  {
+    id: "laziness",
+    label: "Laziness",
+    description: "Verses for overcoming inertia and procrastination",
+    icon: "😴"
+  },
+  {
+    id: "loneliness",
+    label: "Loneliness",
+    description: "Verses for finding divine companionship",
+    icon: "🫂"
+  },
+  {
     id: "depression",
     label: "Depression",
     description: "Verses offering solace and hope during difficult times",
-    icon: "😞"
+    icon: "😢"
   },
   {
     id: "confusion",
@@ -64,36 +124,6 @@ export const moods: Mood[] = [
     id: "losing_hope",
     label: "Losing Hope",
     description: "Verses offering encouragement and assurance",
-    icon: "😔"
-  },
-  {
-    id: "lust",
-    label: "Lust",
-    description: "Verses about transcending physical desires",
-    icon: "💖"
-  },
-  {
-    id: "uncontrolled_mind",
-    label: "Uncontrolled Mind",
-    description: "Verses about mental discipline and control",
-    icon: "🧠"
-  },
-  {
-    id: "envy",
-    label: "Dealing with Envy",
-    description: "Verses about overcoming jealousy",
-    icon: "😤"
-  },
-  {
-    id: "discriminated",
-    label: "Discriminated",
-    description: "Verses about equality and universal vision",
-    icon: "🤝"
-  },
-  {
-    id: "forgiveness",
-    label: "Practicing Forgiveness",
-    description: "Verses about forgiveness and compassion",
-    icon: "🙏"
+    icon: "😞"
   }
 ];
