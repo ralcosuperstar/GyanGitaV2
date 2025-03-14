@@ -84,6 +84,8 @@ export const getRandomVerse = async (): Promise<Verse | undefined> => {
 
 // Get verses for a specific mood - using local data
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
+  console.log('Getting verses for mood:', mood);
+
   // Comprehensive mood-verse mappings based on themes and emotional context
   const moodVerses = {
     anxiety: [[2, 47], [18, 66], [2, 14]], // Focus on duty and letting go of outcomes
@@ -95,24 +97,45 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     grief: [[2, 11], [2, 13], [2, 27]], // Dealing with loss
     loneliness: [[9, 29], [7, 14], [4, 35]], // Divine companionship
     stress: [[2, 48], [5, 12], [18, 58]], // Stress relief through detachment
-    happiness: [[5, 21], [14, 20], [2, 66]] // Path to true happiness
+    happiness: [[5, 21], [14, 20], [2, 66]], // Path to true happiness
+    // Add more mood mappings as needed
   };
 
-  const versesForMood = moodVerses[mood.toLowerCase() as keyof typeof moodVerses] || [];
+  // Normalize the mood string to lowercase for case-insensitive matching
+  const normalizedMood = mood.toLowerCase().trim();
+  console.log('Normalized mood:', normalizedMood);
 
-  if (!versesForMood.length) {
+  // Get verses for the selected mood
+  const versesForMood = moodVerses[normalizedMood as keyof typeof moodVerses];
+
+  if (!versesForMood || !versesForMood.length) {
     console.log(`No verses mapped for mood: ${mood}`);
     return [];
   }
 
+  console.log('Found verse mappings:', versesForMood);
+
+  // Load verses in parallel
   const verses = await Promise.all(
     versesForMood.map(async ([chapter, verse]) => {
-      const verseData = await getVerse(chapter, verse);
-      return verseData;
+      try {
+        const verseData = await getVerse(chapter, verse);
+        if (!verseData) {
+          console.log(`Failed to load verse ${chapter}:${verse}`);
+        }
+        return verseData;
+      } catch (error) {
+        console.error(`Error loading verse ${chapter}:${verse}:`, error);
+        return undefined;
+      }
     })
   );
 
-  return verses.filter((verse): verse is Verse => verse !== undefined);
+  // Filter out any failed verse loads
+  const validVerses = verses.filter((verse): verse is Verse => verse !== undefined);
+  console.log(`Successfully loaded ${validVerses.length} verses for mood: ${mood}`);
+
+  return validVerses;
 };
 
 // Get related verses - simulating the previous API endpoint
