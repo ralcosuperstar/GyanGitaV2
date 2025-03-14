@@ -35,18 +35,14 @@ const itemVariants = {
 export default function Bookmarks() {
   const { t } = useLanguage();
 
-  // First fetch the user's bookmarks
+  // Fetch user's bookmarks
   const { data: bookmarks, isLoading: isLoadingBookmarks } = useQuery({
     queryKey: ['/api/user/bookmarks'],
     queryFn: async () => {
-      const response = await fetch('/api/user/bookmarks', {
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
-        }
-      });
+      const response = await fetch('/api/user/bookmarks');
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('Please log in to view bookmarks');
+          return [];
         }
         throw new Error('Failed to fetch bookmarks');
       }
@@ -54,7 +50,7 @@ export default function Bookmarks() {
     }
   });
 
-  // Then fetch complete verse data for each bookmark
+  // Fetch verse details for each bookmark
   const { data: verseDetails, isLoading: isLoadingVerses } = useQuery({
     queryKey: ['verse-details', bookmarks],
     queryFn: async () => {

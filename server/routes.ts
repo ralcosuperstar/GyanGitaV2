@@ -11,21 +11,17 @@ const insertBookmarkSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth check middleware
-  const requireAuth = (req: any, res: any, next: any) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-    // In a real app, verify the token here
+  // Auth check middleware - for demo, always authenticate
+  const requireAuth = (_req: any, _res: any, next: any) => {
+    // For demo purposes, set a default user
     next();
   };
 
   // Bookmark routes
   app.post('/api/bookmarks', requireAuth, async (req, res) => {
     try {
-      // In a real app, get user_id from the auth token
-      const userId = 1; // Temporary for testing
+      // For demo, use a fixed user ID
+      const userId = 1;
 
       const bookmarkData = insertBookmarkSchema.parse({
         user_id: userId,
@@ -49,8 +45,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/bookmarks', requireAuth, async (req, res) => {
     try {
-      // In a real app, get user_id from the auth token
-      const userId = 1; // Temporary for testing
+      const userId = 1;
 
       const { chapter, verse } = insertBookmarkSchema.parse({
         user_id: userId,
@@ -72,9 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/user/bookmarks', requireAuth, async (req, res) => {
     try {
-      // In a real app, get user_id from the auth token
-      const userId = 1; // Temporary for testing
-
+      const userId = 1;
       const bookmarks = await storage.getUserBookmarks(userId);
       res.json(bookmarks);
     } catch (error) {

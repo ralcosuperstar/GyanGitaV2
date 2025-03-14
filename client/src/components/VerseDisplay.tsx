@@ -104,10 +104,16 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
   // Fetch user's bookmarks
   const { data: userBookmarks } = useQuery({
-    queryKey: ['bookmarks'],
+    queryKey: ['/api/user/bookmarks'],
     queryFn: async () => {
       const response = await fetch('/api/user/bookmarks');
-      if (!response.ok) throw new Error('Failed to fetch bookmarks');
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Handle unauthorized case
+          return new Set();
+        }
+        throw new Error('Failed to fetch bookmarks');
+      }
       const data = await response.json();
       return new Set(data.map((b: any) => `${b.chapter}-${b.verse}`));
     }
@@ -155,7 +161,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
     const isCurrentlyBookmarked = bookmarkedVerses.has(verseId);
 
     try {
-      // Trigger vibration feedback if available
+      // Trigger vibration feedback
       if (navigator.vibrate) {
         navigator.vibrate(50);
       }
@@ -163,8 +169,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       const response = await fetch('/api/bookmarks', {
         method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer dummy-token' // In real app, use actual auth token
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           chapter: Number(verse.chapter),
@@ -173,7 +178,8 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       });
 
       if (!response.ok) {
-        throw new Error(await response.text());
+        const errorText = await response.text();
+        throw new Error(errorText);
       }
 
       // Update local state optimistically
@@ -186,7 +192,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       setBookmarkedVerses(newBookmarks);
 
       // Invalidate queries to refetch bookmarks
-      queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user/bookmarks'] });
 
       toast({
         title: isCurrentlyBookmarked ? "Removed from bookmarks" : "Added to bookmarks",
