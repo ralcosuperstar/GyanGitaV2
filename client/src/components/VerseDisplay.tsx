@@ -250,23 +250,31 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
             >
               <Card className="w-full overflow-hidden bg-card/50 backdrop-blur-sm border-primary/10 hover:border-primary/20 transition-all duration-300 hover:shadow-lg">
                 <CardContent className="p-6 flex flex-col h-full">
-                  {/* Header with Chapter Info and Action Buttons */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center space-x-2">
-                      <span className="px-3 py-1 rounded-full bg-primary/5 text-sm font-medium text-primary/80">
+                  {/* English Translation First - Most prominent */}
+                  <div className="flex-grow mb-6">
+                    <p className="text-xl sm:text-2xl leading-relaxed text-foreground font-medium">
+                      {verse.tej.et || verse.tej.ht}
+                    </p>
+                  </div>
+
+                  {/* Meta Information and Actions */}
+                  <div className="flex items-center justify-between py-4 border-y border-primary/10">
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1.5 rounded-full bg-primary/5 text-sm font-medium text-primary/80">
                         Ch {verse.chapter}
                       </span>
-                      <span className="px-3 py-1 rounded-full bg-primary/5 text-sm font-medium text-primary/80">
+                      <span className="px-3 py-1.5 rounded-full bg-primary/5 text-sm font-medium text-primary/80">
                         V {verse.verse}
                       </span>
                     </div>
-                    <div className="grid grid-flow-col gap-2">
+                    <div className="grid grid-flow-col gap-1.5">
                       <motion.button
                         variants={buttonVariants}
                         whileHover="hover"
                         whileTap="tap"
                         onClick={() => handleCopy(verse)}
-                        className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
+                        className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
+                        title="Copy verse"
                       >
                         {isCopied ? (
                           <Check className="h-4 w-4 text-green-500" />
@@ -279,7 +287,8 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                         whileHover="hover"
                         whileTap="tap"
                         onClick={() => handleShare(verse)}
-                        className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
+                        className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
+                        title="Share verse"
                       >
                         <Share2 className="h-4 w-4" />
                       </motion.button>
@@ -287,31 +296,22 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                         variants={buttonVariants}
                         whileHover="hover"
                         whileTap="tap"
-                        className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
+                        className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
+                        title="Bookmark verse"
                       >
                         <Bookmark className="h-4 w-4" />
                       </motion.button>
                     </div>
                   </div>
 
-                  {/* Main Content Area */}
-                  <div className="flex-grow">
-                    {/* English Translation */}
-                    <div className="mb-6">
-                      <p className="text-lg sm:text-xl leading-relaxed text-foreground">
-                        {verse.tej.et || verse.tej.ht}
-                      </p>
-                    </div>
-
-                    {/* Sanskrit Preview */}
-                    <div className="pt-4 border-t border-primary/10">
-                      <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1 text-muted-foreground">
-                        {verse.slok}
-                      </p>
-                      <p className="text-sm italic text-muted-foreground/80 line-clamp-1">
-                        {verse.transliteration}
-                      </p>
-                    </div>
+                  {/* Sanskrit Preview */}
+                  <div className="mt-4 text-muted-foreground/90">
+                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1.5">
+                      {verse.slok}
+                    </p>
+                    <p className="text-sm italic text-muted-foreground/70 line-clamp-1">
+                      {verse.transliteration}
+                    </p>
                   </div>
 
                   {/* Read More Button */}
@@ -324,7 +324,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full bg-primary/5 hover:bg-primary/10 border-primary/20"
+                      className="w-full bg-primary/5 hover:bg-primary/10 border-primary/20 font-medium"
                       onClick={() => setSelectedVerse(verse)}
                     >
                       <Book className="w-4 h-4 mr-2" />
