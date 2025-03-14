@@ -162,10 +162,10 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             <Heart className="h-4 w-4 mr-2 text-primary animate-pulse" />
-            <span className="text-primary/90">Find Your Inner Light</span>
+            <span className="text-primary/90">Find Peace in Ancient Wisdom</span>
           </motion.div>
 
-          {/* Main title and dynamic quote */}
+          {/* Main title and subtitle */}
           <motion.div
             className="hero-title mb-8"
             initial={{ opacity: 0 }}
@@ -173,13 +173,17 @@ export default function Hero() {
           >
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-playfair mb-6 tracking-tight">
               <span className="block text-balance leading-tight">
-                Modern Guidance from
+                Feeling Lost in Life's
                 <br className="hidden sm:block" />
                 <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  Timeless Wisdom
+                  Chaos & Confusion?
                 </span>
               </span>
             </h1>
+            <p className="text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto mb-8">
+              Discover timeless Bhagavad Gita wisdom tailored to your emotional state. 
+              Get instant guidance for modern challenges through ancient teachings.
+            </p>
 
             {/* Quote Container with Fixed Height */}
             <div className="relative h-[200px] flex items-center justify-center">
@@ -257,7 +261,7 @@ export default function Hero() {
               <div className="absolute inset-0 bg-primary/10 transform rotate-45 translate-x-3/4 transition-transform group-hover:translate-x-1/4" />
               <span className="relative flex items-center">
                 <Sparkles className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
-                Begin Your Journey
+                Find Your Inner Peace Now
               </span>
             </Button>
 
@@ -267,7 +271,7 @@ export default function Hero() {
               onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(t('home.share.text') + '\n\n' + window.location.origin)}`, '_blank')}
             >
               <BsWhatsapp className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
-              Share the Light
+              Share with a Friend
             </Button>
           </motion.div>
         </div>
