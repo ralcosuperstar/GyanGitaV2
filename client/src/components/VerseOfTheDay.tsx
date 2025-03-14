@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLanguage } from "@/contexts/language-context";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Share2, Copy, Check } from "lucide-react";
@@ -8,29 +7,10 @@ import { motion } from "framer-motion";
 import ShareDialog from "@/components/ShareDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { getRandomVerse, type Verse } from "@/lib/data";
 
 interface VerseOfTheDayProps {
   className?: string;
-}
-
-interface Verse {
-  slok: string;
-  transliteration: string;
-  tej: {
-    ht: string;
-    et: string;
-  };
-  siva?: {
-    et: string;
-  };
-  purohit?: {
-    et: string;
-  };
-  chinmay?: {
-    hc: string;
-  };
-  chapter: number;
-  verse: number;
 }
 
 export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
@@ -41,28 +21,18 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
 
   // Fetch one random verse for Today's Verse
   const { data: todayVerse, isLoading: isTodayLoading } = useQuery<Verse>({
-    queryKey: ['/api/verse/random'],
-    queryFn: async () => {
-      const chapter = Math.floor(Math.random() * 18) + 1;
-      const verse = Math.floor(Math.random() * 30) + 1;
-      const response = await fetch(`/api/verse/${chapter}/${verse}`);
-      if (!response.ok) throw new Error('Failed to fetch verse');
-      return response.json();
-    }
+    queryKey: ['verse-of-day'],
+    queryFn: getRandomVerse
   });
 
   // Fetch three random verses for Popular Verses
   const { data: popularVerses, isLoading: isPopularLoading } = useQuery<Verse[]>({
-    queryKey: ['/api/verses/random'],
+    queryKey: ['popular-verses'],
     queryFn: async () => {
       const verses = [];
       for (let i = 0; i < 3; i++) {
-        const chapter = Math.floor(Math.random() * 18) + 1;
-        const verse = Math.floor(Math.random() * 30) + 1;
-        const response = await fetch(`/api/verse/${chapter}/${verse}`);
-        if (!response.ok) throw new Error('Failed to fetch verse');
-        const data = await response.json();
-        verses.push(data);
+        const verse = await getRandomVerse();
+        if (verse) verses.push(verse);
       }
       return verses;
     }
@@ -86,7 +56,6 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
         duration: 2000,
       });
 
-      // Reset the copied state after 2 seconds
       setTimeout(() => {
         setCopiedVerseId(null);
       }, 2000);
