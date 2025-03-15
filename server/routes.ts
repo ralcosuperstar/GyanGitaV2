@@ -4,10 +4,10 @@ import { storage } from "./storage";
 import { z } from "zod";
 
 // Create schema with proper number types
-const insertBookmarkSchema = z.object({
+const insertFavoriteSchema = z.object({
   user_id: z.number(),
-  chapter: z.coerce.number(),
-  verse: z.coerce.number()
+  chapter: z.number(),
+  verse: z.number()
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -21,65 +21,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
 
-  // Bookmark routes
-  app.post('/api/bookmarks', requireAuth, async (req, res) => {
+  // Favorites routes
+  app.post('/api/favorites', requireAuth, async (req, res) => {
     try {
       // In a real app, get user_id from the auth token
       const userId = 1; // Temporary for testing
 
-      const bookmarkData = insertBookmarkSchema.parse({
+      const favoriteData = insertFavoriteSchema.parse({
         user_id: userId,
-        chapter: req.body.chapter,
-        verse: req.body.verse
+        chapter: Number(req.body.chapter),
+        verse: Number(req.body.verse)
       });
 
-      const bookmark = await storage.createBookmark(bookmarkData);
-      res.json(bookmark);
+      const favorite = await storage.createFavorite(favoriteData);
+      res.json(favorite);
     } catch (error) {
-      console.error('Error creating bookmark:', error);
+      console.error('Error creating favorite:', error);
       if (error instanceof z.ZodError) {
         res.status(400).json({ error: 'Invalid data format' });
-      } else if (error instanceof Error && error.message === 'Verse is already bookmarked') {
-        res.status(409).json({ error: error.message });
       } else {
-        res.status(500).json({ error: 'Failed to save bookmark' });
+        res.status(500).json({ error: 'Failed to save favorite' });
       }
     }
   });
 
-  app.delete('/api/bookmarks', requireAuth, async (req, res) => {
+  app.delete('/api/favorites', requireAuth, async (req, res) => {
     try {
       // In a real app, get user_id from the auth token
       const userId = 1; // Temporary for testing
 
-      const { chapter, verse } = insertBookmarkSchema.parse({
-        user_id: userId,
-        chapter: req.body.chapter,
-        verse: req.body.verse
-      });
-
-      await storage.removeBookmark(userId, chapter, verse);
+      const { chapter, verse } = req.body;
+      await storage.removeFavorite(userId, Number(chapter), Number(verse));
       res.json({ success: true });
     } catch (error) {
-      console.error('Error removing bookmark:', error);
-      if (error instanceof z.ZodError) {
-        res.status(400).json({ error: 'Invalid data format' });
-      } else {
-        res.status(500).json({ error: 'Failed to remove bookmark' });
-      }
+      console.error('Error removing favorite:', error);
+      res.status(500).json({ error: 'Failed to remove favorite' });
     }
   });
 
-  app.get('/api/user/bookmarks', requireAuth, async (req, res) => {
+  app.get('/api/user/favorites', requireAuth, async (req, res) => {
     try {
       // In a real app, get user_id from the auth token
       const userId = 1; // Temporary for testing
 
-      const bookmarks = await storage.getUserBookmarks(userId);
-      res.json(bookmarks);
+      const favorites = await storage.getUserFavorites(userId);
+      res.json(favorites);
     } catch (error) {
-      console.error('Error fetching bookmarks:', error);
-      res.status(500).json({ error: 'Failed to fetch bookmarks' });
+      console.error('Error fetching favorites:', error);
+      res.status(500).json({ error: 'Failed to fetch favorites' });
     }
   });
 

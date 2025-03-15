@@ -84,7 +84,7 @@ export default function Home() {
       <TestimonialsSection />
 
       {/* Verse of the Day Section */}
-      <section className="py-16 sm:py-24 bg-gradient-to-b from-background via-muted/5 to-background">
+      <section className="py-24 bg-gradient-to-b from-background via-muted/5 to-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0 }}
@@ -92,18 +92,18 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="text-center mb-12 sm:mb-16">
+            <div className="text-center mb-16">
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="inline-flex items-center px-4 py-1.5 border border-primary/20 rounded-full text-sm font-medium text-primary/80 bg-primary/5 mb-6"
+                className="inline-flex items-center px-4 py-1.5 border border-primary/20 rounded-full text-sm font-medium text-primary/80 bg-primary/5 mb-4"
               >
                 Daily Inspiration
               </motion.div>
 
-              <h2 className="text-3xl sm:text-4xl font-playfair font-semibold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-6">
+              <h2 className="text-4xl font-playfair font-semibold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-4">
                 {t('home.daily.title')}
               </h2>
               <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -116,29 +116,29 @@ export default function Home() {
       </section>
 
       {/* Mood-Based Recommendation Section */}
-      <section id="mood-section" className="py-16 sm:py-24 bg-muted/5">
+      <section id="mood-section" className="py-24 bg-muted/5">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto mb-12 sm:mb-16"
+            className="text-center max-w-3xl mx-auto mb-16"
           >
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center px-4 py-1.5 border border-primary/20 rounded-full text-sm font-medium text-primary/80 bg-primary/5 mb-6"
+              className="inline-flex items-center px-4 py-1.5 border border-primary/20 rounded-full text-sm font-medium text-primary/80 bg-primary/5 mb-4"
             >
               Personalized For You
             </motion.div>
 
-            <h2 className="text-3xl sm:text-4xl font-playfair font-semibold mb-6">
+            <h2 className="text-4xl font-playfair font-semibold mb-6">
               {t('home.mood.title')}
             </h2>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8 px-4">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
               Select how you're feeling right now, and we'll recommend Bhagavad Gita verses that resonate with your current emotional state
             </p>
 

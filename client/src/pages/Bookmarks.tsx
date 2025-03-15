@@ -35,11 +35,11 @@ const itemVariants = {
 export default function Bookmarks() {
   const { t } = useLanguage();
 
-  // First fetch the user's bookmarks
-  const { data: bookmarks, isLoading: isLoadingBookmarks } = useQuery({
-    queryKey: ['/api/user/bookmarks'],
+  // First fetch the user's favorites
+  const { data: favorites, isLoading: isLoadingFavorites } = useQuery({
+    queryKey: ['/api/user/favorites'],
     queryFn: async () => {
-      const response = await fetch('/api/user/bookmarks', {
+      const response = await fetch('/api/user/favorites', {
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('token')
         }
@@ -54,30 +54,30 @@ export default function Bookmarks() {
     }
   });
 
-  // Then fetch complete verse data for each bookmark
+  // Then fetch complete verse data for each favorite
   const { data: verseDetails, isLoading: isLoadingVerses } = useQuery({
-    queryKey: ['verse-details', bookmarks],
+    queryKey: ['verse-details', favorites],
     queryFn: async () => {
-      if (!bookmarks?.length) return [];
+      if (!favorites?.length) return [];
 
-      const versePromises = bookmarks.map(async (bookmark: { chapter: number; verse: number; id: number }) => {
-        const response = await fetch(`https://vedicscriptures.github.io/slok/${bookmark.chapter}/${bookmark.verse}`);
-        if (!response.ok) throw new Error(`Failed to fetch verse ${bookmark.chapter}:${bookmark.verse}`);
+      const versePromises = favorites.map(async (favorite) => {
+        const response = await fetch(`https://vedicscriptures.github.io/slok/${favorite.chapter}/${favorite.verse}`);
+        if (!response.ok) throw new Error(`Failed to fetch verse ${favorite.chapter}:${favorite.verse}`);
         const verseData = await response.json();
         return {
           ...verseData,
-          id: bookmark.id,
-          chapter: bookmark.chapter,
-          verse: bookmark.verse
+          id: favorite.id,
+          chapter: parseInt(favorite.chapter),
+          verse: parseInt(favorite.verse)
         };
       });
 
       return Promise.all(versePromises);
     },
-    enabled: !!bookmarks?.length
+    enabled: !!favorites?.length
   });
 
-  const isLoading = isLoadingBookmarks || isLoadingVerses;
+  const isLoading = isLoadingFavorites || isLoadingVerses;
 
   if (isLoading) {
     return (

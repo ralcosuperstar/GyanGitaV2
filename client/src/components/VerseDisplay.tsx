@@ -28,7 +28,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 // Animation variants refined for smoother transitions
 const cardVariants = {
@@ -96,28 +96,27 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
-  const [bookmarkedVerses, setBookmarkedVerses] = useState<Set<string>>(new Set());
+  const [favoriteVerses, setFavoriteVerses] = useState<Set<string>>(new Set());
   const selectedMoodData = moods.find(m => m.id === selectedMood);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  // Fetch user's bookmarks
-  const { data: userBookmarks } = useQuery({
-    queryKey: ['bookmarks'],
+  // Fetch user's favorites
+  const { data: userFavorites } = useQuery({
+    queryKey: ['favorites'],
     queryFn: async () => {
-      const response = await fetch('/api/user/bookmarks');
-      if (!response.ok) throw new Error('Failed to fetch bookmarks');
+      const response = await fetch('/api/user/favorites');
+      if (!response.ok) throw new Error('Failed to fetch favorites');
       const data = await response.json();
-      return new Set(data.map((b: any) => `${b.chapter}-${b.verse}`));
+      return new Set(data.map((f: any) => `${f.chapter}-${f.verse}`));
     }
   });
 
   useEffect(() => {
-    if (userBookmarks) {
-      setBookmarkedVerses(userBookmarks);
+    if (userFavorites) {
+      setFavoriteVerses(userFavorites);
     }
-  }, [userBookmarks]);
+  }, [userFavorites]);
 
   const handleShare = (verse: VerseResponse) => {
     setSelectedVerse(verse);
@@ -152,49 +151,38 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
   const handleBookmark = async (verse: VerseResponse) => {
     const verseId = `${verse.chapter}-${verse.verse}`;
-    const isCurrentlyBookmarked = bookmarkedVerses.has(verseId);
+    const isCurrentlyFavorited = favoriteVerses.has(verseId);
 
     try {
-      // Trigger vibration feedback if available
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
-
-      const response = await fetch('/api/bookmarks', {
-        method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
+      const response = await fetch('/api/favorites', {
+        method: isCurrentlyFavorited ? 'DELETE' : 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer dummy-token' // In real app, use actual auth token
         },
         body: JSON.stringify({
-          chapter: Number(verse.chapter),
-          verse: Number(verse.verse)
+          chapter: verse.chapter,
+          verse: verse.verse
         })
       });
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      if (!response.ok) throw new Error('Failed to update favorite');
 
-      // Update local state optimistically
-      const newBookmarks = new Set(bookmarkedVerses);
-      if (isCurrentlyBookmarked) {
-        newBookmarks.delete(verseId);
+      // Update local state
+      const newFavorites = new Set(favoriteVerses);
+      if (isCurrentlyFavorited) {
+        newFavorites.delete(verseId);
       } else {
-        newBookmarks.add(verseId);
+        newFavorites.add(verseId);
       }
-      setBookmarkedVerses(newBookmarks);
-
-      // Invalidate queries to refetch bookmarks
-      queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
+      setFavoriteVerses(newFavorites);
 
       toast({
-        title: isCurrentlyBookmarked ? "Removed from bookmarks" : "Added to bookmarks",
-        description: isCurrentlyBookmarked ? "Verse removed from your bookmarks" : "Verse saved to your bookmarks",
+        title: isCurrentlyFavorited ? "Removed from favorites" : "Added to favorites",
+        description: isCurrentlyFavorited ? "Verse removed from your favorites" : "Verse saved to your favorites",
         duration: 2000,
       });
     } catch (err) {
-      console.error('Bookmark error:', err);
       toast({
         title: "Action failed",
         description: "Please try again later",
@@ -307,7 +295,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         {verses.map((verse, index) => {
           const verseId = `${verse.chapter}-${verse.verse}`;
           const isCopied = copiedVerseId === verseId;
-          const isBookmarked = bookmarkedVerses.has(verseId);
+          const isFavorited = favoriteVerses.has(verseId);
 
           // Get the best available English translation, prioritizing Purohit's
           const englishTranslation = verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht;
@@ -323,11 +311,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
               className="flex"
             >
               <Card className="w-full overflow-hidden bg-card/50 backdrop-blur-sm border-primary/10 hover:border-primary/20 transition-all duration-300 hover:shadow-xl relative group">
-                <CardContent className="p-6 flex flex-col h-full relative">
-                  {/* Decorative border effect */}
-                  <div className="absolute inset-0 border border-primary/10 rounded-lg pointer-events-none"></div>
-                  <div className="absolute inset-[1px] border border-primary/5 rounded-lg pointer-events-none"></div>
-
+                <CardContent className="p-6 flex flex-col h-full">
                   {/* Chapter and Verse Info */}
                   <div className="flex items-center gap-2 mb-4">
                     <div className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
@@ -347,10 +331,10 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
                   {/* Sanskrit Text */}
                   <div className="pt-4 border-t border-primary/10">
-                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1 text-foreground">
+                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1 text-foreground/80">
                       {verse.slok}
                     </p>
-                    <p className="text-sm italic text-foreground opacity-90 line-clamp-1">
+                    <p className="text-sm italic text-foreground/60 line-clamp-1">
                       {verse.transliteration}
                     </p>
                   </div>
@@ -374,13 +358,13 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                         whileTap="tap"
                         onClick={() => handleBookmark(verse)}
                         className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg transition-colors text-sm font-medium ${
-                          isBookmarked 
+                          isFavorited 
                             ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
                             : 'bg-primary/10 hover:bg-primary/20'
                         }`}
                       >
-                        <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
-                        {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+                        <Bookmark className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+                        {isFavorited ? 'Saved' : 'Save'}
                       </motion.button>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
