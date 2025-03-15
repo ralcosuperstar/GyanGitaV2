@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { BookOpen, Grid, ArrowLeft } from "lucide-react";
 import VerseCard from "@/components/VerseCard";
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { generateVerseKey } from "@/lib/data";
 
 interface Chapter {
   chapter_number: number;
@@ -57,7 +58,7 @@ export default function Browse() {
   });
 
   const { data: verse, isLoading: isLoadingVerse } = useQuery<VerseResponse>({
-    queryKey: ['/api/verse', selectedChapter, selectedVerse],
+    queryKey: [generateVerseKey(Number(selectedChapter), Number(selectedVerse))],
     queryFn: async () => {
       if (!selectedChapter || !selectedVerse) return null;
       const response = await fetch(`https://vedicscriptures.github.io/slok/${selectedChapter}/${selectedVerse}`);
@@ -65,13 +66,27 @@ export default function Browse() {
       const data = await response.json();
       return { ...data, chapter: parseInt(selectedChapter), verse: parseInt(selectedVerse) };
     },
-    enabled: !!(selectedChapter && selectedVerse)
+    enabled: !!(selectedChapter && selectedVerse),
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    cacheTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
   });
 
-  const handleVerseSelect = (chapter: string, verse: string) => {
+  const handleVerseSelect = useCallback((chapter: string, verse: string) => {
     setSelectedChapter(chapter);
     setSelectedVerse(verse);
-  };
+  }, []);
+
+  const gridItems = useMemo(() => {
+    if (!selectedGridChapter || !chapters) return [];
+    const chapterInfo = chapters.find(c => c.chapter_number === selectedGridChapter);
+    if (!chapterInfo) return [];
+
+    return Array.from({ length: chapterInfo.verses_count }).map((_, i) => ({
+      verseNumber: i + 1,
+      chapterNumber: selectedGridChapter
+    }));
+  }, [selectedGridChapter, chapters]);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
@@ -79,7 +94,7 @@ export default function Browse() {
       <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 to-primary/5 border-b">
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
           <div className="text-center max-w-3xl mx-auto">
-            <motion.h1 
+            <motion.h1
               className="text-4xl font-playfair font-bold mb-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -88,7 +103,7 @@ export default function Browse() {
                 {t('browse.title')}
               </span>
             </motion.h1>
-            <motion.p 
+            <motion.p
               className="text-lg text-muted-foreground mb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -158,9 +173,9 @@ export default function Browse() {
             </div>
 
             <div className="grid gap-4 grid-cols-6 sm:grid-cols-8 md:grid-cols-10">
-              {Array.from({ length: chapters?.find(c => c.chapter_number === selectedGridChapter)?.verses_count || 0 }).map((_, i) => (
+              {gridItems.map((item) => (
                 <motion.button
-                  key={i + 1}
+                  key={item.verseNumber}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -169,16 +184,16 @@ export default function Browse() {
                     type: "spring",
                     stiffness: 400,
                     damping: 17,
-                    delay: i * 0.02
+                    delay: item.verseNumber * 0.02
                   }}
                   className={cn(
                     "h-12 w-12 rounded-md border border-input hover:bg-primary/5",
                     "flex items-center justify-center text-sm font-medium",
                     "transition-colors hover:border-primary/50"
                   )}
-                  onClick={() => handleVerseSelect(selectedGridChapter.toString(), (i + 1).toString())}
+                  onClick={() => handleVerseSelect(item.chapterNumber.toString(), item.verseNumber.toString())}
                 >
-                  {i + 1}
+                  {item.verseNumber}
                 </motion.button>
               ))}
             </div>

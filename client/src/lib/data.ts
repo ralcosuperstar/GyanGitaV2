@@ -22,7 +22,11 @@ export interface Verse {
   verse: number;
 }
 
-// Function to get a specific verse by chapter and verse number
+// Add caching key generator for consistent cache keys
+export const generateVerseKey = (chapter: number, verse: number) => 
+  `/verse/${chapter}/${verse}`;
+
+// Optimize verse fetching with better error handling and types
 export const getVerseByChapterAndNumber = async (chapter: number, verseNumber: number): Promise<Verse | null> => {
   try {
     const verseData = await import(`@/assets/data/slok/${chapter}/${verseNumber}/index.json`);
@@ -179,34 +183,27 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   const versesForMood = moodVerses[normalizedMood as keyof typeof moodVerses] ||
                        moodVerses[normalizedMood.replace(/\s+/g, '_') as keyof typeof moodVerses];
 
-  if (!versesForMood || !versesForMood.length) {
+  if (!versesForMood?.length) {
     console.log(`No verses mapped for mood: ${mood}`);
     return [];
   }
 
-  console.log('Found verse mappings:', versesForMood);
-
-  // Load verses in parallel
-  const verses = await Promise.all(
-    versesForMood.map(async ([chapter, verse]) => {
-      try {
-        const verseData = await getVerse(chapter, verse);
-        if (!verseData) {
-          console.log(`Failed to load verse ${chapter}:${verse}`);
-        }
-        return verseData;
-      } catch (error) {
-        console.error(`Error loading verse ${chapter}:${verse}:`, error);
-        return undefined;
-      }
-    })
+  // Load verses in parallel with better error handling
+  const versePromises = versesForMood.map(([chapter, verse]) => 
+    getVerseByChapterAndNumber(chapter, verse)
+      .catch(error => {
+        console.error(`Failed to load verse ${chapter}:${verse}:`, error);
+        return null;
+      })
   );
 
-  // Filter out any failed verse loads
-  const validVerses = verses.filter((verse): verse is Verse => verse !== undefined);
-  console.log(`Successfully loaded ${validVerses.length} verses for mood: ${mood}`);
+  const verses = await Promise.all(versePromises);
+  return verses.filter((verse): verse is Verse => verse !== null);
+};
 
-  return validVerses;
+// Add verse preloading function for better UX
+export const preloadVersesByMood = (mood: string) => {
+  getVersesByMood(mood).catch(console.error);
 };
 
 // Get related verses for a verse
