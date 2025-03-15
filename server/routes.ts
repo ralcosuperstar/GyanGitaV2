@@ -17,27 +17,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Auth check middleware - for demo, always authenticate
   const requireAuth = (_req: any, _res: any, next: any) => {
-    // For demo purposes, set a default user
+    // For demo purposes, set a fixed user ID
     next();
   };
-
-  // Add logging middleware with proper error handling
-  app.use((req, res, next) => {
-    try {
-      // Only log if the body exists and is an object
-      const logData = {
-        method: req.method,
-        path: req.path,
-        query: req.query,
-        body: req.method !== 'GET' ? req.body : undefined
-      };
-      console.log('Request:', logData);
-      next();
-    } catch (error) {
-      // If logging fails, continue with the request
-      next();
-    }
-  });
 
   // Bookmark routes
   app.post('/api/bookmarks', requireAuth, async (req, res) => {
@@ -45,14 +27,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = 1;
       console.log('Creating bookmark:', { userId, body: req.body });
 
-      // Validate and parse the request body
       const bookmarkData = insertBookmarkSchema.parse({
         user_id: userId,
         chapter: req.body.chapter,
         verse: req.body.verse
       });
 
-      console.log('Parsed bookmark data:', bookmarkData);
       const bookmark = await storage.createBookmark(bookmarkData);
       res.json(bookmark);
     } catch (error) {
@@ -93,9 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/user/bookmarks', requireAuth, async (req, res) => {
     try {
       const userId = 1;
-      console.log('Fetching bookmarks for user:', userId);
       const bookmarks = await storage.getUserBookmarks(userId);
-      console.log('Found bookmarks:', bookmarks);
       res.json(bookmarks);
     } catch (error) {
       console.error('Error fetching bookmarks:', error);

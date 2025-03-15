@@ -165,12 +165,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
     const isCurrentlyBookmarked = bookmarkedVerses.has(verseId);
 
     try {
-      console.log('Sending bookmark request:', {
-        method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
-        chapter: verse.chapter,
-        verse: verse.verse
-      });
-
       // Trigger vibration feedback
       if (navigator.vibrate) {
         navigator.vibrate(50);
@@ -182,14 +176,13 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          chapter: verse.chapter,
-          verse: verse.verse
+          chapter: Number(verse.chapter),
+          verse: Number(verse.verse)
         })
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
+        const data = await response.json();
         throw new Error(data.error || 'Failed to update bookmark');
       }
 
