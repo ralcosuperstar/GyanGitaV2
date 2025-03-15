@@ -8,34 +8,7 @@ import { BookOpen, Grid, ArrowLeft } from "lucide-react";
 import VerseCard from "@/components/VerseCard";
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { generateVerseKey } from "@/lib/data";
-
-interface Chapter {
-  chapter_number: number;
-  name: string;
-  name_meaning: string;
-  verses_count: number;
-}
-
-interface VerseResponse {
-  slok: string;
-  transliteration: string;
-  tej: {
-    ht: string;
-    et: string;
-  };
-  siva?: {
-    et: string;
-  };
-  purohit?: {
-    et: string;
-  };
-  chinmay?: {
-    hc: string;
-  };
-  chapter: number;
-  verse: number;
-}
+import { generateVerseKey, getChapters, getVerseByChapterAndNumber, type Chapter, type Verse } from "@/lib/data";
 
 export default function Browse() {
   const [selectedChapter, setSelectedChapter] = useState<string>("");
@@ -48,23 +21,19 @@ export default function Browse() {
     window.scrollTo(0, 0);
   }, [selectedGridChapter]);
 
+  // Load chapters with minimal data
   const { data: chapters, isLoading: isLoadingChapters } = useQuery<Chapter[]>({
     queryKey: ['/api/chapters'],
-    queryFn: async () => {
-      const response = await fetch('https://vedicscriptures.github.io/chapters');
-      if (!response.ok) throw new Error('Failed to fetch chapters');
-      return response.json();
-    }
+    queryFn: () => getChapters(),
+    staleTime: Infinity, // Chapters data doesn't change
   });
 
-  const { data: verse, isLoading: isLoadingVerse } = useQuery<VerseResponse>({
+  // Load verse with optimized caching
+  const { data: verse, isLoading: isLoadingVerse } = useQuery<Verse | null>({
     queryKey: [generateVerseKey(Number(selectedChapter), Number(selectedVerse))],
     queryFn: async () => {
       if (!selectedChapter || !selectedVerse) return null;
-      const response = await fetch(`https://vedicscriptures.github.io/slok/${selectedChapter}/${selectedVerse}`);
-      if (!response.ok) throw new Error('Failed to fetch verse');
-      const data = await response.json();
-      return { ...data, chapter: parseInt(selectedChapter), verse: parseInt(selectedVerse) };
+      return getVerseByChapterAndNumber(Number(selectedChapter), Number(selectedVerse));
     },
     enabled: !!(selectedChapter && selectedVerse),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -76,6 +45,7 @@ export default function Browse() {
     setSelectedVerse(verse);
   }, []);
 
+  // Memoize grid items to prevent unnecessary recalculations
   const gridItems = useMemo(() => {
     if (!selectedGridChapter || !chapters) return [];
     const chapterInfo = chapters.find(c => c.chapter_number === selectedGridChapter);
