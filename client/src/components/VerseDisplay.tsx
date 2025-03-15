@@ -6,7 +6,6 @@
  */
 
 import { useState, useRef, useEffect } from "react";
-import { useLocation } from "wouter"; // Replace react-router-dom with wouter
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -30,7 +29,6 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-
 
 // Animation variants refined for smoother transitions
 const cardVariants = {
@@ -91,12 +89,10 @@ interface VerseDisplayProps {
   verses: VerseResponse[] | null;
   selectedMood: string | null;
   isLoading: boolean;
-  isPremiumUser: boolean; // Added prop for premium status
 }
 
 
-export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiumUser }: VerseDisplayProps) {
-  const [, navigate] = useLocation(); // Use wouter's useLocation hook
+export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
@@ -108,16 +104,10 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
 
   // Fetch user's bookmarks
   const { data: userBookmarks } = useQuery({
-    queryKey: ['/api/user/bookmarks'],
+    queryKey: ['bookmarks'],
     queryFn: async () => {
       const response = await fetch('/api/user/bookmarks');
-      if (!response.ok) {
-        if (response.status === 401) {
-          // Handle unauthorized case
-          return new Set();
-        }
-        throw new Error('Failed to fetch bookmarks');
-      }
+      if (!response.ok) throw new Error('Failed to fetch bookmarks');
       const data = await response.json();
       return new Set(data.map((b: any) => `${b.chapter}-${b.verse}`));
     }
@@ -165,7 +155,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
     const isCurrentlyBookmarked = bookmarkedVerses.has(verseId);
 
     try {
-      // Trigger vibration feedback
+      // Trigger vibration feedback if available
       if (navigator.vibrate) {
         navigator.vibrate(50);
       }
@@ -173,7 +163,8 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
       const response = await fetch('/api/bookmarks', {
         method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer dummy-token' // In real app, use actual auth token
         },
         body: JSON.stringify({
           chapter: Number(verse.chapter),
@@ -182,8 +173,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to update bookmark');
+        throw new Error(await response.text());
       }
 
       // Update local state optimistically
@@ -196,7 +186,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
       setBookmarkedVerses(newBookmarks);
 
       // Invalidate queries to refetch bookmarks
-      queryClient.invalidateQueries({ queryKey: ['/api/user/bookmarks'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarks'] });
 
       toast({
         title: isCurrentlyBookmarked ? "Removed from bookmarks" : "Added to bookmarks",
@@ -207,7 +197,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
       console.error('Bookmark error:', err);
       toast({
         title: "Action failed",
-        description: err instanceof Error ? err.message : "Please try again later",
+        description: "Please try again later",
         variant: "destructive",
         duration: 2000,
       });
@@ -241,7 +231,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array(3).fill(null).map((_, i) => (
-            <motion.div
+            <motion.div 
               key={i}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -257,7 +247,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
 
   if (!verses?.length) {
     return (
-      <motion.div
+      <motion.div 
         className="text-center py-16 px-6 rounded-xl bg-muted/30 border border-primary/10 max-w-xl mx-auto"
       >
         <div className="mb-6 text-primary/60">
@@ -269,8 +259,8 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
         <p className="text-muted-foreground mb-6">
           We couldn't find any verses for "{selectedMoodData?.label}" in our database. Please try another mood or check back later.
         </p>
-        <Button
-          variant="outline"
+        <Button 
+          variant="outline" 
           className="border-primary/20 hover:bg-primary/5"
           onClick={() => window.location.reload()}
         >
@@ -290,13 +280,13 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
       </div>
 
       {/* Header Section */}
-      <motion.div
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="text-center mb-12"
       >
-        <motion.div
+        <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.4 }}
@@ -365,27 +355,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
                     </p>
                   </div>
 
-                  {/* Premium Features Teaser */}
-                  {!isPremiumUser && (
-                    <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/10">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h4 className="text-sm font-medium text-primary mb-1">Unlock Premium Features</h4>
-                          <p className="text-sm text-muted-foreground">
-                            Get expert commentary, multiple translations, and personalized insights
-                          </p>
-                        </div>
-                        <Button
-                          variant="default"
-                          className="ml-4 whitespace-nowrap"
-                          onClick={() => navigate('/pricing')}
-                        >
-                          Go Premium
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
                   {/* Actions Footer */}
                   <div className="pt-6 mt-4 border-t border-primary/10">
                     <div className="grid grid-cols-2 gap-3 mb-3">
@@ -405,8 +374,8 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
                         whileTap="tap"
                         onClick={() => handleBookmark(verse)}
                         className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg transition-colors text-sm font-medium ${
-                          isBookmarked
-                            ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                          isBookmarked 
+                            ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
                             : 'bg-primary/10 hover:bg-primary/20'
                         }`}
                       >

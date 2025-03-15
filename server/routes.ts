@@ -2,7 +2,6 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import cors from 'cors';
 
 // Create schema with proper number types
 const insertBookmarkSchema = z.object({
@@ -12,20 +11,21 @@ const insertBookmarkSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Enable CORS for all routes
-  app.use(cors());
-
-  // Auth check middleware - for demo, always authenticate
-  const requireAuth = (_req: any, _res: any, next: any) => {
-    // For demo purposes, set a fixed user ID
+  // Auth check middleware
+  const requireAuth = (req: any, res: any, next: any) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    // In a real app, verify the token here
     next();
   };
 
   // Bookmark routes
   app.post('/api/bookmarks', requireAuth, async (req, res) => {
     try {
-      const userId = 1;
-      console.log('Creating bookmark:', { userId, body: req.body });
+      // In a real app, get user_id from the auth token
+      const userId = 1; // Temporary for testing
 
       const bookmarkData = insertBookmarkSchema.parse({
         user_id: userId,
@@ -38,7 +38,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error creating bookmark:', error);
       if (error instanceof z.ZodError) {
-        res.status(400).json({ error: 'Invalid data format', details: error.errors });
+        res.status(400).json({ error: 'Invalid data format' });
       } else if (error instanceof Error && error.message === 'Verse is already bookmarked') {
         res.status(409).json({ error: error.message });
       } else {
@@ -49,8 +49,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/bookmarks', requireAuth, async (req, res) => {
     try {
-      const userId = 1;
-      console.log('Removing bookmark:', { userId, body: req.body });
+      // In a real app, get user_id from the auth token
+      const userId = 1; // Temporary for testing
 
       const { chapter, verse } = insertBookmarkSchema.parse({
         user_id: userId,
@@ -63,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error removing bookmark:', error);
       if (error instanceof z.ZodError) {
-        res.status(400).json({ error: 'Invalid data format', details: error.errors });
+        res.status(400).json({ error: 'Invalid data format' });
       } else {
         res.status(500).json({ error: 'Failed to remove bookmark' });
       }
@@ -72,7 +72,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/user/bookmarks', requireAuth, async (req, res) => {
     try {
-      const userId = 1;
+      // In a real app, get user_id from the auth token
+      const userId = 1; // Temporary for testing
+
       const bookmarks = await storage.getUserBookmarks(userId);
       res.json(bookmarks);
     } catch (error) {
