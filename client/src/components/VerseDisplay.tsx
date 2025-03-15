@@ -29,6 +29,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 // Animation variants refined for smoother transitions
 const cardVariants = {
@@ -89,10 +90,12 @@ interface VerseDisplayProps {
   verses: VerseResponse[] | null;
   selectedMood: string | null;
   isLoading: boolean;
+  isPremiumUser: boolean; // Added prop for premium status
 }
 
 
-export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
+export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiumUser }: VerseDisplayProps) {
+  const navigate = useNavigate();
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
@@ -161,6 +164,13 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
     const isCurrentlyBookmarked = bookmarkedVerses.has(verseId);
 
     try {
+      // Log the data being sent
+      console.log('Sending bookmark request:', {
+        method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
+        chapter: parseInt(verse.chapter.toString()),
+        verse: parseInt(verse.verse.toString())
+      });
+
       // Trigger vibration feedback
       if (navigator.vibrate) {
         navigator.vibrate(50);
@@ -172,14 +182,15 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          chapter: Number(verse.chapter),
-          verse: Number(verse.verse)
+          chapter: parseInt(verse.chapter.toString()),
+          verse: parseInt(verse.verse.toString())
         })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
+        throw new Error(data.error || 'Failed to update bookmark');
       }
 
       // Update local state optimistically
@@ -203,7 +214,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       console.error('Bookmark error:', err);
       toast({
         title: "Action failed",
-        description: "Please try again later",
+        description: err instanceof Error ? err.message : "Please try again later",
         variant: "destructive",
         duration: 2000,
       });
@@ -237,7 +248,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array(3).fill(null).map((_, i) => (
-            <motion.div 
+            <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -253,7 +264,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
   if (!verses?.length) {
     return (
-      <motion.div 
+      <motion.div
         className="text-center py-16 px-6 rounded-xl bg-muted/30 border border-primary/10 max-w-xl mx-auto"
       >
         <div className="mb-6 text-primary/60">
@@ -265,8 +276,8 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         <p className="text-muted-foreground mb-6">
           We couldn't find any verses for "{selectedMoodData?.label}" in our database. Please try another mood or check back later.
         </p>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="border-primary/20 hover:bg-primary/5"
           onClick={() => window.location.reload()}
         >
@@ -286,13 +297,13 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       </div>
 
       {/* Header Section */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="text-center mb-12"
       >
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.4 }}
@@ -361,6 +372,27 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                     </p>
                   </div>
 
+                  {/* Premium Features Teaser */}
+                  {!isPremiumUser && (
+                    <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/10">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h4 className="text-sm font-medium text-primary mb-1">Unlock Premium Features</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Get expert commentary, multiple translations, and personalized insights
+                          </p>
+                        </div>
+                        <Button
+                          variant="default"
+                          className="ml-4 whitespace-nowrap"
+                          onClick={() => navigate('/pricing')}
+                        >
+                          Go Premium
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Actions Footer */}
                   <div className="pt-6 mt-4 border-t border-primary/10">
                     <div className="grid grid-cols-2 gap-3 mb-3">
@@ -380,8 +412,8 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                         whileTap="tap"
                         onClick={() => handleBookmark(verse)}
                         className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg transition-colors text-sm font-medium ${
-                          isBookmarked 
-                            ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+                          isBookmarked
+                            ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                             : 'bg-primary/10 hover:bg-primary/20'
                         }`}
                       >
