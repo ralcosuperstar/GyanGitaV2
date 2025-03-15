@@ -6,6 +6,7 @@
  */
 
 import { useState, useRef, useEffect } from "react";
+import { useLocation } from "wouter"; // Replace react-router-dom with wouter
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+
 
 // Animation variants refined for smoother transitions
 const cardVariants = {
@@ -95,7 +96,7 @@ interface VerseDisplayProps {
 
 
 export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiumUser }: VerseDisplayProps) {
-  const navigate = useNavigate();
+  const [, navigate] = useLocation(); // Use wouter's useLocation hook
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
@@ -164,11 +165,10 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
     const isCurrentlyBookmarked = bookmarkedVerses.has(verseId);
 
     try {
-      // Log the data being sent
       console.log('Sending bookmark request:', {
         method: isCurrentlyBookmarked ? 'DELETE' : 'POST',
-        chapter: parseInt(verse.chapter.toString()),
-        verse: parseInt(verse.verse.toString())
+        chapter: verse.chapter,
+        verse: verse.verse
       });
 
       // Trigger vibration feedback
@@ -182,8 +182,8 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, isPremiu
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          chapter: parseInt(verse.chapter.toString()),
-          verse: parseInt(verse.verse.toString())
+          chapter: verse.chapter,
+          verse: verse.verse
         })
       });
 

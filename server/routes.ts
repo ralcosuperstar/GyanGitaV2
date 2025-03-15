@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
+import cors from 'cors';
 
 // Create schema with proper number types
 const insertBookmarkSchema = z.object({
@@ -11,6 +12,9 @@ const insertBookmarkSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Enable CORS for all routes
+  app.use(cors());
+
   // Auth check middleware - for demo, always authenticate
   const requireAuth = (_req: any, _res: any, next: any) => {
     // For demo purposes, set a default user
