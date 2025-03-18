@@ -146,7 +146,7 @@ export default function VerseCard({
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-4 px-6 border-t border-white/10">
+              <div className="flex gap-3 pt-4 px-6 -mx-6 border-t border-white/10">
                 <Button
                   onClick={() => setShowModal(true)}
                   className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
@@ -163,9 +163,9 @@ export default function VerseCard({
                   <Button
                     variant="outline"
                     onClick={handleShare}
-                    className="p-2 m-2 w-12 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
-                             border border-white/20 hover:bg-white/10 hover:border-white/30 
-                             shadow-lg hover:shadow-xl transition-all duration-300 py-5 group flex-shrink-0"
+                    className="p-2 w-12 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
+                              border border-white/20 hover:bg-white/10 hover:border-white/30 
+                              shadow-lg hover:shadow-xl transition-all duration-300 py-5 group flex-shrink-0"
                   >
                     <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
                   </Button>
@@ -258,7 +258,7 @@ export default function VerseCard({
               </div>
 
               {/* Actions */}
-              <div className="flex gap-4 mt-8 pt-6 border-t border-white/10">
+              <div className="flex gap-3 pt-4 px-6 border-t border-white/10">
                 <Button
                   size="lg"
                   className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
@@ -276,9 +276,9 @@ export default function VerseCard({
                   <Button
                     variant="outline"
                     onClick={handleShare}
-                    className="w-16 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
+                    className="p-2 m-2 w-12 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
                              border border-white/20 hover:bg-white/10 hover:border-white/30 
-                             shadow-lg hover:shadow-xl transition-all duration-300 py-6 group flex-shrink-0"
+                             shadow-lg hover:shadow-xl transition-all duration-300 py-5 group flex-shrink-0"
                   >
                     <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
                   </Button>
