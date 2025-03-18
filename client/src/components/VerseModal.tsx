@@ -81,90 +81,153 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Left Column - Sanskrit */}
+          <div className="space-y-8">
+            {/* Sanskrit Section */}
             <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="space-y-6"
+              className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
             >
-              <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
-                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                  Sanskrit Text
-                </h3>
-                <div className="space-y-6">
-                  <p className="text-2xl leading-relaxed text-white/90 font-light">
-                    {verse.slok}
+              <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
+                Sanskrit Text
+              </h3>
+              <div className="space-y-6">
+                <p className="text-2xl leading-relaxed text-white/90 font-light">
+                  {verse.slok}
+                </p>
+                <div className="pt-6 border-t border-white/10">
+                  <p className="text-base text-gray-400">
+                    {verse.transliteration}
                   </p>
-                  <div className="pt-6 border-t border-white/10">
-                    <p className="text-base text-gray-400">
-                      {verse.transliteration}
-                    </p>
-                  </div>
                 </div>
               </div>
             </motion.div>
 
-            {/* Right Column - Translation */}
+            {/* Translations Section */}
             <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="space-y-6"
             >
-              <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
-                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                  Translation
-                </h3>
-                <div className="prose prose-invert max-w-none">
-                  <p className="text-2xl leading-relaxed text-white/90 font-light">
-                    {verse.purohit?.et || verse.tej.et || verse.siva?.et}
+              <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider px-6">
+                Translations & Interpretations
+              </h3>
+
+              {/* Purohit Translation */}
+              {verse.purohit?.et && (
+                <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-primary">Purohit Translation</span>
+                  </div>
+                  <p className="text-xl leading-relaxed text-white/90 font-light">
+                    {verse.purohit.et}
                   </p>
                 </div>
-              </div>
+              )}
+
+              {/* Sivananda Translation */}
+              {verse.siva?.et && (
+                <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-primary">Sivananda Translation</span>
+                  </div>
+                  <p className="text-xl leading-relaxed text-white/90 font-light">
+                    {verse.siva.et}
+                  </p>
+                </div>
+              )}
+
+              {/* Tejomayananda Translation */}
+              {verse.tej?.et && (
+                <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
+                  <div className="mb-4">
+                    <span className="text-sm font-medium text-primary">Tejomayananda Translation</span>
+                  </div>
+                  <p className="text-xl leading-relaxed text-white/90 font-light">
+                    {verse.tej.et}
+                  </p>
+                </div>
+              )}
+            </motion.div>
+
+            {/* Commentary Section */}
+            {verse.chinmay?.hc && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
+              >
+                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
+                  Commentary by Chinmayananda
+                </h3>
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-lg leading-relaxed text-white/90 font-light whitespace-pre-wrap">
+                    {verse.chinmay.hc}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Hindi Translation Section */}
+            {verse.tej?.ht && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
+              >
+                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
+                  Hindi Translation
+                </h3>
+                <p className="text-lg leading-relaxed text-white/90 font-light">
+                  {verse.tej.ht}
+                </p>
+              </motion.div>
+            )}
+
+            {/* Actions Section */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex gap-4 pt-4 border-t border-white/10"
+            >
+              <Button
+                className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
+                         border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
+                         transition-all duration-300 text-white py-6 group"
+                onClick={() => setShowShareDialog(true)}
+              >
+                <span className="flex items-center justify-center">
+                  <Share2 className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
+                  Share Verse
+                  <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                </span>
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
+                         border border-white/20 hover:bg-white/10 hover:border-white/30 
+                         shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
+                onClick={handleCopy}
+              >
+                {copied ? (
+                  <span className="flex items-center justify-center">
+                    <Check className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                    Copied
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center">
+                    <Copy className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                    Copy Text
+                  </span>
+                )}
+              </Button>
             </motion.div>
           </div>
-
-          {/* Actions Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex gap-4 mt-8 pt-6 border-t border-white/10"
-          >
-            <Button
-              className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
-                       border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
-                       transition-all duration-300 text-white py-6 group"
-              onClick={() => setShowShareDialog(true)}
-            >
-              <span className="flex items-center justify-center">
-                <Share2 className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
-                Share Verse
-                <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-              </span>
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
-                       border border-white/20 hover:bg-white/10 hover:border-white/30 
-                       shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
-              onClick={handleCopy}
-            >
-              {copied ? (
-                <span className="flex items-center justify-center">
-                  <Check className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Copied
-                </span>
-              ) : (
-                <span className="flex items-center justify-center">
-                  <Copy className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Copy Text
-                </span>
-              )}
-            </Button>
-          </motion.div>
         </div>
       </motion.div>
 
