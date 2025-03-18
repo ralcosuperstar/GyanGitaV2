@@ -133,136 +133,111 @@ export default function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden py-8 sm:py-16 md:py-24"
       aria-label="Welcome to GyanGita"
     >
-      {/* Enhanced background effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background z-0" aria-hidden="true" />
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        <motion.div
-          style={{ y: parallaxY }}
-          className="bg-pattern absolute top-[10%] right-[5%] w-[600px] h-[600px] rounded-full bg-primary/3 blur-[120px] opacity-60 transform-gpu"
-        />
-        <motion.div
-          style={{ y: parallaxY }}
-          className="bg-pattern absolute bottom-[15%] left-[10%] w-[700px] h-[700px] rounded-full bg-primary/3 blur-[140px] opacity-50 transform-gpu"
-        />
-      </div>
+      {/* Minimalist background with subtle gradients */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background z-0" aria-hidden="true" />
 
       {/* Main content */}
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-5xl mx-auto text-center">
-          {/* Engaging hero badge */}
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Clean, minimal hero badge */}
           <motion.div
-            className="hero-badge inline-flex items-center px-4 sm:px-6 py-2 mb-6 sm:mb-8 border border-primary/20 rounded-full text-sm font-medium bg-primary/5 backdrop-blur-sm shadow-xl"
+            className="hero-badge inline-flex items-center px-4 sm:px-6 py-2 mb-8 border border-primary/10 rounded-full text-sm font-medium bg-background/50 backdrop-blur-sm"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Heart className="h-4 w-4 mr-2 text-primary animate-pulse" />
-            <span className="text-primary/90">Stop Scrolling, Start Healing</span>
+            <Heart className="h-4 w-4 mr-2 text-primary/80" />
+            <span className="text-primary/80">Ancient Wisdom for Modern Life</span>
           </motion.div>
 
-          {/* Main title and subtitle with better mobile responsiveness */}
+          {/* Main title with improved typography */}
           <motion.div
-            className="hero-title"
+            className="hero-title space-y-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-playfair tracking-tight mb-6 sm:mb-8">
-              <span className="block text-balance leading-tight">
-                Tired of Endless Scrolling
-                <br className="hidden sm:block" />
-                <span className="block mt-2 sm:mt-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  But Still Feeling Empty?
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight">
+              <span className="block leading-tight">
+                Find Inner Peace in a
+                <span className="block mt-2 font-normal bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent">
+                  Chaotic World
                 </span>
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-foreground/80 max-w-3xl mx-auto px-4 mb-8 sm:mb-12">
-              Discover ancient wisdom that actually helps with modern struggles - 
-              anxiety, loneliness, and the constant pressure to "have it all figured out"
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              Discover timeless wisdom from the Bhagavad Gita, making ancient teachings relevant 
+              to your modern life challenges
             </p>
 
-            {/* Quote Container with adaptive height */}
-            <div className="w-full relative min-h-[200px] sm:min-h-[240px] mb-8 sm:mb-12">
+            {/* Quote display with minimal styling */}
+            <div className="w-full relative h-[180px] sm:h-[200px] mt-12">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentQuote}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  transition={{ 
-                    type: "tween",
-                    duration: 0.4,
-                    ease: "easeInOut"
-                  }}
+                  transition={{ duration: 0.4 }}
                   className="absolute inset-0 flex items-center justify-center"
                 >
-                  <div className="w-full max-w-3xl mx-auto px-4 sm:px-6">
-                    <div className="flex flex-col items-center">
-                      <Quote className="h-5 w-5 sm:h-6 sm:w-6 mb-4 text-primary/50" />
-                      <p className="italic text-lg sm:text-xl md:text-2xl text-primary/80 text-center mb-4">
-                        "{inspirationalQuotes[currentQuote].text}"
-                      </p>
-                      <span className="text-sm text-primary/70">
-                        {inspirationalQuotes[currentQuote].theme}
-                      </span>
-                    </div>
+                  <div className="max-w-2xl mx-auto px-4">
+                    <Quote className="h-5 w-5 text-primary/40 mx-auto mb-4" />
+                    <p className="text-lg sm:text-xl font-light text-foreground/90 italic">
+                      "{inspirationalQuotes[currentQuote].text}"
+                    </p>
                   </div>
                 </motion.div>
               </AnimatePresence>
             </div>
           </motion.div>
 
-          {/* Feature highlights */}
-          <div className="hero-features grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto mb-8 sm:mb-12">
+          {/* Feature highlights with minimal design */}
+          <div className="hero-features grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-16 mb-12">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
-                className="bg-card/5 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-primary/10 text-center hover:border-primary/20 transition-all duration-300"
+                className="bg-background/50 backdrop-blur-sm rounded-lg p-6 border border-primary/5 text-center transition-all duration-300"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
               >
-                <span className="text-2xl sm:text-3xl mb-3 block">{feature.icon}</span>
-                <h3 className="font-medium text-base sm:text-lg mb-2">{feature.title}</h3>
+                <span className="text-2xl mb-4 block">{feature.icon}</span>
+                <h3 className="text-base font-medium mb-2">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}
           </div>
 
-          {/* Call to action buttons */}
+          {/* Call to action with clean, minimal buttons */}
           <motion.div 
-            className="hero-buttons flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-xl mx-auto"
+            className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <Button
-              className="relative w-full sm:w-auto sm:min-w-[200px] px-4 sm:px-6 py-5 sm:py-6 text-base sm:text-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all group overflow-hidden"
+              className="w-full sm:w-auto px-6 py-6 text-base font-normal bg-primary hover:bg-primary/90 transition-all"
               onClick={handleScrollToMood}
             >
-              <div className="absolute inset-0 bg-primary/10 transform rotate-45 translate-x-3/4 transition-transform group-hover:translate-x-1/4" />
-              <span className="relative flex items-center justify-center">
-                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
-                Find Peace Today
-              </span>
+              <Sparkles className="h-4 w-4 mr-2" />
+              Start Your Journey
             </Button>
 
             <Button
               variant="outline"
-              className="w-full sm:w-auto sm:min-w-[200px] px-4 sm:px-6 py-5 sm:py-6 text-base sm:text-lg border-primary/20 hover:bg-primary/5 hover:text-primary group backdrop-blur-sm"
+              className="w-full sm:w-auto px-6 py-6 text-base font-normal border-primary/10 hover:bg-primary/5"
               onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(t('home.share.text') + '\n\n' + window.location.origin)}`, '_blank')}
             >
-              <span className="relative flex items-center justify-center">
-                <BsWhatsapp className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
-                Share With Others
-              </span>
+              <BsWhatsapp className="h-4 w-4 mr-2" />
+              Share With Others
             </Button>
           </motion.div>
         </div>
 
-        {/* Scroll indicator */}
+        {/* Minimal scroll indicator */}
         <motion.div 
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
           style={{ opacity: fadeOpacity }}
           aria-hidden="true"
         >
@@ -270,7 +245,7 @@ export default function Hero() {
             animate={{ y: [0, 5, 0] }}
             transition={{ repeat: Infinity, duration: 1.5 }}
           >
-            <ArrowDown className="h-5 w-5 sm:h-6 sm:w-6 text-primary/60" />
+            <ArrowDown className="h-5 w-5 text-primary/40" />
           </motion.div>
         </motion.div>
       </div>
