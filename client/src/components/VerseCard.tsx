@@ -27,9 +27,15 @@ interface VerseCardProps {
   };
   showActions?: boolean;
   isBookmarked?: boolean;
+  variant?: 'detailed' | 'compact';
 }
 
-export default function VerseCard({ verse, showActions = true, isBookmarked: initialIsBookmarked = false }: VerseCardProps) {
+export default function VerseCard({ 
+  verse, 
+  showActions = true, 
+  isBookmarked: initialIsBookmarked = false,
+  variant = 'detailed' 
+}: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const { t } = useLanguage();
@@ -87,98 +93,162 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
     }
   });
 
-  return (
-    <>
+  if (variant === 'compact') {
+    return (
       <motion.div
         whileHover={{ scale: 1.02 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
         className="h-full"
       >
         <Card className="h-full backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-6 flex flex-col h-full">
-            {/* Header Section */}
-            <div className="flex items-center justify-between mb-6">
+          <CardContent className="p-4 flex flex-col h-full">
+            {/* Compact Header */}
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="bg-gradient-to-r from-primary/20 to-primary/10 px-4 py-2 rounded-lg border border-primary/20">
-                  <span className="text-xs uppercase tracking-wider text-white/60">Chapter</span>
-                  <div className="text-xl font-medium text-white/90">{verse.chapter}</div>
-                </div>
-                <div className="bg-gradient-to-r from-primary/20 to-primary/10 px-4 py-2 rounded-lg border border-primary/20">
-                  <span className="text-xs uppercase tracking-wider text-white/60">Verse</span>
-                  <div className="text-xl font-medium text-white/90">{verse.verse}</div>
-                </div>
-              </div>
-              {showActions && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleBookmark}
-                  className="h-9 w-9 rounded-full hover:bg-white/10 transition-all duration-300 backdrop-blur-sm"
-                  disabled={bookmarkMutation.isPending}
-                >
-                  {isBookmarked ? (
-                    <BookmarkCheck className="h-5 w-5 text-primary" />
-                  ) : (
-                    <Bookmark className="h-5 w-5" />
-                  )}
-                </Button>
-              )}
-            </div>
-
-            {/* Content Section */}
-            <div className="flex-1 space-y-6">
-              {/* English Translation */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                <div className="text-lg text-white/90 leading-relaxed font-light">
-                  {verse.purohit?.et || verse.tej.et || verse.siva?.et}
-                </div>
-              </div>
-
-              {/* Sanskrit Text */}
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-                <p className="text-base leading-relaxed text-white/80">
-                  {verse.slok}
-                </p>
-                <p className="mt-2 text-sm text-gray-400">
-                  {verse.transliteration}
-                </p>
+                <span className="text-sm text-white/60">
+                  {verse.chapter}.{verse.verse}
+                </span>
+                <div className="w-1 h-1 rounded-full bg-white/20" />
+                {showActions && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleBookmark}
+                    className="h-8 w-8 hover:bg-white/10 transition-all duration-300"
+                    disabled={bookmarkMutation.isPending}
+                  >
+                    {isBookmarked ? (
+                      <BookmarkCheck className="h-4 w-4 text-primary" />
+                    ) : (
+                      <Bookmark className="h-4 w-4" />
+                    )}
+                  </Button>
+                )}
               </div>
             </div>
 
-            {/* Actions Section */}
-            <div className="pt-6 mt-4 border-t border-white/10 space-y-3">
+            {/* Compact Content */}
+            <div className="flex-1">
+              <p className="text-base text-white/90 leading-relaxed font-light mb-4">
+                {verse.purohit?.et || verse.tej.et || verse.siva?.et}
+              </p>
+            </div>
+
+            {/* Compact Actions */}
+            <div className="flex gap-2 mt-4 pt-4 border-t border-white/10">
               <Button
                 onClick={() => setShowModal(true)}
-                className="w-full bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
-                         border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
-                         transition-all duration-300 text-white font-normal py-6
-                         hover:border-primary/50 group"
+                className="flex-1 bg-primary/90 hover:bg-primary/80 border border-primary/30 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                <Book className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                <span>Read Full Verse</span>
+                <Book className="h-4 w-4 mr-2" />
+                Read
               </Button>
               {showActions && (
                 <Button
                   variant="outline"
                   onClick={handleShare}
-                  className="w-full backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
-                           border border-white/20 hover:bg-white/10 hover:border-white/30 
-                           shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
+                  className="flex-1 backdrop-blur-md bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300"
                 >
-                  <Share2 className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Share Wisdom
+                  <Share2 className="h-4 w-4" />
                 </Button>
               )}
             </div>
           </CardContent>
         </Card>
       </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      className="h-full"
+    >
+      <Card className="h-full backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
+        <CardContent className="p-6 flex flex-col h-full">
+          {/* Header Section */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <div className="bg-gradient-to-r from-primary/20 to-primary/10 px-4 py-2 rounded-lg border border-primary/20">
+                <span className="text-xs uppercase tracking-wider text-white/60">Chapter</span>
+                <div className="text-xl font-medium text-white/90">{verse.chapter}</div>
+              </div>
+              <div className="bg-gradient-to-r from-primary/20 to-primary/10 px-4 py-2 rounded-lg border border-primary/20">
+                <span className="text-xs uppercase tracking-wider text-white/60">Verse</span>
+                <div className="text-xl font-medium text-white/90">{verse.verse}</div>
+              </div>
+            </div>
+            {showActions && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleBookmark}
+                className="h-9 w-9 rounded-full hover:bg-white/10 transition-all duration-300 backdrop-blur-sm"
+                disabled={bookmarkMutation.isPending}
+              >
+                {isBookmarked ? (
+                  <BookmarkCheck className="h-5 w-5 text-primary" />
+                ) : (
+                  <Bookmark className="h-5 w-5" />
+                )}
+              </Button>
+            )}
+          </div>
+
+          {/* Content Section */}
+          <div className="flex-1 space-y-6">
+            {/* English Translation */}
+            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+              <div className="text-lg text-white/90 leading-relaxed font-light">
+                {verse.purohit?.et || verse.tej.et || verse.siva?.et}
+              </div>
+            </div>
+
+            {/* Sanskrit Text */}
+            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+              <p className="text-base leading-relaxed text-white/80">
+                {verse.slok}
+              </p>
+              <p className="mt-2 text-sm text-gray-400">
+                {verse.transliteration}
+              </p>
+            </div>
+          </div>
+
+          {/* Actions Section */}
+          <div className="pt-6 mt-4 border-t border-white/10 space-y-3">
+            <Button
+              onClick={() => setShowModal(true)}
+              className="w-full bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
+                       border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
+                       transition-all duration-300 text-white font-normal py-6
+                       hover:border-primary/50 group"
+            >
+              <Book className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+              <span>Read Full Verse</span>
+            </Button>
+            {showActions && (
+              <Button
+                variant="outline"
+                onClick={handleShare}
+                className="w-full backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
+                         border border-white/20 hover:bg-white/10 hover:border-white/30 
+                         shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
+              >
+                <Share2 className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                Share Wisdom
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       <ShareDialog
         verse={verse}
         open={showShareDialog}
         onOpenChange={setShowShareDialog}
       />
-    </>
+    </motion.div>
   );
 }
