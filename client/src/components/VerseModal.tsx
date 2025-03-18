@@ -82,74 +82,104 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
           </div>
 
           <div className="space-y-8">
-            {/* Sanskrit Section */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
-            >
-              <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                Sanskrit Text
-              </h3>
-              <div className="space-y-6">
-                <p className="text-2xl leading-relaxed text-white/90 font-light">
-                  {verse.slok}
-                </p>
-                <div className="pt-6 border-t border-white/10">
-                  <p className="text-base text-gray-400">
-                    {verse.transliteration}
+            {/* Primary Content Section */}
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Sanskrit Section */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300 h-full"
+              >
+                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
+                  Sanskrit Text
+                </h3>
+                <div className="space-y-6">
+                  <p className="text-2xl leading-relaxed text-white/90 font-light">
+                    {verse.slok}
+                  </p>
+                  <div className="pt-6 border-t border-white/10">
+                    <p className="text-base text-gray-400">
+                      {verse.transliteration}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Primary Translation */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300 h-full"
+              >
+                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
+                  Primary Translation
+                </h3>
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-2xl leading-relaxed text-white/90 font-light">
+                    {verse.purohit?.et || verse.tej.et || verse.siva?.et}
                   </p>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
 
-            {/* Translations Section */}
+            {/* Additional Translations Grid */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.3 }}
               className="space-y-6"
             >
-              <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider px-6">
-                Translations & Interpretations
+              <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider">
+                Additional Translations
               </h3>
-
-              {/* Purohit Translation */}
-              {verse.purohit?.et && (
-                <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
-                  <div className="mb-4">
-                    <span className="text-sm font-medium text-primary">Purohit Translation</span>
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Alternative Translations */}
+                {verse.purohit?.et && (
+                  <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
+                    <div className="mb-4">
+                      <span className="text-sm font-medium text-primary">Purohit Translation</span>
+                    </div>
+                    <p className="text-lg leading-relaxed text-white/90 font-light">
+                      {verse.purohit.et}
+                    </p>
                   </div>
-                  <p className="text-xl leading-relaxed text-white/90 font-light">
-                    {verse.purohit.et}
-                  </p>
-                </div>
-              )}
+                )}
 
-              {/* Sivananda Translation */}
-              {verse.siva?.et && (
-                <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
-                  <div className="mb-4">
-                    <span className="text-sm font-medium text-primary">Sivananda Translation</span>
+                {verse.siva?.et && (
+                  <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
+                    <div className="mb-4">
+                      <span className="text-sm font-medium text-primary">Sivananda Translation</span>
+                    </div>
+                    <p className="text-lg leading-relaxed text-white/90 font-light">
+                      {verse.siva.et}
+                    </p>
                   </div>
-                  <p className="text-xl leading-relaxed text-white/90 font-light">
-                    {verse.siva.et}
-                  </p>
-                </div>
-              )}
+                )}
 
-              {/* Tejomayananda Translation */}
-              {verse.tej?.et && (
-                <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
-                  <div className="mb-4">
-                    <span className="text-sm font-medium text-primary">Tejomayananda Translation</span>
+                {verse.tej?.et && (
+                  <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
+                    <div className="mb-4">
+                      <span className="text-sm font-medium text-primary">Tejomayananda Translation</span>
+                    </div>
+                    <p className="text-lg leading-relaxed text-white/90 font-light">
+                      {verse.tej.et}
+                    </p>
                   </div>
-                  <p className="text-xl leading-relaxed text-white/90 font-light">
-                    {verse.tej.et}
-                  </p>
-                </div>
-              )}
+                )}
+
+                {verse.tej?.ht && (
+                  <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
+                    <div className="mb-4">
+                      <span className="text-sm font-medium text-primary">Hindi Translation</span>
+                    </div>
+                    <p className="text-lg leading-relaxed text-white/90 font-light">
+                      {verse.tej.ht}
+                    </p>
+                  </div>
+                )}
+              </div>
             </motion.div>
 
             {/* Commentary Section */}
@@ -157,7 +187,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.4 }}
                 className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
               >
                 <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
@@ -168,23 +198,6 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
                     {verse.chinmay.hc}
                   </p>
                 </div>
-              </motion.div>
-            )}
-
-            {/* Hindi Translation Section */}
-            {verse.tej?.ht && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
-              >
-                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                  Hindi Translation
-                </h3>
-                <p className="text-lg leading-relaxed text-white/90 font-light">
-                  {verse.tej.ht}
-                </p>
               </motion.div>
             )}
 
@@ -249,7 +262,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
     <AnimatePresence>
       {open && (
         <Dialog open={open} onOpenChange={onOpenChange}>
-          <DialogContent className="sm:max-w-4xl mx-auto max-h-[90vh] overflow-y-auto 
+          <DialogContent className="sm:max-w-5xl mx-auto max-h-[90vh] overflow-y-auto 
                                 backdrop-blur-xl bg-gradient-to-br from-black/50 to-black/30 
                                 border border-white/10 rounded-xl shadow-2xl"
           >
