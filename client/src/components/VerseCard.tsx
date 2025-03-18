@@ -103,19 +103,20 @@ export default function VerseCard({
         className="h-full"
       >
         <Card className="h-full backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-5 flex flex-col h-full relative overflow-hidden">
+          <CardContent className="p-6 flex flex-col h-full relative overflow-hidden">
             {/* Decorative Background Pattern */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30" />
 
             {/* Content Container */}
-            <div className="relative z-10">
+            <div className="relative z-10 flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="text-sm font-medium text-white/60">
-                    <span className="text-2xl text-white/90">{verse.chapter}</span>
-                    <span className="mx-2 text-white/40">·</span>
-                    <span className="text-2xl text-white/90">{verse.verse}</span>
+                  <div className="px-3 py-1.5 rounded-lg backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
+                    <span className="text-sm text-white/60">Ch.{verse.chapter}</span>
+                  </div>
+                  <div className="px-3 py-1.5 rounded-lg backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
+                    <span className="text-sm text-white/60">V.{verse.verse}</span>
                   </div>
                 </div>
                 {showActions && (
@@ -136,21 +137,21 @@ export default function VerseCard({
               </div>
 
               {/* Main Content */}
-              <div className="flex-1 mb-4">
+              <div className="flex-1 mb-6">
                 <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
-                  <p className="text-base text-white/90 leading-relaxed font-light">
+                  <p className="text-lg text-white/90 leading-relaxed font-light">
                     {verse.purohit?.et || verse.tej.et || verse.siva?.et}
                   </p>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 mt-auto">
+              <div className="flex gap-3 pt-4 border-t border-white/10">
                 <Button
                   onClick={() => setShowModal(true)}
                   className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
-                           border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
-                           transition-all duration-300 text-white py-5 group"
+                            border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
+                            transition-all duration-300 text-white py-5 group"
                 >
                   <span className="flex items-center justify-center">
                     <Book className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
@@ -162,7 +163,7 @@ export default function VerseCard({
                   <Button
                     variant="outline"
                     onClick={handleShare}
-                    className="w-14 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
+                    className="w-12 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
                              border border-white/20 hover:bg-white/10 hover:border-white/30 
                              shadow-lg hover:shadow-xl transition-all duration-300 py-5 group flex-shrink-0"
                   >
