@@ -1,6 +1,6 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share2, Copy, Check, ArrowRight } from "lucide-react";
+import { Share2, Copy, Check, Book, ArrowRight, Heart } from "lucide-react";
 import { useState, useCallback, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { Verse } from "@/lib/data";
@@ -13,14 +13,13 @@ interface VerseModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Memoize modal content to prevent unnecessary re-renders
 const VerseContent = memo(({ verse }: { verse: Verse }) => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
   const handleCopy = useCallback(async () => {
-    const englishTranslation = verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht;
+    const englishTranslation = verse.purohit?.et || verse.tej.et || verse.siva?.et;
     const textToCopy = `${englishTranslation}\n\n${verse.slok}\n\n${verse.transliteration}`;
 
     try {
@@ -47,59 +46,73 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="px-4 sm:px-8 py-8 space-y-8"
+        className="relative"
       >
-        <DialogHeader>
-          <div className="flex items-center gap-4 mb-2">
-            <div className="px-3 py-1.5 rounded-full backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
-              <span className="text-sm font-medium text-white/90">Chapter {verse.chapter}</span>
+        {/* Decorative Background Pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-40" />
+
+        <div className="relative px-4 sm:px-8 py-8">
+          {/* Header Section */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+            <div className="flex items-center gap-3">
+              <Heart className="h-5 w-5 text-primary/80" />
+              <span className="text-sm font-medium text-white/60 uppercase tracking-wider">Bhagavad Gita</span>
             </div>
-            <div className="px-3 py-1.5 rounded-full backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
-              <span className="text-sm font-medium text-white/90">Verse {verse.verse}</span>
+            <div className="flex gap-3">
+              <div className="px-3 py-1.5 rounded-lg backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
+                <span className="text-sm text-white/60 block">Ch.{verse.chapter}</span>
+              </div>
+              <div className="px-3 py-1.5 rounded-lg backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
+                <span className="text-sm text-white/60 block">V.{verse.verse}</span>
+              </div>
             </div>
           </div>
-        </DialogHeader>
 
-        <div className="space-y-8">
-          {/* English Translation Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 sm:p-8 border border-white/10 shadow-lg"
-          >
-            <h3 className="text-base font-medium flex items-center gap-2 text-white/60 mb-4 uppercase tracking-wider">
-              English Translation
-            </h3>
-            <p className="text-2xl leading-relaxed text-white/90 font-light">
-              {verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht}
-            </p>
-          </motion.div>
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Left Column - Sanskrit */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="space-y-6"
+            >
+              <div className="backdrop-blur-lg bg-white/5 rounded-xl p-6 border border-white/10 shadow-lg">
+                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
+                  Sanskrit Text
+                </h3>
+                <p className="text-2xl leading-relaxed text-white/90 font-light mb-4">
+                  {verse.slok}
+                </p>
+                <p className="text-base text-gray-400">
+                  {verse.transliteration}
+                </p>
+              </div>
+            </motion.div>
 
-          {/* Sanskrit Text */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 sm:p-8 border border-white/10 shadow-lg"
-          >
-            <h3 className="text-base font-medium flex items-center gap-2 text-white/60 mb-4 uppercase tracking-wider">
-              Sanskrit Text
-            </h3>
-            <p className="text-2xl leading-relaxed text-white/90 font-light">
-              {verse.slok}
-            </p>
-            <p className="mt-4 text-base text-gray-400">
-              {verse.transliteration}
-            </p>
-          </motion.div>
+            {/* Right Column - Translation */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-6"
+            >
+              <div className="backdrop-blur-lg bg-white/5 rounded-xl p-6 border border-white/10 shadow-lg">
+                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
+                  Translation
+                </h3>
+                <p className="text-2xl leading-relaxed text-white/90 font-light">
+                  {verse.purohit?.et || verse.tej.et || verse.siva?.et}
+                </p>
+              </div>
+            </motion.div>
+          </div>
 
-          {/* Actions */}
+          {/* Actions Section */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex gap-4 pt-4"
+            className="flex gap-4 mt-8 pt-6 border-t border-white/10"
           >
             <Button
               className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
@@ -107,9 +120,10 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
                        transition-all duration-300 text-white py-6 group"
               onClick={() => setShowShareDialog(true)}
             >
-              <span className="flex items-center">
+              <span className="flex items-center justify-center">
+                <Share2 className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
                 Share Verse
-                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
               </span>
             </Button>
             <Button
@@ -120,15 +134,15 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
               onClick={handleCopy}
             >
               {copied ? (
-                <>
+                <span className="flex items-center justify-center">
                   <Check className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                  <span>Copied</span>
-                </>
+                  Copied
+                </span>
               ) : (
-                <>
+                <span className="flex items-center justify-center">
                   <Copy className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                  <span>Copy Text</span>
-                </>
+                  Copy Text
+                </span>
               )}
             </Button>
           </motion.div>
@@ -153,9 +167,10 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
     <AnimatePresence>
       {open && (
         <Dialog open={open} onOpenChange={onOpenChange}>
-          <DialogContent className="sm:max-w-3xl mx-auto max-h-[90vh] overflow-y-auto 
-                                  backdrop-blur-xl bg-gradient-to-br from-black/50 to-black/30 
-                                  border border-white/10 rounded-xl">
+          <DialogContent className="sm:max-w-4xl mx-auto max-h-[90vh] overflow-y-auto 
+                                backdrop-blur-xl bg-gradient-to-br from-black/50 to-black/30 
+                                border border-white/10 rounded-xl shadow-2xl"
+          >
             <VerseContent verse={verse} />
           </DialogContent>
         </Dialog>
