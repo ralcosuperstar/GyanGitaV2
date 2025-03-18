@@ -50,9 +50,9 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
         {/* Decorative Background Pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30" />
 
-        <div className="relative px-6 sm:px-8 py-8">
+        <div className="relative p-4 sm:p-6 md:p-8">
           {/* Header Section */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Heart className="h-5 w-5 text-primary" />
@@ -63,15 +63,15 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
               </div>
             </div>
             {/* Highlighted Chapter & Verse Numbers */}
-            <div className="flex items-center gap-4">
-              <div className="relative group">
+            <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="relative group flex-1 sm:flex-initial">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-xl blur-lg group-hover:blur-xl transition-all duration-500 opacity-50"></div>
                 <div className="relative px-4 py-3 backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20 rounded-xl hover:border-primary/30 transition-colors">
                   <span className="text-sm text-white/60 block mb-1">Chapter</span>
                   <span className="text-3xl font-medium text-white/90 block">{verse.chapter}</span>
                 </div>
               </div>
-              <div className="relative group">
+              <div className="relative group flex-1 sm:flex-initial">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-xl blur-lg group-hover:blur-xl transition-all duration-500 opacity-50"></div>
                 <div className="relative px-4 py-3 backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20 rounded-xl hover:border-primary/30 transition-colors">
                   <span className="text-sm text-white/60 block mb-1">Verse</span>
@@ -83,7 +83,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
 
           <div className="space-y-8">
             {/* Primary Content Section */}
-            <div className="grid lg:grid-cols-2 gap-8">
+            <div className="grid lg:grid-cols-2 gap-6">
               {/* Sanskrit Section */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -95,11 +95,11 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
                   Sanskrit Text
                 </h3>
                 <div className="space-y-6">
-                  <p className="text-2xl leading-relaxed text-white/90 font-light">
+                  <p className="text-2xl leading-relaxed text-white/90 font-light break-words">
                     {verse.slok}
                   </p>
                   <div className="pt-6 border-t border-white/10">
-                    <p className="text-base text-gray-400">
+                    <p className="text-base text-gray-400 break-words">
                       {verse.transliteration}
                     </p>
                   </div>
@@ -117,7 +117,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
                   Primary Translation
                 </h3>
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-2xl leading-relaxed text-white/90 font-light">
+                  <p className="text-2xl leading-relaxed text-white/90 font-light break-words">
                     {verse.purohit?.et || verse.tej.et || verse.siva?.et}
                   </p>
                 </div>
@@ -141,7 +141,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
                     <div className="mb-4">
                       <span className="text-sm font-medium text-primary">Purohit Translation</span>
                     </div>
-                    <p className="text-lg leading-relaxed text-white/90 font-light">
+                    <p className="text-lg leading-relaxed text-white/90 font-light break-words">
                       {verse.purohit.et}
                     </p>
                   </div>
@@ -152,7 +152,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
                     <div className="mb-4">
                       <span className="text-sm font-medium text-primary">Sivananda Translation</span>
                     </div>
-                    <p className="text-lg leading-relaxed text-white/90 font-light">
+                    <p className="text-lg leading-relaxed text-white/90 font-light break-words">
                       {verse.siva.et}
                     </p>
                   </div>
@@ -163,7 +163,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
                     <div className="mb-4">
                       <span className="text-sm font-medium text-primary">Tejomayananda Translation</span>
                     </div>
-                    <p className="text-lg leading-relaxed text-white/90 font-light">
+                    <p className="text-lg leading-relaxed text-white/90 font-light break-words">
                       {verse.tej.et}
                     </p>
                   </div>
@@ -174,7 +174,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
                     <div className="mb-4">
                       <span className="text-sm font-medium text-primary">Hindi Translation</span>
                     </div>
-                    <p className="text-lg leading-relaxed text-white/90 font-light">
+                    <p className="text-lg leading-relaxed text-white/90 font-light break-words">
                       {verse.tej.ht}
                     </p>
                   </div>
@@ -194,7 +194,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
                   Commentary by Chinmayananda
                 </h3>
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-lg leading-relaxed text-white/90 font-light whitespace-pre-wrap">
+                  <p className="text-lg leading-relaxed text-white/90 font-light break-words whitespace-pre-wrap">
                     {verse.chinmay.hc}
                   </p>
                 </div>
@@ -206,7 +206,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="flex gap-4 pt-4 border-t border-white/10"
+              className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/10"
             >
               <Button
                 className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
@@ -262,7 +262,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
     <AnimatePresence>
       {open && (
         <Dialog open={open} onOpenChange={onOpenChange}>
-          <DialogContent className="sm:max-w-5xl mx-auto max-h-[90vh] overflow-y-auto 
+          <DialogContent className="w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] max-w-5xl mx-auto my-4 max-h-[calc(100vh-2rem)] overflow-y-auto 
                                 backdrop-blur-xl bg-gradient-to-br from-black/50 to-black/30 
                                 border border-white/10 rounded-xl shadow-2xl"
           >
