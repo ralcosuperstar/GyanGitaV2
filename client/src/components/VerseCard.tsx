@@ -146,7 +146,7 @@ export default function VerseCard({
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-3 mt-auto">
+              <div className="flex items-center gap-3">
                 <Button
                   onClick={() => setShowModal(true)}
                   className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
