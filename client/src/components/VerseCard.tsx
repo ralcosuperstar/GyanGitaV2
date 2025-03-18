@@ -146,7 +146,7 @@ export default function VerseCard({
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-3 pt-4 border-t border-white/10">
+              <div className="flex items-center gap-4 pt-4 border-t border-white/10">
                 <Button
                   onClick={() => setShowModal(true)}
                   className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
@@ -163,9 +163,10 @@ export default function VerseCard({
                   <Button
                     variant="outline"
                     onClick={handleShare}
-                    className="w-12 h-12 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
+                    size="icon"
+                    className="h-11 w-11 shrink-0 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
                              border border-white/20 hover:bg-white/10 hover:border-white/30 
-                             shadow-lg hover:shadow-xl transition-all duration-300 group flex-shrink-0 flex items-center justify-center"
+                             shadow-lg hover:shadow-xl transition-all duration-300 group"
                   >
                     <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
                   </Button>
