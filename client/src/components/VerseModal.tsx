@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share2, Copy, Check, Book, ArrowRight, Heart } from "lucide-react";
+import { Share2, Copy, Check, ArrowRight, Heart } from "lucide-react";
 import { useState, useCallback, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { Verse } from "@/lib/data";
@@ -19,8 +19,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
   const { toast } = useToast();
 
   const handleCopy = useCallback(async () => {
-    const englishTranslation = verse.purohit?.et || verse.tej.et || verse.siva?.et;
-    const textToCopy = `${englishTranslation}\n\n${verse.slok}\n\n${verse.transliteration}`;
+    const textToCopy = `${verse.purohit?.et || verse.tej.et || verse.siva?.et}\n\n${verse.slok}\n\n${verse.transliteration}`;
 
     try {
       await navigator.clipboard.writeText(textToCopy);
@@ -49,26 +48,40 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
         className="relative"
       >
         {/* Decorative Background Pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-40" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30" />
 
-        <div className="relative px-4 sm:px-8 py-8">
+        <div className="relative px-6 sm:px-8 py-8">
           {/* Header Section */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-10">
             <div className="flex items-center gap-3">
-              <Heart className="h-5 w-5 text-primary/80" />
-              <span className="text-sm font-medium text-white/60 uppercase tracking-wider">Bhagavad Gita</span>
-            </div>
-            <div className="flex gap-3">
-              <div className="px-3 py-1.5 rounded-lg backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
-                <span className="text-sm text-white/60 block">Ch.{verse.chapter}</span>
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Heart className="h-5 w-5 text-primary" />
               </div>
-              <div className="px-3 py-1.5 rounded-lg backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
-                <span className="text-sm text-white/60 block">V.{verse.verse}</span>
+              <div>
+                <span className="text-sm font-medium text-white/60 uppercase tracking-wider block">Bhagavad Gita</span>
+                <span className="text-sm text-white/40">Ancient Wisdom</span>
+              </div>
+            </div>
+            {/* Highlighted Chapter & Verse Numbers */}
+            <div className="flex items-center gap-4">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-xl blur-lg group-hover:blur-xl transition-all duration-500 opacity-50"></div>
+                <div className="relative px-4 py-3 backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20 rounded-xl hover:border-primary/30 transition-colors">
+                  <span className="text-sm text-white/60 block mb-1">Chapter</span>
+                  <span className="text-3xl font-medium text-white/90 block">{verse.chapter}</span>
+                </div>
+              </div>
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-xl blur-lg group-hover:blur-xl transition-all duration-500 opacity-50"></div>
+                <div className="relative px-4 py-3 backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20 rounded-xl hover:border-primary/30 transition-colors">
+                  <span className="text-sm text-white/60 block mb-1">Verse</span>
+                  <span className="text-3xl font-medium text-white/90 block">{verse.verse}</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-2 gap-8">
             {/* Left Column - Sanskrit */}
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
@@ -76,16 +89,20 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
               transition={{ delay: 0.1 }}
               className="space-y-6"
             >
-              <div className="backdrop-blur-lg bg-white/5 rounded-xl p-6 border border-white/10 shadow-lg">
-                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
+              <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
+                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
                   Sanskrit Text
                 </h3>
-                <p className="text-2xl leading-relaxed text-white/90 font-light mb-4">
-                  {verse.slok}
-                </p>
-                <p className="text-base text-gray-400">
-                  {verse.transliteration}
-                </p>
+                <div className="space-y-6">
+                  <p className="text-2xl leading-relaxed text-white/90 font-light">
+                    {verse.slok}
+                  </p>
+                  <div className="pt-6 border-t border-white/10">
+                    <p className="text-base text-gray-400">
+                      {verse.transliteration}
+                    </p>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
@@ -96,13 +113,15 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
               transition={{ delay: 0.2 }}
               className="space-y-6"
             >
-              <div className="backdrop-blur-lg bg-white/5 rounded-xl p-6 border border-white/10 shadow-lg">
-                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
+              <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
+                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
                   Translation
                 </h3>
-                <p className="text-2xl leading-relaxed text-white/90 font-light">
-                  {verse.purohit?.et || verse.tej.et || verse.siva?.et}
-                </p>
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-2xl leading-relaxed text-white/90 font-light">
+                    {verse.purohit?.et || verse.tej.et || verse.siva?.et}
+                  </p>
+                </div>
               </div>
             </motion.div>
           </div>
