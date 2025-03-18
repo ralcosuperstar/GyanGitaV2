@@ -50,7 +50,7 @@ export default function MoodSelector({ onSelect, selectedMood }: MoodSelectorPro
         </span>
       </motion.div>
 
-      <motion.div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+      <motion.div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-4">
         {moods.map((mood) => (
           <motion.div
             key={mood.id}
@@ -74,18 +74,10 @@ export default function MoodSelector({ onSelect, selectedMood }: MoodSelectorPro
               </div>
 
               <CardContent className="p-0 text-center relative z-10 flex flex-col items-center justify-center h-full">
-                {/* Icon Container */}
-                <div className="relative mb-4 p-4 rounded-full bg-gradient-to-br from-primary/10 to-transparent 
-                            border border-primary/20 group-hover:border-primary/30 transition-all duration-300">
-                  <div className="text-4xl transform transition-transform group-hover:scale-110 duration-300">
-                    {mood.icon}
-                  </div>
-                  {/* Glow Effect */}
-                  <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
+                <div className="text-3xl transform transition-transform group-hover:scale-110 duration-300">
+                  {mood.icon}
                 </div>
-
-                {/* Text Content */}
-                <h3 className="font-medium text-xl text-white/90 group-hover:text-primary transition-colors px-4">
+                <h3 className="mt-2 font-medium text-sm text-white/90 group-hover:text-primary transition-colors px-2">
                   {mood.label}
                 </h3>
               </CardContent>
