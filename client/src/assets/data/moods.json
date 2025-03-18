@@ -1,0 +1,26 @@
+{
+  "moods": [
+    {
+      "name": "Anger",
+      "description": "Verses to help control and overcome anger",
+      "verses": [
+        { "chapter": 2, "text": 56, "theme": "Controlling anger through steady wisdom" },
+        { "chapter": 2, "text": 62, "theme": "Understanding the root of anger" },
+        { "chapter": 2, "text": 63, "theme": "Effects of anger on consciousness" },
+        { "chapter": 5, "text": 26, "theme": "Freedom from anger through meditation" },
+        { "chapter": 16, "text": 1, "theme": "Divine qualities including freedom from anger" }
+      ]
+    },
+    {
+      "name": "Seeking Peace",
+      "description": "Verses for finding inner peace and tranquility",
+      "verses": [
+        { "chapter": 2, "text": 66, "theme": "Peace through mental control" },
+        { "chapter": 2, "text": 71, "theme": "Peace through detachment" },
+        { "chapter": 4, "text": 39, "theme": "Peace through spiritual knowledge" },
+        { "chapter": 5, "text": 29, "theme": "Ultimate peace through meditation" },
+        { "chapter": 8, "text": 28, "theme": "Transcendental peace" }
+      ]
+    }
+  ]
+}
