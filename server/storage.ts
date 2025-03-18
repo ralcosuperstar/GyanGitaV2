@@ -36,7 +36,7 @@ export class MemStorage implements IStorage {
         id: this.currentId++,
         mood: moodData.name.toLowerCase(),
         chapter: verse.chapter.toString(),
-        verse: verse.text.toString()
+        verse: verse.verse.toString()
       }));
       this.moodVersesMap.set(moodData.name.toLowerCase(), moodVerses);
     });

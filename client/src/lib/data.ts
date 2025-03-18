@@ -144,11 +144,11 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
       try {
         const verse = await getVerseByChapterAndNumber(
           verseData.chapter,
-          verseData.text
+          verseData.verse
         );
         return verse;
       } catch (error) {
-        console.error(`Error loading verse ${verseData.chapter}:${verseData.text}:`, error);
+        console.error(`Error loading verse ${verseData.chapter}:${verseData.verse}:`, error);
         return null;
       }
     });

@@ -4,22 +4,49 @@
       "name": "Anger",
       "description": "Verses to help control and overcome anger",
       "verses": [
-        { "chapter": 2, "text": 56, "theme": "Controlling anger through steady wisdom" },
-        { "chapter": 2, "text": 62, "theme": "Understanding the root of anger" },
-        { "chapter": 2, "text": 63, "theme": "Effects of anger on consciousness" },
-        { "chapter": 5, "text": 26, "theme": "Freedom from anger through meditation" },
-        { "chapter": 16, "text": 1, "theme": "Divine qualities including freedom from anger" }
+        { "chapter": 2, "verse": 56, "theme": "Controlling anger through steady wisdom" },
+        { "chapter": 2, "verse": 62, "theme": "Understanding the root of anger" },
+        { "chapter": 2, "verse": 63, "theme": "Effects of anger on consciousness" },
+        { "chapter": 5, "verse": 26, "theme": "Freedom from anger through meditation" },
+        { "chapter": 16, "verse": 1, "theme": "Divine qualities including freedom from anger" }
       ]
     },
     {
       "name": "Seeking Peace",
       "description": "Verses for finding inner peace and tranquility",
       "verses": [
-        { "chapter": 2, "text": 66, "theme": "Peace through mental control" },
-        { "chapter": 2, "text": 71, "theme": "Peace through detachment" },
-        { "chapter": 4, "text": 39, "theme": "Peace through spiritual knowledge" },
-        { "chapter": 5, "text": 29, "theme": "Ultimate peace through meditation" },
-        { "chapter": 8, "text": 28, "theme": "Transcendental peace" }
+        { "chapter": 2, "verse": 66, "theme": "Peace through mental control" },
+        { "chapter": 2, "verse": 71, "theme": "Peace through detachment" },
+        { "chapter": 4, "verse": 39, "theme": "Peace through spiritual knowledge" },
+        { "chapter": 5, "verse": 29, "theme": "Ultimate peace through meditation" },
+        { "chapter": 8, "verse": 28, "theme": "Transcendental peace" }
+      ]
+    },
+    {
+      "name": "Depression",
+      "description": "Verses offering solace and hope during difficult times",
+      "verses": [
+        { "chapter": 2, "verse": 3, "theme": "Overcoming weakness of heart" },
+        { "chapter": 2, "verse": 14, "theme": "Understanding temporary nature of suffering" },
+        { "chapter": 5, "verse": 21, "theme": "Finding inner joy" }
+      ]
+    },
+    {
+      "name": "Confusion",
+      "description": "Verses providing clarity and direction",
+      "verses": [
+        { "chapter": 2, "verse": 7, "theme": "Seeking guidance" },
+        { "chapter": 3, "verse": 7, "theme": "Understanding right action" },
+        { "chapter": 18, "verse": 61, "theme": "Divine guidance" }
+      ]
+    },
+    {
+      "name": "Fear",
+      "description": "Verses for overcoming fear and anxiety",
+      "verses": [
+        { "chapter": 4, "verse": 10, "theme": "Freedom from fear" },
+        { "chapter": 11, "verse": 50, "theme": "Divine assurance" },
+        { "chapter": 18, "verse": 30, "theme": "Fearlessness through knowledge" }
       ]
     }
   ]
