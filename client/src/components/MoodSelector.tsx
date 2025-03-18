@@ -63,7 +63,7 @@ export default function MoodSelector({ onSelect, selectedMood }: MoodSelectorPro
           >
             <Card
               className={`cursor-pointer backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 
-                       hover:bg-white/10 hover:border-primary/20 transition-all duration-300 overflow-hidden relative group
+                       hover:bg-white/10 hover:border-primary/20 transition-all duration-300 overflow-hidden relative group aspect-square
                        ${selectedMood === mood.id ? 'ring-2 ring-primary bg-white/10' : ''}`}
               onClick={() => onSelect(mood.id)}
             >
@@ -73,9 +73,9 @@ export default function MoodSelector({ onSelect, selectedMood }: MoodSelectorPro
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/2 to-transparent" />
               </div>
 
-              <CardContent className="p-8 text-center relative z-10 flex flex-col items-center justify-center min-h-[200px]">
+              <CardContent className="p-0 text-center relative z-10 flex flex-col items-center justify-center h-full">
                 {/* Icon Container */}
-                <div className="relative mb-6 p-4 rounded-full bg-gradient-to-br from-primary/10 to-transparent 
+                <div className="relative mb-4 p-4 rounded-full bg-gradient-to-br from-primary/10 to-transparent 
                             border border-primary/20 group-hover:border-primary/30 transition-all duration-300">
                   <div className="text-4xl transform transition-transform group-hover:scale-110 duration-300">
                     {mood.icon}
@@ -85,12 +85,9 @@ export default function MoodSelector({ onSelect, selectedMood }: MoodSelectorPro
                 </div>
 
                 {/* Text Content */}
-                <h3 className="font-medium text-xl mb-3 text-white/90 group-hover:text-primary transition-colors">
+                <h3 className="font-medium text-xl text-white/90 group-hover:text-primary transition-colors px-4">
                   {mood.label}
                 </h3>
-                <p className="text-sm text-white/60 line-clamp-2">
-                  {mood.description}
-                </p>
               </CardContent>
             </Card>
           </motion.div>
