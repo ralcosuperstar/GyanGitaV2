@@ -145,8 +145,8 @@ export default function VerseCard({
                 </div>
               </div>
 
-              {/* Actions Container */}
-              <div className="flex items-center gap-3 pt-4 mt-auto border-t border-white/10">
+              {/* Actions Container with proper spacing */}
+              <div className="flex items-center gap-3 pt-4 border-t border-white/10">
                 <Button
                   onClick={() => setShowModal(true)}
                   className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
@@ -159,6 +159,7 @@ export default function VerseCard({
                     <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                   </span>
                 </Button>
+
                 {showActions && (
                   <Button
                     variant="outline"
@@ -166,7 +167,7 @@ export default function VerseCard({
                     onClick={handleShare}
                     className="h-11 w-11 shrink-0 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
                               border border-white/20 hover:bg-white/10 hover:border-white/30 
-                              shadow-lg hover:shadow-xl transition-all duration-300 group rounded-lg"
+                              shadow-lg hover:shadow-xl transition-all duration-300 group rounded-lg mr-0"
                   >
                     <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
                   </Button>
