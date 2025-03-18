@@ -22,9 +22,6 @@ interface VerseCardProps {
     purohit?: {
       et: string;
     };
-    chinmay?: {
-      hc: string;
-    };
     chapter: number;
     verse: number;
   };
@@ -129,7 +126,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             {/* Main Content */}
             <div className="flex-1 space-y-6">
               {/* English Translation */}
-              <div className="text-xl text-white/90 leading-relaxed">
+              <div className="text-xl text-white/90 leading-relaxed font-light">
                 {verse.purohit?.et || verse.tej.et || verse.siva?.et}
               </div>
 
@@ -138,7 +135,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                 <p className="text-base leading-relaxed text-white/80">
                   {verse.slok}
                 </p>
-                <p className="mt-2 text-sm text-gray-400 italic">
+                <p className="mt-2 text-sm text-gray-400">
                   {verse.transliteration}
                 </p>
               </div>
@@ -148,7 +145,10 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             <div className="pt-6 mt-4 border-t border-white/10 space-y-3">
               <Button
                 onClick={() => setShowModal(true)}
-                className="w-full bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm transition-all duration-300 text-white font-normal py-6"
+                className="w-full bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
+                         border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
+                         transition-all duration-300 text-white font-normal py-6
+                         hover:border-primary/50"
               >
                 Read More
               </Button>
@@ -156,9 +156,9 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                 <Button
                   variant="outline"
                   onClick={handleShare}
-                  className="w-full backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 py-6"
+                  className="w-full backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
                 >
-                  <Share2 className="h-4 w-4 mr-2" />
+                  <Share2 className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
                   Share
                 </Button>
               )}

@@ -1,10 +1,3 @@
-/**
- * Hero Component
- * 
- * Creates an immediate emotional connection through relatable modern challenges
- * while presenting ancient wisdom as practical solutions.
- */
-
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
@@ -16,7 +9,6 @@ import { useLanguage } from "@/contexts/language-context";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Update inspirationalQuotes array to have similar length quotes for consistency
 const inspirationalQuotes = [
   { 
     text: "Your anxiety about the future is useless. Focus on what you can control in this moment.",
@@ -38,7 +30,6 @@ const inspirationalQuotes = [
   }
 ];
 
-// Value propositions targeting modern challenges
 const features = [
   {
     icon: "🎯",

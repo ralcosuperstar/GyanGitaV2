@@ -68,10 +68,8 @@ export default {
       },
       fontFamily: {
         'sans': ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        'serif': ['Georgia', 'ui-serif', 'serif'],
         'mono': ['Menlo', 'Monaco', 'Courier New', 'monospace'],
-        'playfair': ['Playfair Display', 'serif'],
-        'sanskrit': ['Sanskrit Text', 'serif']
+        'sanskrit': ['Noto Sans', 'sans-serif']
       },
       keyframes: {
         "accordion-down": {
