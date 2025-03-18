@@ -7,7 +7,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Book } from "lucide-react";
+import { RefreshCw, Book, Bookmark, ArrowRight, Share2 } from "lucide-react"; // Added imports
 import { moods } from "@/lib/moods";
 import { motion, AnimatePresence } from "framer-motion";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
@@ -287,28 +287,79 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto"
+        className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto"
       >
         {verses.map((verse, index) => (
           <motion.div
             key={`${verse.chapter}-${verse.verse}`}
             variants={itemVariants}
             custom={index}
-            className="flex"
+            className="h-full"
           >
-            <VerseCard 
-              verse={verse}
-              variant="compact"
-              showActions={true}
-              handleShare={handleShare}
-              handleCopy={handleCopy}
-              handleBookmark={handleBookmark}
-              copiedVerseId={copiedVerseId}
-              setCopiedVerseId={setCopiedVerseId}
-              favoriteVerses={favoriteVerses}
-              setFavoriteVerses={setFavoriteVerses}
-              toast={toast}
-            />
+            <Card className="h-full backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="p-6 flex flex-col h-full relative">
+                {/* Decorative Background */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30" />
+
+                {/* Content Container */}
+                <div className="relative z-10 flex flex-col h-full">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className="px-3 py-1.5 rounded-lg backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
+                        <span className="text-sm text-white/60">Ch.{verse.chapter}</span>
+                      </div>
+                      <div className="px-3 py-1.5 rounded-lg backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
+                        <span className="text-sm text-white/60">V.{verse.verse}</span>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleBookmark(verse)}
+                      className="h-9 w-9 rounded-full hover:bg-white/10 transition-all duration-300"
+                      disabled={false}
+                    >
+                      <Bookmark className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {/* Main Content */}
+                  <div className="flex-1 mb-6">
+                    <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
+                      <p className="text-lg text-white/90 leading-relaxed font-light">
+                        {verse.purohit?.et || verse.tej.et || verse.siva?.et}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-3 pt-4 border-t border-white/10">
+                    <Button
+                      onClick={() => setSelectedVerse(verse)}
+                      className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
+                                   border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
+                                   transition-all duration-300 text-white py-5 group"
+                    >
+                      <span className="flex items-center justify-center">
+                        <Book className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
+                        Read Full Verse
+                        <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                      </span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleShare(verse)}
+                      className="px-5 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
+                                   border border-white/20 hover:bg-white/10 hover:border-white/30 
+                                   shadow-lg hover:shadow-xl transition-all duration-300 py-5 group"
+                    >
+                      <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </motion.div>
         ))}
       </motion.div>
