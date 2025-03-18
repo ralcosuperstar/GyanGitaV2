@@ -13,6 +13,8 @@ import { getVersesByMood, getVerseByChapterAndNumber, type Verse } from "@/lib/d
 import FeaturesSection from "@/components/FeaturesSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import CallToAction from "@/components/CallToAction";
+import StatsSection from "@/components/StatsSection";
+import USPSection from "@/components/USPSection";
 
 // Floating Element Component
 const FloatingElement = ({ className = "", delay = 0 }) => (
@@ -247,7 +249,8 @@ export default function Home() {
       {/* Show these sections only if no mood is selected */}
       {!selectedMood && (
         <>
-          <FeaturesSection />
+          <StatsSection />
+          <USPSection />
           <TestimonialsSection />
           <CallToAction />
         </>

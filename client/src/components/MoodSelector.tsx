@@ -43,14 +43,14 @@ export default function MoodSelector({ onSelect, selectedMood }: MoodSelectorPro
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-center mb-8"
+        className="text-center mb-12"
       >
-        <span className="text-lg sm:text-xl text-white/60">
-          Select how you're feeling to receive personalized guidance from the Gita
+        <span className="text-2xl sm:text-3xl text-white/90 font-light">
+          How are you feeling today?
         </span>
       </motion.div>
 
-      <motion.div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+      <motion.div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
         {moods.map((mood) => (
           <motion.div
             key={mood.id}
@@ -67,24 +67,30 @@ export default function MoodSelector({ onSelect, selectedMood }: MoodSelectorPro
                        ${selectedMood === mood.id ? 'ring-2 ring-primary bg-white/10' : ''}`}
               onClick={() => onSelect(mood.id)}
             >
-              {/* Background Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/2 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              {/* Sacred Geometry Background Pattern */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0%,var(--primary)_25%,transparent_50%)] animate-spin-slow" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/2 to-transparent" />
+              </div>
 
-              <CardContent className="p-6 text-center relative z-10">
-                <div className="text-4xl mb-4 transform transition-transform group-hover:scale-110 duration-300">
-                  {mood.icon}
+              <CardContent className="p-8 text-center relative z-10 flex flex-col items-center justify-center min-h-[200px]">
+                {/* Icon Container */}
+                <div className="relative mb-6 p-4 rounded-full bg-gradient-to-br from-primary/10 to-transparent 
+                            border border-primary/20 group-hover:border-primary/30 transition-all duration-300">
+                  <div className="text-4xl transform transition-transform group-hover:scale-110 duration-300">
+                    {mood.icon}
+                  </div>
+                  {/* Glow Effect */}
+                  <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
                 </div>
-                <h3 className="font-medium text-lg mb-2 text-white/90 group-hover:text-primary transition-colors">
+
+                {/* Text Content */}
+                <h3 className="font-medium text-xl mb-3 text-white/90 group-hover:text-primary transition-colors">
                   {mood.label}
                 </h3>
-                <p className="text-sm text-white/60">
+                <p className="text-sm text-white/60 line-clamp-2">
                   {mood.description}
                 </p>
-
-                {/* Sacred Geometry Accent */}
-                <div className="absolute -z-10 inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
-                  <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0%,var(--primary)_25%,transparent_50%)]" />
-                </div>
               </CardContent>
             </Card>
           </motion.div>

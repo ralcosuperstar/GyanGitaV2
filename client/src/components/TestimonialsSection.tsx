@@ -5,27 +5,27 @@ import { Button } from "@/components/ui/button";
 
 const testimonials = [
   {
-    quote: "Whatever happened, happened for the good. Whatever is happening, is happening for the good. Whatever will happen, will also happen for the good.",
-    author: "Bhagavad Gita",
-    chapter: "Chapter 2",
+    quote: "This app helped me find inner peace during my most stressful times. The verses recommended were exactly what I needed.",
+    author: "Mindful Seeker",
+    role: "Daily Practitioner",
     image: "/assets/profile1.jpg"
   },
   {
-    quote: "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.",
-    author: "Bhagavad Gita",
-    chapter: "Chapter 2, Verse 47",
+    quote: "The mood-based recommendations are incredible. Each verse feels personally chosen for my situation.",
+    author: "Spiritual Explorer",
+    role: "Meditation Teacher",
     image: "/assets/profile2.jpg"
   },
   {
-    quote: "For him who has conquered the mind, the mind is the best of friends; but for one who has failed to do so, his very mind will be the greatest enemy.",
-    author: "Bhagavad Gita",
-    chapter: "Chapter 6, Verse 6",
+    quote: "Combining ancient wisdom with modern technology in such a beautiful way. This app is a bridge between centuries.",
+    author: "Digital Yogi",
+    role: "Wellness Coach",
     image: "/assets/profile3.jpg"
   },
   {
-    quote: "The mind is restless and difficult to restrain, but it is subdued by practice.",
-    author: "Bhagavad Gita",
-    chapter: "Chapter 6, Verse 35",
+    quote: "The interface is so calming, and the verses are life-changing. It's like having a spiritual guide in your pocket.",
+    author: "Peace Finder",
+    role: "Yoga Instructor",
     image: "/assets/profile4.jpg"
   }
 ];
@@ -89,7 +89,7 @@ export default function TestimonialsSection() {
               Eternal <span className="text-primary">Wisdom</span> For Modern Life
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              The timeless teachings of the Bhagavad Gita offer guidance that transcends centuries
+              Discover how others have found peace and clarity through ancient teachings
             </p>
           </motion.div>
 
@@ -117,7 +117,7 @@ export default function TestimonialsSection() {
                     </p>
                     <div className="mt-auto">
                       <p className="font-playfair text-lg font-semibold">{testimonials[current].author}</p>
-                      <p className="text-sm text-muted-foreground">{testimonials[current].chapter}</p>
+                      <p className="text-sm text-muted-foreground">{testimonials[current].role}</p>
                     </div>
                   </div>
                 </motion.div>
