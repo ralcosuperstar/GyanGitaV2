@@ -133,31 +133,35 @@ export default function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden py-8 sm:py-16 md:py-24"
       aria-label="Welcome to GyanGita"
     >
-      {/* Minimalist background with subtle gradients */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background z-0" aria-hidden="true" />
+      {/* Modern gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-800 to-black z-0" aria-hidden="true">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-60" />
+      </div>
 
       {/* Main content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Clean, minimal hero badge */}
+          {/* Minimal hero badge with glass effect */}
           <motion.div
-            className="hero-badge inline-flex items-center px-4 sm:px-6 py-2 mb-8 border border-primary/10 rounded-full text-sm font-medium bg-background/50 backdrop-blur-sm"
+            className="hero-badge inline-flex items-center px-4 sm:px-6 py-2 mb-8 rounded-full 
+                       backdrop-blur-md bg-white/5 border border-white/10 shadow-lg
+                       hover:bg-white/10 transition-all duration-300"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Heart className="h-4 w-4 mr-2 text-primary/80" />
-            <span className="text-primary/80">Ancient Wisdom for Modern Life</span>
+            <Heart className="h-4 w-4 mr-2 text-primary/90" />
+            <span className="text-white/90">Ancient Wisdom for Modern Life</span>
           </motion.div>
 
-          {/* Main title with improved typography */}
+          {/* Main title with refined typography */}
           <motion.div
             className="hero-title space-y-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight">
-              <span className="block leading-tight">
+              <span className="block leading-tight text-white/90">
                 Find Inner Peace in a
                 <span className="block mt-2 font-normal bg-gradient-to-r from-primary/90 to-primary/70 bg-clip-text text-transparent">
                   Chaotic World
@@ -165,12 +169,12 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
               Discover timeless wisdom from the Bhagavad Gita, making ancient teachings relevant 
               to your modern life challenges
             </p>
 
-            {/* Quote display with minimal styling */}
+            {/* Quote display with glass effect */}
             <div className="w-full relative h-[180px] sm:h-[200px] mt-12">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
@@ -181,9 +185,10 @@ export default function Hero() {
                   transition={{ duration: 0.4 }}
                   className="absolute inset-0 flex items-center justify-center"
                 >
-                  <div className="max-w-2xl mx-auto px-4">
-                    <Quote className="h-5 w-5 text-primary/40 mx-auto mb-4" />
-                    <p className="text-lg sm:text-xl font-light text-foreground/90 italic">
+                  <div className="max-w-2xl mx-auto px-4 py-6 rounded-xl
+                                backdrop-blur-lg bg-white/5 border border-white/10 shadow-lg">
+                    <Quote className="h-5 w-5 text-primary/60 mx-auto mb-4" />
+                    <p className="text-lg sm:text-xl font-light text-white/90 italic">
                       "{inspirationalQuotes[currentQuote].text}"
                     </p>
                   </div>
@@ -192,32 +197,36 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Feature highlights with minimal design */}
+          {/* Feature cards with glass effect */}
           <div className="hero-features grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-16 mb-12">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
-                className="bg-background/50 backdrop-blur-sm rounded-lg p-6 border border-primary/5 text-center transition-all duration-300"
+                className="backdrop-blur-lg bg-white/5 rounded-lg p-6 
+                         border border-white/10 shadow-lg
+                         hover:bg-white/10 transition-all duration-300"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
               >
                 <span className="text-2xl mb-4 block">{feature.icon}</span>
-                <h3 className="text-base font-medium mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <h3 className="text-base font-medium mb-2 text-white/90">{feature.title}</h3>
+                <p className="text-sm text-gray-400">{feature.description}</p>
               </motion.div>
             ))}
           </div>
 
-          {/* Call to action with clean, minimal buttons */}
+          {/* Call to action with refined buttons */}
           <motion.div 
             className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <Button
-              className="w-full sm:w-auto px-6 py-6 text-base font-normal bg-primary hover:bg-primary/90 transition-all"
+              className="w-full sm:w-auto px-6 py-6 text-base font-normal
+                       bg-primary/90 hover:bg-primary/80 border border-primary/30
+                       shadow-lg hover:shadow-xl transition-all duration-300"
               onClick={handleScrollToMood}
             >
               <Sparkles className="h-4 w-4 mr-2" />
@@ -226,7 +235,9 @@ export default function Hero() {
 
             <Button
               variant="outline"
-              className="w-full sm:w-auto px-6 py-6 text-base font-normal border-primary/10 hover:bg-primary/5"
+              className="w-full sm:w-auto px-6 py-6 text-base font-normal
+                       backdrop-blur-md bg-white/5 border border-white/20
+                       hover:bg-white/10 hover:border-white/30 transition-all duration-300"
               onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(t('home.share.text') + '\n\n' + window.location.origin)}`, '_blank')}
             >
               <BsWhatsapp className="h-4 w-4 mr-2" />
@@ -245,7 +256,7 @@ export default function Hero() {
             animate={{ y: [0, 5, 0] }}
             transition={{ repeat: Infinity, duration: 1.5 }}
           >
-            <ArrowDown className="h-5 w-5 text-primary/40" />
+            <ArrowDown className="h-5 w-5 text-white/40" />
           </motion.div>
         </motion.div>
       </div>
