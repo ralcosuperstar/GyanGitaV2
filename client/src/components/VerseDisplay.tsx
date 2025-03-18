@@ -1,18 +1,17 @@
 /**
  * VerseDisplay Component
- * 
  * Displays Bhagavad Gita verses based on selected mood with optimized animations,
  * loading states, and accessibility features.
  */
 
 import { useState, useRef, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Book, Share2, Copy, Bookmark, Check } from "lucide-react";
+import { RefreshCw, Book } from "lucide-react";
 import { moods } from "@/lib/moods";
 import { motion, AnimatePresence } from "framer-motion";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
+import VerseCard from "@/components/VerseCard";
 import { useToast } from "@/hooks/use-toast";
 import ShareDialog from "@/components/ShareDialog";
 import {
@@ -22,49 +21,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 import { useQuery } from '@tanstack/react-query';
 
+
 // Animation variants refined for smoother transitions
-const cardVariants = {
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
+  visible: {
     opacity: 1,
     y: 0,
     transition: {
-      delay: i * 0.1,
-      duration: 0.5,
-      ease: [0.48, 0.15, 0.25, 0.96]
-    }
-  }),
-  hover: {
-    y: -8,
-    transition: {
-      duration: 0.3,
-      ease: "easeOut"
+      type: "spring",
+      stiffness: 300,
+      damping: 25
     }
   }
 };
 
-const buttonVariants = {
-  hover: {
-    scale: 1.05,
-    transition: {
-      duration: 0.2,
-      ease: "easeInOut"
-    }
-  },
-  tap: {
-    scale: 0.95
-  }
-};
-
-// Types for verse data structure
 interface VerseResponse {
   slok: string;
   transliteration: string;
@@ -90,7 +74,6 @@ interface VerseDisplayProps {
   selectedMood: string | null;
   isLoading: boolean;
 }
-
 
 export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
@@ -192,31 +175,39 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
     }
   };
 
-  useEffect(() => {
-    //No GSAP animation in this version.
-  }, [verses]);
 
   if (!selectedMood) return null;
 
   if (isLoading) {
     return (
       <div className="relative" role="status" aria-label="Loading verses">
+        {/* Background Gradients */}
         <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
-          <div className="absolute top-40 left-10 w-72 h-72 bg-primary/5 rounded-full blur-[100px] animate-pulse-glow"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-[100px] animate-pulse-glow" style={{ animationDelay: "1s" }}></div>
+          <div className="absolute top-40 left-10 w-72 h-72 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: "1s" }}></div>
         </div>
 
-        <div className="text-center mb-12 mood-title">
-          <h2 className="font-playfair text-3xl font-semibold mb-2">
-            <span className="gradient-heading">
-              {selectedMoodData?.icon} Finding verses for {selectedMoodData?.label}
-            </span>
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Searching the ancient wisdom for guidance on your current emotional state...
-          </p>
+        {/* Loading Header */}
+        <div className="text-center mb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center px-4 py-1.5 border border-primary/20 rounded-full text-sm font-medium text-primary/80 bg-primary/5 mb-4"
+          >
+            {selectedMoodData?.icon} Finding verses for {selectedMoodData?.label}
+          </motion.div>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="text-muted-foreground max-w-2xl mx-auto"
+          >
+            Searching ancient wisdom for guidance on your current emotional state...
+          </motion.p>
         </div>
 
+        {/* Loading Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array(3).fill(null).map((_, i) => (
             <motion.div 
@@ -236,16 +227,17 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
   if (!verses?.length) {
     return (
       <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="text-center py-16 px-6 rounded-xl bg-muted/30 border border-primary/10 max-w-xl mx-auto"
       >
         <div className="mb-6 text-primary/60">
-          <svg className="w-16 h-16 mx-auto" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M21 21L15.5 15.5M10 7V10M10 13V13.01M10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10C17 13.866 13.866 17 10 17Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <RefreshCw className="w-16 h-16 mx-auto animate-spin-slow" />
         </div>
         <h3 className="text-xl font-medium mb-2">No verses found for this mood</h3>
         <p className="text-muted-foreground mb-6">
-          We couldn't find any verses for "{selectedMoodData?.label}" in our database. Please try another mood or check back later.
+          We couldn't find any verses that match "{selectedMoodData?.label}". Please try another mood or check back later.
         </p>
         <Button 
           variant="outline" 
@@ -261,7 +253,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
   return (
     <div ref={containerRef} className="verses-container relative px-4 sm:px-6 max-w-[1920px] mx-auto" role="region" aria-label="Verse recommendations">
-      {/* Background gradients */}
+      {/* Background Gradients */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: "1s" }}></div>
@@ -282,7 +274,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
         >
           {selectedMoodData?.icon} Guidance for {selectedMoodData?.label}
         </motion.div>
-        <h2 className="text-3xl sm:text-4xl font-playfair font-semibold mb-3 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+        <h2 className="text-3xl sm:text-4xl font-medium mb-3 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
           Verses for when you feel {selectedMoodData?.label}
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg">
@@ -291,129 +283,45 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
       </motion.div>
 
       {/* Verses Grid */}
-      <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
-        {verses.map((verse, index) => {
-          const verseId = `${verse.chapter}-${verse.verse}`;
-          const isCopied = copiedVerseId === verseId;
-          const isFavorited = favoriteVerses.has(verseId);
-
-          // Get the best available English translation, prioritizing Purohit's
-          const englishTranslation = verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht;
-
-          return (
-            <motion.div
-              key={verseId}
-              variants={cardVariants}
-              initial="hidden"
-              animate="visible"
-              whileHover="hover"
-              custom={index}
-              className="flex"
-            >
-              <Card className="w-full overflow-hidden bg-card/50 backdrop-blur-sm border-primary/10 hover:border-primary/20 transition-all duration-300 hover:shadow-xl relative group">
-                <CardContent className="p-6 flex flex-col h-full">
-                  {/* Chapter and Verse Info */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                      Ch {verse.chapter}
-                    </div>
-                    <div className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                      V {verse.verse}
-                    </div>
-                  </div>
-
-                  {/* English Translation - Primary Focus */}
-                  <div className="flex-grow mb-6">
-                    <p className="text-xl sm:text-2xl leading-relaxed text-foreground">
-                      {englishTranslation}
-                    </p>
-                  </div>
-
-                  {/* Sanskrit Text */}
-                  <div className="pt-4 border-t border-primary/10">
-                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-1 text-foreground/80">
-                      {verse.slok}
-                    </p>
-                    <p className="text-sm italic text-foreground/60 line-clamp-1">
-                      {verse.transliteration}
-                    </p>
-                  </div>
-
-                  {/* Actions Footer */}
-                  <div className="pt-6 mt-4 border-t border-primary/10">
-                    <div className="grid grid-cols-2 gap-3 mb-3">
-                      <motion.button
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        onClick={() => setSelectedVerse(verse)}
-                        className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-sm font-medium"
-                      >
-                        <Book className="h-4 w-4" />
-                        Read More
-                      </motion.button>
-                      <motion.button
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        onClick={() => handleBookmark(verse)}
-                        className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg transition-colors text-sm font-medium ${
-                          isFavorited 
-                            ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
-                            : 'bg-primary/10 hover:bg-primary/20'
-                        }`}
-                      >
-                        <Bookmark className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
-                        {isFavorited ? 'Saved' : 'Save'}
-                      </motion.button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <motion.button
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        onClick={() => handleCopy(verse)}
-                        className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
-                      >
-                        {isCopied ? (
-                          <>
-                            <Check className="h-4 w-4 text-green-500" />
-                            <span className="text-green-500">Copied</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="h-4 w-4" />
-                            <span>Copy</span>
-                          </>
-                        )}
-                      </motion.button>
-                      <motion.button
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        onClick={() => handleShare(verse)}
-                        className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg hover:bg-primary/10 transition-colors text-sm font-medium"
-                      >
-                        <Share2 className="h-4 w-4" />
-                        <span>Share</span>
-                      </motion.button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          );
-        })}
-      </div>
-
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto"
+      >
+        {verses.map((verse, index) => (
+          <motion.div
+            key={`${verse.chapter}-${verse.verse}`}
+            variants={itemVariants}
+            custom={index}
+            className="flex"
+          >
+            <VerseCard 
+              verse={verse}
+              variant="compact"
+              showActions={true}
+              handleShare={handleShare}
+              handleCopy={handleCopy}
+              handleBookmark={handleBookmark}
+              copiedVerseId={copiedVerseId}
+              setCopiedVerseId={setCopiedVerseId}
+              favoriteVerses={favoriteVerses}
+              setFavoriteVerses={setFavoriteVerses}
+              toast={toast}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
       {/* Share Dialog */}
-      {selectedVerse && (
-        <ShareDialog
-          verse={selectedVerse}
-          open={showShareDialog}
-          onOpenChange={setShowShareDialog}
-        />
-      )}
+      <AnimatePresence>
+        {selectedVerse && (
+          <ShareDialog
+            verse={selectedVerse}
+            open={showShareDialog}
+            onOpenChange={setShowShareDialog}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Enhanced Modal Dialog */}
       <Dialog open={!!selectedVerse && !showShareDialog} onOpenChange={() => setSelectedVerse(null)}>
