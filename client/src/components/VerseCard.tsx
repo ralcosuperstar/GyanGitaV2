@@ -97,15 +97,15 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
         className="h-full"
       >
-        <Card className="h-full backdrop-blur-lg bg-white/5 border border-white/10 shadow-lg hover:bg-white/10 transition-all duration-300">
+        <Card className="h-full backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardContent className="p-6 flex flex-col h-full">
             {/* Chapter and Verse Info */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex gap-2">
-                <div className="px-3 py-1.5 rounded-full backdrop-blur-md bg-primary/10 border border-primary/20 text-sm">
+                <div className="px-3 py-1.5 rounded-full backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20 text-sm text-white/90">
                   Ch {verse.chapter}
                 </div>
-                <div className="px-3 py-1.5 rounded-full backdrop-blur-md bg-primary/10 border border-primary/20 text-sm">
+                <div className="px-3 py-1.5 rounded-full backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20 text-sm text-white/90">
                   V {verse.verse}
                 </div>
               </div>
@@ -114,7 +114,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   variant="ghost"
                   size="icon"
                   onClick={handleBookmark}
-                  className="h-8 w-8 hover:bg-white/10 transition-colors"
+                  className="h-8 w-8 hover:bg-white/10 transition-colors backdrop-blur-sm"
                   disabled={bookmarkMutation.isPending}
                 >
                   {isBookmarked ? (
@@ -148,7 +148,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             <div className="pt-6 mt-4 border-t border-white/10 space-y-3">
               <Button
                 onClick={() => setShowModal(true)}
-                className="w-full bg-primary/90 hover:bg-primary/80 border border-primary/30 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm transition-all duration-300 text-white font-normal py-6"
               >
                 Read More
               </Button>
@@ -156,7 +156,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                 <Button
                   variant="outline"
                   onClick={handleShare}
-                  className="w-full backdrop-blur-md bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300"
+                  className="w-full backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 py-6"
                 >
                   <Share2 className="h-4 w-4 mr-2" />
                   Share
