@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Share2, Bookmark, BookmarkCheck } from "lucide-react";
+import { Share2, Bookmark, BookmarkCheck, Book } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -96,14 +96,15 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       >
         <Card className="h-full backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardContent className="p-6 flex flex-col h-full">
-            {/* Chapter and Verse Info */}
+            {/* Header with Chapter & Verse Info */}
             <div className="flex items-center justify-between mb-6">
-              <div className="flex gap-2">
-                <div className="px-3 py-1.5 rounded-full backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20 text-sm text-white/90">
-                  Ch {verse.chapter}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center px-3 py-1.5 rounded-full backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
+                  <span className="text-sm font-medium text-white/90">Chapter {verse.chapter}</span>
                 </div>
-                <div className="px-3 py-1.5 rounded-full backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20 text-sm text-white/90">
-                  V {verse.verse}
+                <div className="w-[1px] h-4 bg-white/20"></div>
+                <div className="text-xl font-medium text-white/90">
+                  Verse {verse.verse}
                 </div>
               </div>
               {showActions && (
@@ -111,7 +112,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   variant="ghost"
                   size="icon"
                   onClick={handleBookmark}
-                  className="h-8 w-8 hover:bg-white/10 transition-colors backdrop-blur-sm"
+                  className="h-8 w-8 hover:bg-white/10 transition-colors backdrop-blur-sm rounded-full"
                   disabled={bookmarkMutation.isPending}
                 >
                   {isBookmarked ? (
@@ -126,7 +127,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
             {/* Main Content */}
             <div className="flex-1 space-y-6">
               {/* English Translation */}
-              <div className="text-xl text-white/90 leading-relaxed font-light">
+              <div className="text-lg text-white/90 leading-relaxed font-light">
                 {verse.purohit?.et || verse.tej.et || verse.siva?.et}
               </div>
 
@@ -148,18 +149,21 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                 className="w-full bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
                          border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
                          transition-all duration-300 text-white font-normal py-6
-                         hover:border-primary/50"
+                         hover:border-primary/50 group"
               >
-                Read More
+                <Book className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                <span>Read Full Verse</span>
               </Button>
               {showActions && (
                 <Button
                   variant="outline"
                   onClick={handleShare}
-                  className="w-full backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
+                  className="w-full backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
+                           border border-white/20 hover:bg-white/10 hover:border-white/30 
+                           shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
                 >
                   <Share2 className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Share
+                  Share Wisdom
                 </Button>
               )}
             </div>
