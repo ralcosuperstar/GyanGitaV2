@@ -103,7 +103,7 @@ export default function VerseCard({
         className="h-full"
       >
         <Card className="h-full backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-6 flex flex-col h-full relative overflow-hidden">
+          <CardContent className="flex flex-col h-full p-6 relative">
             {/* Decorative Background Pattern */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30" />
 
@@ -137,7 +137,7 @@ export default function VerseCard({
               </div>
 
               {/* Main Content */}
-              <div className="flex-1 mb-6">
+              <div className="flex-grow mb-6">
                 <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
                   <p className="text-lg text-white/90 leading-relaxed font-light">
                     {verse.purohit?.et || verse.tej.et || verse.siva?.et}
@@ -145,8 +145,8 @@ export default function VerseCard({
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-3">
+              {/* Actions Container */}
+              <div className="flex items-center gap-3 pt-4 mt-auto border-t border-white/10">
                 <Button
                   onClick={() => setShowModal(true)}
                   className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
@@ -162,11 +162,11 @@ export default function VerseCard({
                 {showActions && (
                   <Button
                     variant="outline"
-                    onClick={handleShare}
                     size="icon"
+                    onClick={handleShare}
                     className="h-11 w-11 shrink-0 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
                               border border-white/20 hover:bg-white/10 hover:border-white/30 
-                              shadow-lg hover:shadow-xl transition-all duration-300 group"
+                              shadow-lg hover:shadow-xl transition-all duration-300 group rounded-lg"
                   >
                     <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
                   </Button>
