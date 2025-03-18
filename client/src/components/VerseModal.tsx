@@ -44,33 +44,33 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
     <>
       <div className="px-4 sm:px-8 py-8 space-y-8">
         <DialogHeader className="space-y-3">
-          <DialogTitle className="text-2xl font-playfair text-foreground">
+          <DialogTitle className="text-2xl text-white/90">
             Chapter {verse.chapter}, Verse {verse.verse}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-8">
           {/* English Translation Section */}
-          <div className="bg-card rounded-lg p-6 sm:p-8 space-y-4">
-            <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
+          <div className="backdrop-blur-lg bg-white/5 rounded-lg p-6 sm:p-8 border border-white/10 shadow-lg space-y-4">
+            <h3 className="text-lg font-medium flex items-center gap-2 text-white/90">
               <span className="w-2 h-2 rounded-full bg-primary"></span>
               English Translation
             </h3>
-            <p className="text-xl leading-relaxed text-foreground">
+            <p className="text-xl leading-relaxed text-white/90">
               {verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht}
             </p>
           </div>
 
           {/* Sanskrit Text */}
-          <div className="bg-card rounded-lg p-6 sm:p-8 space-y-4">
-            <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
+          <div className="backdrop-blur-lg bg-white/5 rounded-lg p-6 sm:p-8 border border-white/10 shadow-lg space-y-4">
+            <h3 className="text-lg font-medium flex items-center gap-2 text-white/90">
               <span className="w-2 h-2 rounded-full bg-primary"></span>
               Sanskrit Text
             </h3>
-            <p className="text-2xl font-sanskrit leading-relaxed text-foreground">
+            <p className="text-2xl leading-relaxed text-white/90">
               {verse.slok}
             </p>
-            <p className="text-lg italic text-foreground opacity-90">
+            <p className="text-lg text-gray-400 italic">
               {verse.transliteration}
             </p>
           </div>
@@ -78,7 +78,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
           {/* Actions */}
           <div className="flex gap-4 pt-4">
             <Button
-              className="flex-1 bg-primary/10 hover:bg-primary/20"
+              className="flex-1 bg-primary/90 hover:bg-primary/80 border border-primary/30 shadow-lg hover:shadow-xl transition-all duration-300"
               onClick={() => setShowShareDialog(true)}
             >
               <Share2 className="h-4 w-4 mr-2" />
@@ -86,7 +86,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
             </Button>
             <Button
               variant="outline"
-              className="flex-1"
+              className="flex-1 backdrop-blur-md bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300"
               onClick={handleCopy}
             >
               {copied ? (
@@ -121,7 +121,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl mx-auto max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl mx-auto max-h-[90vh] overflow-y-auto backdrop-blur-xl bg-black/50 border border-white/10">
         <VerseContent verse={verse} />
       </DialogContent>
     </Dialog>
