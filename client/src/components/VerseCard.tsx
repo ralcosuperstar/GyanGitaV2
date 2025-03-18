@@ -96,15 +96,16 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
       >
         <Card className="h-full backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardContent className="p-6 flex flex-col h-full">
-            {/* Header with Chapter & Verse Info */}
+            {/* Header Section */}
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center px-3 py-1.5 rounded-full backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
-                  <span className="text-sm font-medium text-white/90">Chapter {verse.chapter}</span>
+              <div className="flex items-center gap-2">
+                <div className="bg-gradient-to-r from-primary/20 to-primary/10 px-4 py-2 rounded-lg border border-primary/20">
+                  <span className="text-xs uppercase tracking-wider text-white/60">Chapter</span>
+                  <div className="text-xl font-medium text-white/90">{verse.chapter}</div>
                 </div>
-                <div className="w-[1px] h-4 bg-white/20"></div>
-                <div className="text-xl font-medium text-white/90">
-                  Verse {verse.verse}
+                <div className="bg-gradient-to-r from-primary/20 to-primary/10 px-4 py-2 rounded-lg border border-primary/20">
+                  <span className="text-xs uppercase tracking-wider text-white/60">Verse</span>
+                  <div className="text-xl font-medium text-white/90">{verse.verse}</div>
                 </div>
               </div>
               {showActions && (
@@ -112,7 +113,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
                   variant="ghost"
                   size="icon"
                   onClick={handleBookmark}
-                  className="h-8 w-8 hover:bg-white/10 transition-colors backdrop-blur-sm rounded-full"
+                  className="h-9 w-9 rounded-full hover:bg-white/10 transition-all duration-300 backdrop-blur-sm"
                   disabled={bookmarkMutation.isPending}
                 >
                   {isBookmarked ? (
@@ -124,15 +125,17 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               )}
             </div>
 
-            {/* Main Content */}
+            {/* Content Section */}
             <div className="flex-1 space-y-6">
               {/* English Translation */}
-              <div className="text-lg text-white/90 leading-relaxed font-light">
-                {verse.purohit?.et || verse.tej.et || verse.siva?.et}
+              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                <div className="text-lg text-white/90 leading-relaxed font-light">
+                  {verse.purohit?.et || verse.tej.et || verse.siva?.et}
+                </div>
               </div>
 
               {/* Sanskrit Text */}
-              <div className="pt-4 border-t border-white/10">
+              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
                 <p className="text-base leading-relaxed text-white/80">
                   {verse.slok}
                 </p>
@@ -142,7 +145,7 @@ export default function VerseCard({ verse, showActions = true, isBookmarked: ini
               </div>
             </div>
 
-            {/* Actions */}
+            {/* Actions Section */}
             <div className="pt-6 mt-4 border-t border-white/10 space-y-3">
               <Button
                 onClick={() => setShowModal(true)}
