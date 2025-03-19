@@ -42,34 +42,38 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
       return verseCache.get(cacheKey) || null;
     }
 
-    // Construct the correct path to verse file
-    try {
-      const verseData = await import(`../assets/data/slok/${chapter}/${verse}/index.json`);
+    // Ensure proper path resolution
+    const versePath = `/attached_assets/src/assets/data/slok/${chapter}/${verse}/index.json`;
+    console.log(`Loading verse from file: ${versePath}`);
 
-      if (!verseData?.default) {
-        console.error(`No data found in verse file for ${chapter}:${verse}`);
-        return null;
-      }
-
-      const verse = {
-        ...verseData.default,
-        chapter,
-        verse
-      };
-
-      // Manage cache size
-      if (verseCache.size >= VERSE_CACHE_SIZE) {
-        const firstKey = verseCache.keys().next().value;
-        verseCache.delete(firstKey);
-      }
-
-      verseCache.set(cacheKey, verse);
-      console.log(`Successfully loaded verse ${chapter}:${verse}`);
-      return verse;
-    } catch (importError) {
-      console.error(`Failed to import verse file for ${chapter}:${verse}:`, importError);
+    const response = await fetch(versePath);
+    if (!response.ok) {
+      console.error(`Failed to fetch verse file for ${chapter}:${verse}`);
       return null;
     }
+
+    const verseData = await response.json();
+    if (!verseData) {
+      console.error(`No data found in verse file for ${chapter}:${verse}`);
+      return null;
+    }
+
+    const verseObject: Verse = {
+      ...verseData,
+      chapter,
+      verse
+    };
+
+    // Manage cache size
+    if (verseCache.size >= VERSE_CACHE_SIZE) {
+      const firstKey = verseCache.keys().next().value;
+      verseCache.delete(firstKey);
+    }
+
+    verseCache.set(cacheKey, verseObject);
+    console.log(`Successfully loaded verse ${chapter}:${verse}`);
+    return verseObject;
+
   } catch (error) {
     console.error(`Error in getVerseByChapterAndNumber for ${chapter}:${verse}:`, error);
     return null;
