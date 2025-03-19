@@ -32,73 +32,51 @@ export const generateVerseKey = (chapter: number, verse: number) =>
 
 // Optimize verse fetching with better error handling and logging
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
-  const cacheKey = generateVerseKey(chapter, verse);
-
-  // Check cache first
-  if (verseCache.has(cacheKey)) {
-    console.log(`Retrieved verse ${chapter}:${verse} from cache`);
-    return verseCache.get(cacheKey) || null;
-  }
-
   try {
+    const cacheKey = generateVerseKey(chapter, verse);
     console.log(`Attempting to load verse ${chapter}:${verse}`);
-    const verseModule = await import(`../assets/data/slok/${chapter}/${verse}/index.json`);
 
-    if (!verseModule.default) {
-      console.error(`No data found in verse file for ${chapter}:${verse}`);
+    // Check cache first
+    if (verseCache.has(cacheKey)) {
+      console.log(`Retrieved verse ${chapter}:${verse} from cache`);
+      return verseCache.get(cacheKey) || null;
+    }
+
+    // Construct the correct path to verse file
+    try {
+      const verseData = await import(`../assets/data/slok/${chapter}/${verse}/index.json`);
+
+      if (!verseData?.default) {
+        console.error(`No data found in verse file for ${chapter}:${verse}`);
+        return null;
+      }
+
+      const verse = {
+        ...verseData.default,
+        chapter,
+        verse
+      };
+
+      // Manage cache size
+      if (verseCache.size >= VERSE_CACHE_SIZE) {
+        const firstKey = verseCache.keys().next().value;
+        verseCache.delete(firstKey);
+      }
+
+      verseCache.set(cacheKey, verse);
+      console.log(`Successfully loaded verse ${chapter}:${verse}`);
+      return verse;
+    } catch (importError) {
+      console.error(`Failed to import verse file for ${chapter}:${verse}:`, importError);
       return null;
     }
-
-    const verseData: Verse = {
-      ...verseModule.default,
-      chapter,
-      verse
-    };
-
-    // Manage cache size
-    if (verseCache.size >= VERSE_CACHE_SIZE) {
-      const firstKey = verseCache.keys().next().value;
-      verseCache.delete(firstKey);
-    }
-
-    verseCache.set(cacheKey, verseData);
-    console.log(`Successfully loaded verse ${chapter}:${verse}`);
-    return verseData;
   } catch (error) {
-    console.error(`Failed to load verse ${chapter}:${verse}:`, error);
+    console.error(`Error in getVerseByChapterAndNumber for ${chapter}:${verse}:`, error);
     return null;
   }
 };
 
-// Get random verse with improved error handling
-export const getRandomVerse = async (): Promise<Verse | null> => {
-  try {
-    const chapters = getChapters();
-    const randomChapter = Math.floor(Math.random() * chapters.length) + 1;
-    const chapterData = chapters[randomChapter - 1];
-
-    if (!chapterData) {
-      console.error('Invalid chapter data when getting random verse');
-      return null;
-    }
-
-    const randomVerse = Math.floor(Math.random() * chapterData.verses_count) + 1;
-    console.log(`Attempting to load random verse ${randomChapter}:${randomVerse}`);
-
-    const verse = await getVerseByChapterAndNumber(randomChapter, randomVerse);
-    if (!verse) {
-      console.error(`Failed to load random verse ${randomChapter}:${randomVerse}`);
-      return null;
-    }
-
-    return verse;
-  } catch (error) {
-    console.error('Error getting random verse:', error);
-    return null;
-  }
-};
-
-// Get verses for a specific mood with optimized loading and error handling
+// Get verses for a specific mood with better error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
     const normalizedMood = mood.toLowerCase().trim();
@@ -118,9 +96,14 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     const verses = await Promise.all(
       moodData.verses.map(async (verseRef) => {
         try {
+          if (!verseRef.chapter || !verseRef.verse) {
+            console.error(`Invalid verse reference for mood ${normalizedMood}:`, verseRef);
+            return null;
+          }
+
           const verse = await getVerseByChapterAndNumber(
-            verseRef.chapter,
-            verseRef.verse
+            Number(verseRef.chapter),
+            Number(verseRef.verse)
           );
 
           if (!verse) {
@@ -170,6 +153,26 @@ export interface Chapter {
     hi: string;
   };
 }
+
+// Get random verse with improved error handling
+export const getRandomVerse = async (): Promise<Verse | null> => {
+  try {
+    const chapters = getChapters();
+    const randomChapter = Math.floor(Math.random() * chapters.length) + 1;
+    const chapterData = chapters[randomChapter - 1];
+
+    if (!chapterData) {
+      console.error('Invalid chapter data when getting random verse');
+      return null;
+    }
+
+    const randomVerse = Math.floor(Math.random() * chapterData.verses_count) + 1;
+    return await getVerseByChapterAndNumber(randomChapter, randomVerse);
+  } catch (error) {
+    console.error('Error getting random verse:', error);
+    return null;
+  }
+};
 
 export const preloadVersesByMood = (mood: string) => {
   getVersesByMood(mood).catch(console.error);

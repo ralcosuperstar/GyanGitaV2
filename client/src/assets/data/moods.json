@@ -4,39 +4,39 @@
       "name": "Anger",
       "description": "Verses to help control and overcome anger",
       "verses": [
-        { "chapter": 2, "verse": 56, "theme": "Controlling anger through steady wisdom" },
-        { "chapter": 2, "verse": 62, "theme": "Understanding the root of anger" },
-        { "chapter": 2, "verse": 63, "theme": "Effects of anger on consciousness" }
+        { "chapter": 2, "verse": 14, "theme": "Understanding anger's temporary nature" },
+        { "chapter": 2, "verse": 56, "theme": "Controlling anger through steady wisdom" }
       ]
     },
     {
       "name": "Seeking Peace",
       "description": "Verses for finding inner peace and tranquility",
       "verses": [
-        { "chapter": 2, "verse": 56, "theme": "Peace through mental control" },
-        { "chapter": 2, "verse": 71, "theme": "Peace through detachment" }
+        { "chapter": 2, "verse": 14, "theme": "Finding peace through understanding" },
+        { "chapter": 2, "verse": 56, "theme": "Peace through mental control" }
       ]
     },
     {
       "name": "Depression",
       "description": "Verses offering solace and hope during difficult times",
       "verses": [
-        { "chapter": 2, "verse": 56, "theme": "Finding strength in wisdom" },
-        { "chapter": 2, "verse": 14, "theme": "Understanding temporary nature of suffering" }
+        { "chapter": 2, "verse": 14, "theme": "Understanding temporary nature of suffering" },
+        { "chapter": 2, "verse": 56, "theme": "Finding strength in wisdom" }
       ]
     },
     {
       "name": "Confusion",
       "description": "Verses providing clarity and direction",
       "verses": [
-        { "chapter": 2, "verse": 56, "theme": "Clarity through steady wisdom" },
-        { "chapter": 2, "verse": 7, "theme": "Seeking guidance" }
+        { "chapter": 2, "verse": 7, "theme": "Seeking guidance" },
+        { "chapter": 2, "verse": 56, "theme": "Clarity through steady wisdom" }
       ]
     },
     {
       "name": "Fear",
       "description": "Verses for overcoming fear and anxiety",
       "verses": [
+        { "chapter": 2, "verse": 14, "theme": "Understanding the temporary nature of fear" },
         { "chapter": 2, "verse": 56, "theme": "Fearlessness through wisdom" }
       ]
     }
