@@ -43,12 +43,12 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
     }
 
     // Ensure proper path resolution
-    const versePath = `/attached_assets/src/assets/data/slok/${chapter}/${verse}/index.json`;
+    const versePath = `/src/assets/data/slok/${chapter}/${verse}/index.json`;
     console.log(`Loading verse from file: ${versePath}`);
 
     const response = await fetch(versePath);
     if (!response.ok) {
-      console.error(`Failed to fetch verse file for ${chapter}:${verse}`);
+      console.error(`Failed to fetch verse file for ${chapter}:${verse}, status: ${response.status}`);
       return null;
     }
 
@@ -76,6 +76,7 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
 
   } catch (error) {
     console.error(`Error in getVerseByChapterAndNumber for ${chapter}:${verse}:`, error);
+    console.error('Full error:', JSON.stringify(error));
     return null;
   }
 };
@@ -105,6 +106,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
             return null;
           }
 
+          console.log(`Attempting to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${normalizedMood}`);
           const verse = await getVerseByChapterAndNumber(
             Number(verseRef.chapter),
             Number(verseRef.verse)
@@ -116,6 +118,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
           return verse;
         } catch (err) {
           console.error(`Error processing verse ${verseRef.chapter}:${verseRef.verse}:`, err);
+          console.error('Full error:', JSON.stringify(err)); //Added more detailed error logging
           return null;
         }
       })
@@ -127,6 +130,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     return validVerses;
   } catch (error) {
     console.error('Error in getVersesByMood:', error);
+    console.error('Full error:', JSON.stringify(error)); //Added more detailed error logging
     return [];
   }
 };
@@ -174,6 +178,7 @@ export const getRandomVerse = async (): Promise<Verse | null> => {
     return await getVerseByChapterAndNumber(randomChapter, randomVerse);
   } catch (error) {
     console.error('Error getting random verse:', error);
+    console.error('Full error:', JSON.stringify(error)); //Added more detailed error logging
     return null;
   }
 };
@@ -182,7 +187,6 @@ export const preloadVersesByMood = (mood: string) => {
   getVersesByMood(mood).catch(console.error);
 };
 
-// Get related verses with optimized error handling
 export const getRelatedVerses = async (currentChapter: number, currentVerse: number): Promise<Verse[]> => {
   try {
     const chapters = getChapters();
@@ -213,6 +217,7 @@ export const getRelatedVerses = async (currentChapter: number, currentVerse: num
     return relatedVerses;
   } catch (error) {
     console.error('Error getting related verses:', error);
+    console.error('Full error:', JSON.stringify(error)); //Added more detailed error logging
     return [];
   }
 };
