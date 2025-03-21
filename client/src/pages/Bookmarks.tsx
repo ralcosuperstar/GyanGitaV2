@@ -2,12 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
 import { BookmarkX } from "lucide-react";
-import VerseCard from "@/components/VerseCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import PageLayout from "@/components/PageLayout";
 import { motion } from "framer-motion";
 import { getVerseByChapterAndNumber } from "@/lib/data";
+import VerseCard from "@/components/VerseCard";
 
 interface Favorite {
   id: number;
@@ -52,7 +52,9 @@ export default function Bookmarks() {
       }
       const data = await response.json();
       return data as Favorite[];
-    }
+    },
+    staleTime: 0, // Always fetch fresh data
+    cacheTime: 0, // Don't cache the results
   });
 
   const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
@@ -85,7 +87,9 @@ export default function Bookmarks() {
       const results = await Promise.all(versePromises);
       return results.filter((v): v is NonNullable<typeof v> => v !== null);
     },
-    enabled: favorites.length > 0
+    enabled: favorites.length > 0,
+    staleTime: 0, // Always fetch fresh data
+    cacheTime: 0, // Don't cache the results
   });
 
   const isLoading = isLoadingFavorites || isLoadingVerses;

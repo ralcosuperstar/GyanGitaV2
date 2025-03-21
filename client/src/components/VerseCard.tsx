@@ -75,6 +75,7 @@ export default function VerseCard({
     onMutate: async () => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
+      await queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] });
 
       // Snapshot the previous value
       const previousState = localIsBookmarked;
@@ -98,15 +99,17 @@ export default function VerseCard({
         duration: 3000,
       });
     },
+    onSettled: () => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
+    },
     onSuccess: (_, __, context) => {
       const newBookmarkState = !context?.previousState;
 
       if (onBookmarkChange) {
         onBookmarkChange(newBookmarkState);
       }
-
-      // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
 
       toast({
         title: "Success",
@@ -208,6 +211,7 @@ export default function VerseCard({
         isBookmarked={localIsBookmarked}
         onBookmarkChange={setLocalIsBookmarked}
       />
+
       <ShareDialog
         verse={verse}
         open={showShareDialog}
