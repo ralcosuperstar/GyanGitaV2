@@ -45,7 +45,7 @@ export default function Bookmarks() {
 
   // First fetch the user's favorites
   const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery({
-    queryKey: ['favorites'],
+    queryKey: ['/api/user/favorites'],
     queryFn: async () => {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -69,7 +69,8 @@ export default function Bookmarks() {
       return data;
     },
     refetchOnMount: true,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
+    staleTime: 0 // Always refetch
   });
 
   // Then fetch complete verse data for each favorite
@@ -105,7 +106,8 @@ export default function Bookmarks() {
     },
     enabled: favorites.length > 0,
     refetchOnMount: true,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
+    staleTime: 0 // Always refetch when favorites change
   });
 
   const isLoading = isLoadingFavorites || isLoadingVerses;
@@ -143,16 +145,7 @@ export default function Bookmarks() {
               variants={itemVariants}
             >
               <VerseCard
-                verse={{
-                  chapter: verse.chapter,
-                  verse: verse.verse,
-                  slok: verse.slok,
-                  transliteration: verse.transliteration,
-                  tej: verse.tej,
-                  siva: verse.siva,
-                  purohit: verse.purohit,
-                  chinmay: verse.chinmay
-                }}
+                verse={verse}
                 isBookmarked={true}
                 showActions={true}
               />

@@ -95,7 +95,7 @@ export default function VerseCard({
         onBookmarkChange(newBookmarkState);
       }
 
-      // Invalidate all relevant queries
+      // Invalidate all relevant queries to ensure data consistency
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
       queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
@@ -153,7 +153,7 @@ export default function VerseCard({
                     disabled={bookmarkMutation.isPending}
                   >
                     {localIsBookmarked ? (
-                      <BookmarkCheck className="h-4 w-4 text-primary" />
+                      <BookmarkCheck className="h-4 w-4 text-primary animate-in" />
                     ) : (
                       <Bookmark className="h-4 w-4" />
                     )}
@@ -170,7 +170,7 @@ export default function VerseCard({
                 </div>
               </div>
 
-              {/* Actions Container with proper spacing */}
+              {/* Actions */}
               <div className="flex items-center gap-3 pt-4 border-t border-white/10">
                 <Button
                   onClick={() => setShowModal(true)}
