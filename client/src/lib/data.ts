@@ -56,14 +56,20 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
   }
 };
 
+// Helper function to normalize mood names
+const normalizeMoodName = (mood: string): string => {
+  return mood.toUpperCase().replace(/_/g, ' ').trim();
+};
+
 // Get verses for a specific mood
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
-    const searchMood = mood.toUpperCase().trim();
+    const searchMood = normalizeMoodName(mood);
     console.log(`Looking for verses for mood: "${searchMood}"`);
 
-    // Find mood data
-    const moodData = moods.moods.find(m => m.name === searchMood);
+    // Find mood data using normalized comparison
+    const moodData = moods.moods.find(m => normalizeMoodName(m.name) === searchMood);
+
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: "${searchMood}"`);
       return [];
