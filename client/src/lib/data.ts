@@ -1,6 +1,6 @@
 // Data utility functions for loading Bhagavad Gita content
 import chaptersData from '@/assets/data/chapters/index.json';
-import moodsData from '@/assets/data/moods.json';
+import moods from '@/assets/data/moods.json';
 
 // Types for verse and chapter data
 export interface Verse {
@@ -33,8 +33,8 @@ export const generateVerseKey = (chapter: number, verse: number) =>
 // Optimize verse fetching with better error handling and logging
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
-    const cacheKey = generateVerseKey(chapter, verse);
     console.log(`Attempting to load verse ${chapter}:${verse}`);
+    const cacheKey = generateVerseKey(chapter, verse);
 
     // Check cache first
     if (verseCache.has(cacheKey)) {
@@ -88,7 +88,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     const normalizedMood = mood.charAt(0).toUpperCase() + mood.slice(1).toLowerCase();
     console.log(`Looking for verses for mood: ${normalizedMood}`);
 
-    const moodData = moodsData.moods.find(m => m.name === normalizedMood);
+    const moodData = moods.moods.find(m => m.name === normalizedMood);
 
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: ${mood}`);
@@ -177,7 +177,7 @@ export const getRandomVerse = async (): Promise<Verse | null> => {
     return await getVerseByChapterAndNumber(randomChapter, randomVerse);
   } catch (error) {
     console.error('Error getting random verse:', error);
-    console.error('Full error:', JSON.stringify(error)); //Added more detailed error logging
+    console.error('Full error:', JSON.stringify(error));
     return null;
   }
 };
@@ -216,7 +216,7 @@ export const getRelatedVerses = async (currentChapter: number, currentVerse: num
     return relatedVerses;
   } catch (error) {
     console.error('Error getting related verses:', error);
-    console.error('Full error:', JSON.stringify(error)); //Added more detailed error logging
+    console.error('Full error:', JSON.stringify(error));
     return [];
   }
 };
