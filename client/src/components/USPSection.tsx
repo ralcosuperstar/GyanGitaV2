@@ -4,23 +4,23 @@ import { BookOpen, Sparkles, Brain, Heart } from "lucide-react";
 const usps = [
   {
     icon: Brain,
-    title: "Emotional Intelligence",
-    description: "Find verses that match your emotional state through our innovative mood-based guidance system"
+    title: "Smart Guidance",
+    description: "Find relevant verses based on your current emotional state"
   },
   {
     icon: BookOpen,
-    title: "Ancient Wisdom",
-    description: "Access timeless knowledge from all 700 verses across 18 chapters of the Bhagavad Gita"
+    title: "Sacred Knowledge",
+    description: "Access 700 verses from the timeless Bhagavad Gita"
   },
   {
     icon: Heart,
-    title: "Personal Growth",
-    description: "Transform daily challenges into opportunities for spiritual growth with practical wisdom"
+    title: "Daily Growth",
+    description: "Transform challenges into opportunities with ancient wisdom"
   },
   {
     icon: Sparkles,
-    title: "Modern Accessibility",
-    description: "Experience sacred teachings through a beautiful, easy-to-understand modern interface"
+    title: "Modern Design",
+    description: "Experience sacred teachings through an intuitive interface"
   }
 ];
 
@@ -51,24 +51,14 @@ export default function USPSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-4xl font-light mb-6"
           >
-            Experience Timeless Wisdom 
+            Ancient Wisdom
             <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-              in a Modern Way
+              Modern Guidance
             </span>
           </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-lg text-white/60"
-          >
-            Discover how GyanGita makes ancient Bhagavad Gita teachings accessible and relevant for your personal journey
-          </motion.p>
         </div>
 
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2 max-w-4xl mx-auto">
           {usps.map((usp, index) => {
             const Icon = usp.icon;
             return (

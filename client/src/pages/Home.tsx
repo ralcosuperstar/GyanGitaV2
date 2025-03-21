@@ -10,7 +10,6 @@ import VerseDisplay from "@/components/VerseDisplay";
 import VerseModal from "@/components/VerseModal";
 import VerseOfTheDay from "@/components/VerseOfTheDay";
 import { getVersesByMood, getVerseByChapterAndNumber, type Verse } from "@/lib/data";
-import FeaturesSection from "@/components/FeaturesSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import CallToAction from "@/components/CallToAction";
 import StatsSection from "@/components/StatsSection";
@@ -94,7 +93,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Concise Hero Section */}
+      {/* Hero Section */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-16 sm:py-24">
         {/* Ambient Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background">
@@ -110,8 +109,8 @@ export default function Home() {
             {/* Sacred Badge */}
             <motion.div
               className="inline-flex items-center px-6 py-2 mb-8 rounded-full 
-                       backdrop-blur-xl bg-primary/5 border border-primary/20 shadow-lg
-                       hover:bg-primary/10 transition-all duration-300"
+                        backdrop-blur-xl bg-primary/5 border border-primary/20 shadow-lg
+                        hover:bg-primary/10 transition-all duration-300"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -143,7 +142,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Prominent Mood Selection Section */}
+      {/* Mood Selection Section */}
       <section id="mood-section" className="py-16 relative overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -210,39 +209,14 @@ export default function Home() {
         </section>
       )}
 
-      {/* Verse of the Day Section - Show only if no mood is selected */}
+      {/* Show these sections only if no mood is selected */}
       {!selectedMood && (
-        <section className="py-24 bg-gradient-to-b from-background via-muted/5 to-background">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="text-center mb-16">
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="inline-flex items-center px-4 py-1.5 border border-primary/20 rounded-full text-sm font-medium text-primary/80 bg-primary/5 mb-4"
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Daily Inspiration
-                </motion.div>
-
-                <h2 className="text-4xl font-playfair font-semibold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent mb-4">
-                  {t('home.daily.title')}
-                </h2>
-                <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Start your day with divine wisdom and timeless guidance
-                </p>
-              </div>
-              <VerseOfTheDay className="max-w-3xl mx-auto" />
-            </motion.div>
-          </div>
-        </section>
+        <>
+          <USPSection />
+          <VerseOfTheDay />
+          <TestimonialsSection />
+          <CallToAction />
+        </>
       )}
 
       {/* Deep-linked Verse Modal */}
@@ -251,16 +225,6 @@ export default function Home() {
         open={showVerseModal}
         onOpenChange={setShowVerseModal}
       />
-
-      {/* Show these sections only if no mood is selected */}
-      {!selectedMood && (
-        <>
-          <StatsSection />
-          <USPSection />
-          <TestimonialsSection />
-          <CallToAction />
-        </>
-      )}
     </div>
   );
 }
