@@ -34,7 +34,7 @@ export const generateVerseKey = (chapter: number, verse: number) =>
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
     const cacheKey = generateVerseKey(chapter, verse);
-    console.log(`Processing verse ${chapter}:${verse}`);
+    console.log(`Attempting to load verse ${chapter}:${verse}`);
 
     // Check cache first
     if (verseCache.has(cacheKey)) {
@@ -45,10 +45,9 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
     // Ensure proper path with padded numbers
     const paddedChapter = chapter.toString().padStart(2, '0');
     const paddedVerse = verse.toString().padStart(2, '0');
-    const basePath = `/attached_assets/src/assets/data/slok`;
-    const versePath = `${basePath}/${paddedChapter}/${paddedVerse}/index.json`;
+    const versePath = `/assets/data/slok/${paddedChapter}/${paddedVerse}/index.json`;
 
-    console.log(`Loading verse from: ${versePath}`);
+    console.log(`Loading verse from path: ${versePath}`);
 
     const response = await fetch(versePath);
     if (!response.ok) {
@@ -85,10 +84,10 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
   }
 };
 
-// Get verses for a specific mood with improved error handling
+// Get verses for a specific mood with better error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
-    // Use exact mood name
+    // Use exact mood name (uppercase)
     const searchMood = mood.toUpperCase().trim();
     console.log(`Looking for verses for mood: "${searchMood}"`);
 
@@ -110,7 +109,6 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
           return null;
         }
 
-        console.log(`Loading verse ${verseRef.chapter}:${verseRef.verse} for mood ${searchMood}`);
         const verse = await getVerseByChapterAndNumber(
           Number(verseRef.chapter),
           Number(verseRef.verse)
@@ -137,7 +135,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   }
 };
 
-// Load chapters with minimal data
+// Export other functions...
 export const getChapters = (): Chapter[] => {
   return chaptersData.map(chapter => ({
     chapter_number: chapter.chapter_number,
@@ -164,7 +162,11 @@ export interface Chapter {
   };
 }
 
-// Get random verse with improved error handling
+// Export helper functions
+export const preloadVersesByMood = (mood: string) => {
+  getVersesByMood(mood).catch(console.error);
+};
+
 export const getRandomVerse = async (): Promise<Verse | null> => {
   try {
     const chapters = getChapters();
@@ -184,11 +186,6 @@ export const getRandomVerse = async (): Promise<Verse | null> => {
   }
 };
 
-export const preloadVersesByMood = (mood: string) => {
-  getVersesByMood(mood).catch(console.error);
-};
-
-// Get related verses with optimized error handling
 export const getRelatedVerses = async (currentChapter: number, currentVerse: number): Promise<Verse[]> => {
   try {
     const chapters = getChapters();

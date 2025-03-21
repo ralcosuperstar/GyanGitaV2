@@ -62,6 +62,67 @@
       ]
     },
     {
+      "name": "LUST",
+      "description": "Verses about transcending physical desires",
+      "verses": [
+        { "chapter": 3, "verse": 37, "theme": "Understanding lust" },
+        { "chapter": 3, "verse": 41, "theme": "Controlling senses" },
+        { "chapter": 3, "verse": 43, "theme": "Conquering desire" },
+        { "chapter": 5, "verse": 22, "theme": "Transcending pleasures" },
+        { "chapter": 16, "verse": 21, "theme": "Avoiding degradation" }
+      ]
+    },
+    {
+      "name": "UNCONTROLLED MIND",
+      "description": "Verses about mental discipline and control",
+      "verses": [
+        { "chapter": 6, "verse": 5, "theme": "Self-elevation" },
+        { "chapter": 6, "verse": 6, "theme": "Mind as friend and enemy" },
+        { "chapter": 6, "verse": 26, "theme": "Mental control" },
+        { "chapter": 6, "verse": 35, "theme": "Practice and detachment" }
+      ]
+    },
+    {
+      "name": "DEALING WITH ENVY",
+      "description": "Verses about overcoming jealousy",
+      "verses": [
+        { "chapter": 12, "verse": 13, "theme": "Universal friendship" },
+        { "chapter": 12, "verse": 14, "theme": "Contentment" },
+        { "chapter": 16, "verse": 19, "theme": "Results of envy" },
+        { "chapter": 18, "verse": 71, "theme": "Freedom from malice" }
+      ]
+    },
+    {
+      "name": "DISCRIMINATED",
+      "description": "Verses about equality and universal vision",
+      "verses": [
+        { "chapter": 5, "verse": 18, "theme": "Equal vision" },
+        { "chapter": 5, "verse": 19, "theme": "Transcending differences" },
+        { "chapter": 6, "verse": 32, "theme": "Perfect yogi's vision" },
+        { "chapter": 9, "verse": 29, "theme": "Divine equality" }
+      ]
+    },
+    {
+      "name": "LAZINESS",
+      "description": "Verses for motivation and action",
+      "verses": [
+        { "chapter": 3, "verse": 8, "theme": "Prescribed duties" },
+        { "chapter": 3, "verse": 20, "theme": "Necessity of action" },
+        { "chapter": 6, "verse": 16, "theme": "Balanced lifestyle" },
+        { "chapter": 18, "verse": 39, "theme": "Understanding happiness" }
+      ]
+    },
+    {
+      "name": "LONELINESS",
+      "description": "Verses for finding inner companionship",
+      "verses": [
+        { "chapter": 6, "verse": 30, "theme": "Universal consciousness" },
+        { "chapter": 9, "verse": 29, "theme": "Divine companionship" },
+        { "chapter": 13, "verse": 16, "theme": "Omnipresent truth" },
+        { "chapter": 13, "verse": 18, "theme": "Light of consciousness" }
+      ]
+    },
+    {
       "name": "DEPRESSION",
       "description": "Verses offering solace and hope during difficult times",
       "verses": [
@@ -98,26 +159,6 @@
       ]
     },
     {
-      "name": "UNCONTROLLED MIND",
-      "description": "Verses about mental discipline and control",
-      "verses": [
-        { "chapter": 6, "verse": 5, "theme": "Self-elevation" },
-        { "chapter": 6, "verse": 6, "theme": "Mind as friend and enemy" },
-        { "chapter": 6, "verse": 26, "theme": "Mental control" },
-        { "chapter": 6, "verse": 35, "theme": "Practice and detachment" }
-      ]
-    },
-    {
-      "name": "DEALING WITH ENVY",
-      "description": "Verses about overcoming jealousy",
-      "verses": [
-        { "chapter": 12, "verse": 13, "theme": "Universal friendship" },
-        { "chapter": 12, "verse": 14, "theme": "Contentment" },
-        { "chapter": 16, "verse": 19, "theme": "Results of envy" },
-        { "chapter": 18, "verse": 71, "theme": "Freedom from malice" }
-      ]
-    },
-    {
       "name": "DEMOTIVATED",
       "description": "Verses for inspiration and motivation",
       "verses": [
@@ -134,6 +175,14 @@
         { "chapter": 2, "verse": 61, "theme": "Mastering senses" },
         { "chapter": 2, "verse": 70, "theme": "Peace amidst desires" },
         { "chapter": 7, "verse": 14, "theme": "Overcoming illusion" }
+      ]
+    },
+    {
+      "name": "FORGETFULNESS",
+      "description": "Verses about mindfulness and remembrance",
+      "verses": [
+        { "chapter": 15, "verse": 15, "theme": "Divine memory" },
+        { "chapter": 18, "verse": 61, "theme": "Supreme guidance" }
       ]
     },
     {
