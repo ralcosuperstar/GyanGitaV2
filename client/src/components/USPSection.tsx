@@ -1,26 +1,26 @@
 import { motion } from "framer-motion";
-import { Heart, Brain, Sparkles, Flower2 } from "lucide-react";
+import { BookOpen, Sparkles, Brain, Heart } from "lucide-react";
 
 const usps = [
   {
     icon: Brain,
-    title: "Mood-Based Guidance",
-    description: "Get personalized verses that resonate with your current emotional state"
+    title: "Emotional Intelligence",
+    description: "Find verses that match your emotional state through our innovative mood-based guidance system"
+  },
+  {
+    icon: BookOpen,
+    title: "Ancient Wisdom",
+    description: "Access timeless knowledge from all 700 verses across 18 chapters of the Bhagavad Gita"
   },
   {
     icon: Heart,
-    title: "Ancient Wisdom, Modern Context",
-    description: "Timeless teachings adapted for contemporary challenges"
-  },
-  {
-    icon: Flower2,
-    title: "Spiritual Growth",
-    description: "Progress on your journey with daily verses and reflections"
+    title: "Personal Growth",
+    description: "Transform daily challenges into opportunities for spiritual growth with practical wisdom"
   },
   {
     icon: Sparkles,
-    title: "Instant Peace",
-    description: "Find immediate solace in moments of emotional turbulence"
+    title: "Modern Accessibility",
+    description: "Experience sacred teachings through a beautiful, easy-to-understand modern interface"
   }
 ];
 
@@ -51,9 +51,9 @@ export default function USPSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-4xl font-light mb-6"
           >
-            Transform Your Life with
+            Experience Timeless Wisdom 
             <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-              Ancient Wisdom
+              in a Modern Way
             </span>
           </motion.h2>
 
@@ -64,7 +64,7 @@ export default function USPSection() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-lg text-white/60"
           >
-            Discover how GyanGita makes ancient wisdom accessible and relevant for your modern life journey
+            Discover how GyanGita makes ancient Bhagavad Gita teachings accessible and relevant for your personal journey
           </motion.p>
         </div>
 
