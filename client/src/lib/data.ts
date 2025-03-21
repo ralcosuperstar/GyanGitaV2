@@ -42,9 +42,9 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
       return verseCache.get(cacheKey) || null;
     }
 
-    // Ensure proper path resolution
-    const versePath = `/src/assets/data/slok/${chapter}/${verse}/index.json`;
-    console.log(`Loading verse from file: ${versePath}`);
+    // Construct path to verse file in attached_assets
+    const versePath = `/attached_assets/src/assets/data/slok/${chapter}/${verse}/index.json`;
+    console.log(`Loading verse from path: ${versePath}`);
 
     const response = await fetch(versePath);
     if (!response.ok) {
@@ -84,7 +84,6 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
 // Get verses for a specific mood with better error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
-    // Normalize mood name to match moods.json
     const normalizedMood = mood.charAt(0).toUpperCase() + mood.slice(1).toLowerCase();
     console.log(`Looking for verses for mood: ${normalizedMood}`);
 
@@ -117,7 +116,6 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
           return verse;
         } catch (err) {
           console.error(`Error processing verse ${verseRef.chapter}:${verseRef.verse}:`, err);
-          console.error('Full error:', JSON.stringify(err)); //Added more detailed error logging
           return null;
         }
       })
@@ -129,7 +127,6 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     return validVerses;
   } catch (error) {
     console.error('Error in getVersesByMood:', error);
-    console.error('Full error:', JSON.stringify(error)); //Added more detailed error logging
     return [];
   }
 };
@@ -161,7 +158,6 @@ export interface Chapter {
   };
 }
 
-// Get random verse with improved error handling
 export const getRandomVerse = async (): Promise<Verse | null> => {
   try {
     const chapters = getChapters();
@@ -177,7 +173,6 @@ export const getRandomVerse = async (): Promise<Verse | null> => {
     return await getVerseByChapterAndNumber(randomChapter, randomVerse);
   } catch (error) {
     console.error('Error getting random verse:', error);
-    console.error('Full error:', JSON.stringify(error));
     return null;
   }
 };
@@ -216,7 +211,6 @@ export const getRelatedVerses = async (currentChapter: number, currentVerse: num
     return relatedVerses;
   } catch (error) {
     console.error('Error getting related verses:', error);
-    console.error('Full error:', JSON.stringify(error));
     return [];
   }
 };
