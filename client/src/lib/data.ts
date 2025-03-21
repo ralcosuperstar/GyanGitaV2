@@ -22,7 +22,7 @@ export interface Verse {
   verse: number;
 }
 
-// Generate key for verses
+// Helper function to generate verse key
 export const generateVerseKey = (chapter: number, verse: number) =>
   `${chapter}-${verse}`;
 
@@ -30,19 +30,24 @@ export const generateVerseKey = (chapter: number, verse: number) =>
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
     console.log(`Attempting to load verse ${chapter}:${verse}`);
+    const response = await fetch(`https://vedicscriptures.github.io/slok/${chapter}/${verse}`);
 
-    const response = await fetch(`/src/assets/data/slok/${chapter}/${verse}.json`);
     if (!response.ok) {
-      console.error(`No verse file found for chapter ${chapter}, verse ${verse}`);
+      console.error(`Failed to fetch verse ${chapter}:${verse}. Status: ${response.status}`);
       return null;
     }
 
-    const verseData = await response.json();
-    return {
-      ...verseData,
-      chapter,
-      verse
-    };
+    try {
+      const verseData = await response.json();
+      return {
+        ...verseData,
+        chapter,
+        verse
+      };
+    } catch (parseError) {
+      console.error(`Failed to parse JSON for verse ${chapter}:${verse}:`, parseError);
+      return null;
+    }
   } catch (error) {
     console.error(`Error loading verse ${chapter}:${verse}:`, error);
     return null;
@@ -63,25 +68,33 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     }
 
     console.log(`Found ${moodData.verses.length} verses to load for mood: ${searchMood}`);
-    console.log('Loading verses:', moodData.verses);
+    console.log('Verses to load:', moodData.verses);
 
     // Load verses
     const verses = await Promise.all(
-      moodData.verses.map(verseRef => 
-        getVerseByChapterAndNumber(Number(verseRef.chapter), Number(verseRef.verse))
-      )
+      moodData.verses.map(async verseRef => {
+        const verse = await getVerseByChapterAndNumber(
+          Number(verseRef.chapter), 
+          Number(verseRef.verse)
+        );
+        if (!verse) {
+          console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${searchMood}`);
+        }
+        return verse;
+      })
     );
 
     const validVerses = verses.filter((v): v is Verse => v !== null);
-    console.log(`Successfully loaded ${validVerses.length} verses for mood ${searchMood}`);
+    console.log(`Successfully loaded ${validVerses.length} out of ${moodData.verses.length} verses for mood ${searchMood}`);
     return validVerses;
+
   } catch (error) {
     console.error('Error loading verses for mood:', error);
     return [];
   }
 };
 
-// Helper functions
+// Export helper functions
 export const getChapters = () => chaptersData;
 export const preloadVersesByMood = (mood: string) => getVersesByMood(mood).catch(console.error);
 
