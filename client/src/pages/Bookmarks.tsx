@@ -7,7 +7,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import PageLayout from "@/components/PageLayout";
 import { motion } from "framer-motion";
-import type { Verse } from "@/lib/data";
 import { getVerseByChapterAndNumber } from "@/lib/data";
 
 interface Favorite {
@@ -43,7 +42,7 @@ const itemVariants = {
 export default function Bookmarks() {
   const { t } = useLanguage();
 
-  // First fetch the user's favorites
+  // Fetch user's favorites
   const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery({
     queryKey: ['/api/user/favorites'],
     queryFn: async () => {
@@ -102,12 +101,9 @@ export default function Bookmarks() {
       });
 
       const results = await Promise.all(versePromises);
-      return results.filter((v): v is Verse & { id: number } => v !== null);
+      return results.filter((v): v is (typeof import("@/lib/data").Verse & { id: number }) => v !== null);
     },
-    enabled: favorites.length > 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    staleTime: 0 // Always refetch when favorites change
+    enabled: favorites.length > 0
   });
 
   const isLoading = isLoadingFavorites || isLoadingVerses;

@@ -17,15 +17,13 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private moodVersesMap: Map<string, MoodVerse[]>;
-  private favoritesList: Favorite[];
-  private userFavoritesMap: Map<number, Set<string>>;
+  private favorites: Map<number, Map<string, Favorite>>;
   private currentId: number;
   private favoriteId: number;
 
   constructor() {
     this.moodVersesMap = new Map();
-    this.favoritesList = [];
-    this.userFavoritesMap = new Map();
+    this.favorites = new Map();
     this.currentId = 1;
     this.favoriteId = 1;
     this.initializeMoodVerses();
@@ -52,49 +50,36 @@ export class MemStorage implements IStorage {
   }
 
   async getAllVerses(): Promise<{ chapter: string; verse: string; }[]> {
-    const allVerses: { chapter: string; verse: string; }[] = [];
+    const allVerses = new Set<string>();
+    const result: { chapter: string; verse: string; }[] = [];
+
     this.moodVersesMap.forEach((verses) => {
       verses.forEach((v) => {
-        if (!allVerses.some(existing => 
-          existing.chapter === v.chapter && existing.verse === v.verse
-        )) {
-          allVerses.push({
+        const key = this.getVerseKey(v.chapter, v.verse);
+        if (!allVerses.has(key)) {
+          allVerses.add(key);
+          result.push({
             chapter: v.chapter,
             verse: v.verse
           });
         }
       });
     });
-    return allVerses;
-  }
 
-  async insertMoodVerse(moodVerse: InsertMoodVerse): Promise<MoodVerse> {
-    const id = this.currentId++;
-    const newMoodVerse: MoodVerse = { 
-      ...moodVerse, 
-      id,
-      chapter: moodVerse.chapter.toString(),
-      verse: moodVerse.verse.toString()
-    };
-
-    const existingVerses = this.moodVersesMap.get(moodVerse.mood) || [];
-    this.moodVersesMap.set(moodVerse.mood, [...existingVerses, newMoodVerse]);
-
-    return newMoodVerse;
+    return result;
   }
 
   async createFavorite(favorite: InsertFavorite): Promise<Favorite> {
-    const id = this.favoriteId++;
-    const verseKey = this.getVerseKey(
-      favorite.chapter.toString(),
-      favorite.verse.toString()
-    );
+    // Ensure consistent string types
+    const chapter = favorite.chapter.toString();
+    const verse = favorite.verse.toString();
+    const verseKey = this.getVerseKey(chapter, verse);
 
-    // Get or create user's favorites set
-    let userFavorites = this.userFavoritesMap.get(favorite.user_id);
+    // Get or create user's favorites map
+    let userFavorites = this.favorites.get(favorite.user_id);
     if (!userFavorites) {
-      userFavorites = new Set();
-      this.userFavoritesMap.set(favorite.user_id, userFavorites);
+      userFavorites = new Map();
+      this.favorites.set(favorite.user_id, userFavorites);
     }
 
     // Check if already favorited
@@ -102,50 +87,40 @@ export class MemStorage implements IStorage {
       throw new Error('Verse is already in favorites');
     }
 
-    // Add to user's favorites set
-    userFavorites.add(verseKey);
-
-    // Create favorite object with consistent string types
+    // Create new favorite
     const newFavorite: Favorite = {
-      id,
+      id: this.favoriteId++,
       user_id: favorite.user_id,
-      chapter: favorite.chapter.toString(),
-      verse: favorite.verse.toString(),
+      chapter,
+      verse,
       saved_at: new Date(),
       notes: favorite.notes || null
     };
 
-    // Add to favorites list
-    this.favoritesList.push(newFavorite);
+    // Store favorite
+    userFavorites.set(verseKey, newFavorite);
 
     return newFavorite;
   }
 
   async getUserFavorites(userId: number): Promise<Favorite[]> {
-    // Return a sorted copy of the favorites
-    return [...this.favoritesList]
-      .filter(f => f.user_id === userId)
-      .sort((a, b) => {
-        // Handle potential null values
-        const aTime = a.saved_at ? a.saved_at.getTime() : 0;
-        const bTime = b.saved_at ? b.saved_at.getTime() : 0;
-        return bTime - aTime;
-      });
+    const userFavorites = this.favorites.get(userId);
+    if (!userFavorites) {
+      return [];
+    }
+
+    // Return sorted array of favorites
+    return Array.from(userFavorites.values())
+      .sort((a, b) => b.saved_at.getTime() - a.saved_at.getTime());
   }
 
   async removeFavorite(userId: number, chapter: string, verse: string): Promise<void> {
     const verseKey = this.getVerseKey(chapter, verse);
+    const userFavorites = this.favorites.get(userId);
 
-    // Remove from user's favorites set
-    const userFavorites = this.userFavoritesMap.get(userId);
     if (userFavorites) {
       userFavorites.delete(verseKey);
     }
-
-    // Remove from favorites list
-    this.favoritesList = this.favoritesList.filter(
-      f => !(f.user_id === userId && f.chapter === chapter && f.verse === verse)
-    );
   }
 }
 
