@@ -3,11 +3,11 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 
-// Create schema with proper number types
+// Create schema with proper string types to match storage
 const insertFavoriteSchema = z.object({
   user_id: z.number(),
-  chapter: z.number(),
-  verse: z.number()
+  chapter: z.string(),
+  verse: z.string()
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -29,8 +29,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const favoriteData = insertFavoriteSchema.parse({
         user_id: userId,
-        chapter: Number(req.body.chapter),
-        verse: Number(req.body.verse)
+        chapter: req.body.chapter.toString(),
+        verse: req.body.verse.toString()
       });
 
       const favorite = await storage.createFavorite(favoriteData);
@@ -51,7 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = 1; // Temporary for testing
 
       const { chapter, verse } = req.body;
-      await storage.removeFavorite(userId, Number(chapter), Number(verse));
+      await storage.removeFavorite(userId, chapter.toString(), verse.toString());
       res.json({ success: true });
     } catch (error) {
       console.error('Error removing favorite:', error);
