@@ -17,13 +17,13 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private moodVersesMap: Map<string, MoodVerse[]>;
-  private favorites: Map<string, Favorite>;
+  private favorites: Favorite[];
   private currentId: number;
   private favoriteId: number;
 
   constructor() {
     this.moodVersesMap = new Map();
-    this.favorites = new Map();
+    this.favorites = [];
     this.currentId = 1;
     this.favoriteId = 1;
     this.initializeMoodVerses();
@@ -39,10 +39,6 @@ export class MemStorage implements IStorage {
       }));
       this.moodVersesMap.set(moodData.name.toLowerCase(), moodVerses);
     });
-  }
-
-  private getFavoriteKey(userId: number, chapter: string, verse: string): string {
-    return `${userId}-${chapter}-${verse}`;
   }
 
   async getMoodVerses(mood: string): Promise<MoodVerse[]> {
@@ -87,12 +83,19 @@ export class MemStorage implements IStorage {
   async createFavorite(favorite: InsertFavorite): Promise<Favorite> {
     const chapter = favorite.chapter.toString();
     const verse = favorite.verse.toString();
-    const key = this.getFavoriteKey(favorite.user_id, chapter, verse);
 
-    if (this.favorites.has(key)) {
+    // Check if already favorited
+    const existingFavorite = this.favorites.find(
+      f => f.user_id === favorite.user_id && 
+          f.chapter === chapter && 
+          f.verse === verse
+    );
+
+    if (existingFavorite) {
       throw new Error('Verse is already in favorites');
     }
 
+    // Create new favorite
     const newFavorite: Favorite = {
       id: this.favoriteId++,
       user_id: favorite.user_id,
@@ -102,28 +105,22 @@ export class MemStorage implements IStorage {
       notes: favorite.notes || null
     };
 
-    this.favorites.set(key, newFavorite);
+    this.favorites.push(newFavorite);
     return newFavorite;
   }
 
   async getUserFavorites(userId: number): Promise<Favorite[]> {
-    const userFavorites: Favorite[] = [];
-
-    this.favorites.forEach((favorite) => {
-      const keyParts = Object.keys(favorite).filter(key => key.startsWith('user_id'))
-      if (parseInt(keyParts[0].split('-')[0]) === userId) {
-        userFavorites.push(favorite);
-      }
-    });
-
-    return userFavorites.sort((a, b) => 
-      b.saved_at.getTime() - a.saved_at.getTime()
-    );
+    return this.favorites
+      .filter(f => f.user_id === userId)
+      .sort((a, b) => b.saved_at.getTime() - a.saved_at.getTime());
   }
 
   async removeFavorite(userId: number, chapter: string, verse: string): Promise<void> {
-    const key = this.getFavoriteKey(userId, chapter, verse);
-    this.favorites.delete(key);
+    this.favorites = this.favorites.filter(
+      f => !(f.user_id === userId && 
+            f.chapter === chapter.toString() && 
+            f.verse === verse.toString())
+    );
   }
 }
 

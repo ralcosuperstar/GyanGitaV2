@@ -13,6 +13,7 @@ interface Favorite {
   id: number;
   chapter: string;
   verse: string;
+  saved_at: Date;
 }
 
 const containerVariants = {
@@ -49,7 +50,8 @@ export default function Bookmarks() {
       if (!response.ok) {
         throw new Error('Failed to fetch favorites');
       }
-      return response.json();
+      const data = await response.json();
+      return data as Favorite[];
     }
   });
 
@@ -58,7 +60,7 @@ export default function Bookmarks() {
     queryFn: async () => {
       if (!favorites?.length) return [];
 
-      const versePromises = favorites.map(async (favorite) => {
+      const versePromises = favorites.map(async (favorite: Favorite) => {
         try {
           const verse = await getVerseByChapterAndNumber(
             parseInt(favorite.chapter),
@@ -108,7 +110,7 @@ export default function Bookmarks() {
       title={t('bookmarks.title')}
       subtitle={t('bookmarks.subtitle')}
     >
-      {verseDetails?.length ? (
+      {verseDetails?.length > 0 ? (
         <motion.div
           variants={containerVariants}
           initial="hidden"
