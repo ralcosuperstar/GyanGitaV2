@@ -88,33 +88,38 @@ export default function VerseCard({
 
       return response.json();
     },
-    onSuccess: () => {
-      const newBookmarkState = !localIsBookmarked;
-      setLocalIsBookmarked(newBookmarkState);
-      if (onBookmarkChange) {
-        onBookmarkChange(newBookmarkState);
-      }
-
-      // Invalidate all relevant queries to ensure data consistency
-      queryClient.invalidateQueries({ queryKey: ['favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
-      queryClient.invalidateQueries({ 
-        queryKey: [`verse-${verse.chapter}-${verse.verse}`] 
-      });
-
-      toast({
-        title: "Success",
-        description: newBookmarkState ? "Verse has been bookmarked" : "Bookmark removed",
-        duration: 2000,
-      });
+    onMutate: () => {
+      // Optimistic update
+      const previousState = localIsBookmarked;
+      setLocalIsBookmarked(!previousState);
+      return { previousState };
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _, context) => {
+      // Revert on error
+      if (context) {
+        setLocalIsBookmarked(context.previousState);
+      }
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
         duration: 3000,
+      });
+    },
+    onSuccess: () => {
+      const newBookmarkState = !localIsBookmarked;
+      if (onBookmarkChange) {
+        onBookmarkChange(newBookmarkState);
+      }
+
+      // Invalidate all relevant queries to ensure data consistency
+      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
+
+      toast({
+        title: "Success",
+        description: newBookmarkState ? "Verse has been bookmarked" : "Bookmark removed",
+        duration: 2000,
       });
     }
   });

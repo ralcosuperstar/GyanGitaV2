@@ -17,20 +17,21 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private moodVersesMap: Map<string, MoodVerse[]>;
-  private favoritesMap: Map<number, Favorite[]>;
+  private favoritesMap: Map<number, Set<string>>;
+  private favoritesList: Favorite[];
   currentId: number;
   favoriteId: number;
 
   constructor() {
     this.moodVersesMap = new Map();
     this.favoritesMap = new Map();
+    this.favoritesList = [];
     this.currentId = 1;
     this.favoriteId = 1;
     this.initializeMoodVerses();
   }
 
   private initializeMoodVerses() {
-    // Initialize from moods data
     moodsData.moods.forEach((moodData: any) => {
       const moodVerses = moodData.verses.map((verse: any) => ({
         id: this.currentId++,
@@ -40,6 +41,10 @@ export class MemStorage implements IStorage {
       }));
       this.moodVersesMap.set(moodData.name.toLowerCase(), moodVerses);
     });
+  }
+
+  private getVerseKey(chapter: string, verse: string): string {
+    return `${chapter}-${verse}`;
   }
 
   async getMoodVerses(mood: string): Promise<MoodVerse[]> {
@@ -76,42 +81,56 @@ export class MemStorage implements IStorage {
 
   async createFavorite(favorite: InsertFavorite): Promise<Favorite> {
     const id = this.favoriteId++;
-    const newFavorite: Favorite = { 
-      ...favorite, 
+    const verseKey = this.getVerseKey(favorite.chapter, favorite.verse);
+
+    // Get or create user's favorite set
+    let userFavorites = this.favoritesMap.get(favorite.user_id);
+    if (!userFavorites) {
+      userFavorites = new Set();
+      this.favoritesMap.set(favorite.user_id, userFavorites);
+    }
+
+    // Check if already favorited
+    if (userFavorites.has(verseKey)) {
+      throw new Error('Verse is already in favorites');
+    }
+
+    // Add to user's favorites set
+    userFavorites.add(verseKey);
+
+    // Create favorite object
+    const newFavorite: Favorite = {
       id,
+      user_id: favorite.user_id,
+      chapter: favorite.chapter,
+      verse: favorite.verse,
       saved_at: new Date(),
       notes: favorite.notes || null
     };
 
-    const userFavorites = this.favoritesMap.get(favorite.user_id) || [];
-
-    // Check if verse is already favorited
-    const exists = userFavorites.some(
-      f => f.chapter === favorite.chapter && f.verse === favorite.verse
-    );
-
-    if (exists) {
-      throw new Error('Verse is already in favorites');
-    }
-
-    this.favoritesMap.set(
-      favorite.user_id, 
-      [...userFavorites, newFavorite]
-    );
+    // Add to favorites list
+    this.favoritesList.push(newFavorite);
 
     return newFavorite;
   }
 
   async getUserFavorites(userId: number): Promise<Favorite[]> {
-    return this.favoritesMap.get(userId) || [];
+    return this.favoritesList.filter(f => f.user_id === userId);
   }
 
   async removeFavorite(userId: number, chapter: string, verse: string): Promise<void> {
-    const userFavorites = this.favoritesMap.get(userId) || [];
-    const updatedFavorites = userFavorites.filter(
-      f => f.chapter !== chapter || f.verse !== verse
+    const verseKey = this.getVerseKey(chapter, verse);
+
+    // Remove from user's favorites set
+    const userFavorites = this.favoritesMap.get(userId);
+    if (userFavorites) {
+      userFavorites.delete(verseKey);
+    }
+
+    // Remove from favorites list
+    this.favoritesList = this.favoritesList.filter(
+      f => !(f.user_id === userId && f.chapter === chapter && f.verse === verse)
     );
-    this.favoritesMap.set(userId, updatedFavorites);
   }
 }
 
