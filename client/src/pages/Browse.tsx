@@ -3,12 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { BookOpen, Grid, ArrowLeft } from "lucide-react";
+import { Grid, ArrowLeft } from "lucide-react";
 import VerseCard from "@/components/VerseCard";
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { generateVerseKey, getChapters, getVerseByChapterAndNumber, type Chapter, type Verse } from "@/lib/data";
+import VerseModal from "@/components/VerseModal";
 
 export default function Browse() {
   const [selectedChapter, setSelectedChapter] = useState<string>("");
@@ -56,7 +56,6 @@ export default function Browse() {
       chapterNumber: selectedGridChapter
     }));
   }, [selectedGridChapter, chapters]);
-
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
@@ -170,17 +169,15 @@ export default function Browse() {
           </div>
         )}
 
-        {/* Verse Display */}
-        {verse && (
-          <Dialog open={!!verse} onOpenChange={() => {
+        {/* Verse Modal */}
+        <VerseModal
+          verse={verse}
+          open={!!verse}
+          onOpenChange={() => {
             setSelectedChapter("");
             setSelectedVerse("");
-          }}>
-            <DialogContent className="max-w-4xl">
-              <VerseCard verse={verse} />
-            </DialogContent>
-          </Dialog>
-        )}
+          }}
+        />
       </div>
     </div>
   );
