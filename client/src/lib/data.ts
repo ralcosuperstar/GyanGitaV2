@@ -33,8 +33,8 @@ export const generateVerseKey = (chapter: number, verse: number) =>
 // Optimize verse fetching with better error handling and logging
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
-    console.log(`Attempting to load verse ${chapter}:${verse}`);
     const cacheKey = generateVerseKey(chapter, verse);
+    console.log(`Processing verse ${chapter}:${verse}`);
 
     // Check cache first
     if (verseCache.has(cacheKey)) {
@@ -42,53 +42,60 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
       return verseCache.get(cacheKey) || null;
     }
 
-    // Construct path to verse file in attached_assets
-    const versePath = `/attached_assets/src/assets/data/slok/${chapter}/${verse}/index.json`;
-    console.log(`Loading verse from path: ${versePath}`);
+    // Construct correct path to verse file
+    const versePath = `/src/assets/data/slok/${chapter}/${verse}/index.json`;
+    console.log(`Attempting to load verse from: ${versePath}`);
 
-    const response = await fetch(versePath);
-    if (!response.ok) {
-      console.error(`Failed to fetch verse file for ${chapter}:${verse}, status: ${response.status}`);
+    try {
+      const verseModule = await import(
+        /* @vite-ignore */
+        `../assets/data/slok/${chapter}/${verse}/index.json`
+      );
+
+      if (!verseModule.default) {
+        console.error(`No verse data found for ${chapter}:${verse}`);
+        return null;
+      }
+
+      const verseData: Verse = {
+        ...verseModule.default,
+        chapter,
+        verse
+      };
+
+      // Validate required fields
+      if (!verseData.slok || !verseData.transliteration || !verseData.tej) {
+        console.error(`Invalid verse data structure for ${chapter}:${verse}`);
+        return null;
+      }
+
+      // Manage cache size
+      if (verseCache.size >= VERSE_CACHE_SIZE) {
+        const firstKey = verseCache.keys().next().value;
+        verseCache.delete(firstKey);
+      }
+
+      verseCache.set(cacheKey, verseData);
+      console.log(`Successfully loaded verse ${chapter}:${verse}`);
+      return verseData;
+
+    } catch (importError) {
+      console.error(`Failed to import verse file ${chapter}:${verse}:`, importError);
       return null;
     }
-
-    const verseData = await response.json();
-    if (!verseData) {
-      console.error(`No data found in verse file for ${chapter}:${verse}`);
-      return null;
-    }
-
-    const verseObject: Verse = {
-      ...verseData,
-      chapter,
-      verse
-    };
-
-    // Manage cache size
-    if (verseCache.size >= VERSE_CACHE_SIZE) {
-      const firstKey = verseCache.keys().next().value;
-      verseCache.delete(firstKey);
-    }
-
-    verseCache.set(cacheKey, verseObject);
-    console.log(`Successfully loaded verse ${chapter}:${verse}`);
-    return verseObject;
-
   } catch (error) {
-    console.error(`Error in getVerseByChapterAndNumber for ${chapter}:${verse}:`, error);
-    console.error('Full error:', JSON.stringify(error));
+    console.error(`Error processing verse ${chapter}:${verse}:`, error);
     return null;
   }
 };
 
-// Get verses for a specific mood with better error handling
+// Get verses for a specific mood with optimized loading and error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
     const normalizedMood = mood.charAt(0).toUpperCase() + mood.slice(1).toLowerCase();
     console.log(`Looking for verses for mood: ${normalizedMood}`);
 
     const moodData = moods.moods.find(m => m.name === normalizedMood);
-
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: ${mood}`);
       return [];
@@ -96,37 +103,31 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
 
     console.log(`Found ${moodData.verses.length} verse references for mood: ${normalizedMood}`);
 
-    const verses = await Promise.all(
-      moodData.verses.map(async (verseRef) => {
-        try {
-          if (!verseRef.chapter || !verseRef.verse) {
-            console.error(`Invalid verse reference for mood ${normalizedMood}:`, verseRef);
-            return null;
-          }
+    const versePromises = moodData.verses.map(async verseRef => {
+      try {
+        console.log(`Loading verse ${verseRef.chapter}:${verseRef.verse} for mood ${normalizedMood}`);
+        const verse = await getVerseByChapterAndNumber(
+          Number(verseRef.chapter),
+          Number(verseRef.verse)
+        );
 
-          console.log(`Attempting to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${normalizedMood}`);
-          const verse = await getVerseByChapterAndNumber(
-            Number(verseRef.chapter),
-            Number(verseRef.verse)
-          );
-
-          if (!verse) {
-            console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${normalizedMood}`);
-          }
-          return verse;
-        } catch (err) {
-          console.error(`Error processing verse ${verseRef.chapter}:${verseRef.verse}:`, err);
-          return null;
+        if (!verse) {
+          console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${normalizedMood}`);
         }
-      })
-    );
+        return verse;
+      } catch (error) {
+        console.error(`Error loading verse ${verseRef.chapter}:${verseRef.verse}:`, error);
+        return null;
+      }
+    });
 
+    const verses = await Promise.all(versePromises);
     const validVerses = verses.filter((v): v is Verse => v !== null);
     console.log(`Successfully loaded ${validVerses.length} out of ${moodData.verses.length} verses for mood ${normalizedMood}`);
 
     return validVerses;
   } catch (error) {
-    console.error('Error in getVersesByMood:', error);
+    console.error('Error loading verses for mood:', mood, error);
     return [];
   }
 };
