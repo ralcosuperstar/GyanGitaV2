@@ -98,11 +98,9 @@ export default function VerseCard({
       // Invalidate all relevant queries
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
       queryClient.invalidateQueries({ 
         queryKey: [`verse-${verse.chapter}-${verse.verse}`] 
-      });
-      queryClient.invalidateQueries({ 
-        queryKey: ['bookmarked-verses'] 
       });
 
       toast({

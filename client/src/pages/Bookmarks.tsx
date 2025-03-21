@@ -8,6 +8,7 @@ import { Link } from "wouter";
 import PageLayout from "@/components/PageLayout";
 import { motion } from "framer-motion";
 import type { Verse } from "@/lib/data";
+import { getVerseByChapterAndNumber } from "@/lib/data";
 
 interface Favorite {
   id: number;
@@ -43,7 +44,7 @@ export default function Bookmarks() {
   const { t } = useLanguage();
 
   // First fetch the user's favorites
-  const { data: favorites, isLoading: isLoadingFavorites } = useQuery({
+  const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery({
     queryKey: ['favorites'],
     queryFn: async () => {
       const token = localStorage.getItem('token');
@@ -67,29 +68,31 @@ export default function Bookmarks() {
       const data: Favorite[] = await response.json();
       return data;
     },
-    staleTime: 0 // Always refetch on mount
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   // Then fetch complete verse data for each favorite
-  const { data: verseDetails, isLoading: isLoadingVerses } = useQuery({
+  const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
     queryKey: ['bookmarked-verses', favorites],
     queryFn: async () => {
       if (!favorites?.length) return [];
 
       const versePromises = favorites.map(async (favorite) => {
         try {
-          // Build the URL properly
-          const response = await fetch(`/src/assets/data/slok/${favorite.chapter}/${favorite.verse}/index.json`);
-          if (!response.ok) {
-            console.error(`Failed to fetch verse ${favorite.chapter}:${favorite.verse}`);
+          const verse = await getVerseByChapterAndNumber(
+            parseInt(favorite.chapter),
+            parseInt(favorite.verse)
+          );
+
+          if (!verse) {
+            console.error(`Failed to load verse ${favorite.chapter}:${favorite.verse}`);
             return null;
           }
-          const verseData = await response.json();
+
           return {
-            ...verseData,
-            id: favorite.id,
-            chapter: parseInt(favorite.chapter),
-            verse: parseInt(favorite.verse)
+            ...verse,
+            id: favorite.id
           };
         } catch (error) {
           console.error(`Error loading verse ${favorite.chapter}:${favorite.verse}:`, error);
@@ -100,8 +103,9 @@ export default function Bookmarks() {
       const results = await Promise.all(versePromises);
       return results.filter((v): v is Verse & { id: number } => v !== null);
     },
-    enabled: !!favorites?.length,
-    staleTime: 0 // Always refetch when favorites change
+    enabled: favorites.length > 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   const isLoading = isLoadingFavorites || isLoadingVerses;
