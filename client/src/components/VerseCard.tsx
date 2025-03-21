@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Share2, Bookmark, BookmarkCheck, Book, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import ShareDialog from "@/components/ShareDialog";
+import ShareDialog from "./ShareDialog";
 import VerseModal from "./VerseModal";
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -75,25 +75,18 @@ export default function VerseCard({
       return response.json();
     },
     onMutate: async () => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
       await queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] });
 
-      // Snapshot the previous value
       const previousState = localIsBookmarked;
-
-      // Optimistically update to the new value
       setLocalIsBookmarked(!previousState);
 
-      // Return a context object with the snapshotted value
       return { previousState };
     },
     onError: (error: Error, _, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
       if (context) {
         setLocalIsBookmarked(context.previousState);
       }
-
       toast({
         title: "Error",
         description: error.message,
@@ -101,17 +94,21 @@ export default function VerseCard({
         duration: 3000,
       });
     },
-    onSuccess: (_, __, context) => {
-      const newState = !context?.previousState;
+    onSettled: () => {
+      // Always refresh the queries after any mutation
+      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
+    },
+    onSuccess: () => {
+      const newState = !localIsBookmarked;
 
-      // Update parent component if callback exists
+      // Update the local state
+      setLocalIsBookmarked(newState);
+
+      // Notify parent component
       if (onBookmarkChange) {
         onBookmarkChange(newState);
       }
-
-      // Invalidate and refetch immediately
-      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
 
       toast({
         title: "Success",
