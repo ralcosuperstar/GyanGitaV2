@@ -1,3 +1,4 @@
+// Import necessary data
 import chaptersData from '@/assets/data/chapters/index.json';
 import moods from '@/assets/data/moods.json';
 
@@ -21,6 +22,11 @@ export interface Verse {
   chapter: number;
   verse: number;
 }
+
+// Helper function to normalize mood names
+const normalizeMoodName = (mood: string): string => {
+  return mood.toUpperCase().replace(/_/g, ' ').trim();
+};
 
 // Helper function to generate verse key
 export const generateVerseKey = (chapter: number, verse: number) =>
@@ -56,11 +62,6 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
   }
 };
 
-// Helper function to normalize mood names
-const normalizeMoodName = (mood: string): string => {
-  return mood.toUpperCase().replace(/_/g, ' ').trim();
-};
-
 // Get verses for a specific mood
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
@@ -76,7 +77,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     }
 
     console.log(`Found ${moodData.verses.length} verses to load for mood: ${searchMood}`);
-    console.log('Verses to load:', moodData.verses);
+    console.log('Loading verses:', moodData.verses);
 
     // Load verses
     const verses = await Promise.all(
@@ -107,28 +108,6 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   }
 };
 
-// Export helper functions
-export const getChapters = () => chaptersData;
-export const preloadVersesByMood = (mood: string) => getVersesByMood(mood).catch(console.error);
-
-// Types
-export interface Chapter {
-  chapter_number: number;
-  verses_count: number;
-  name: string;
-  name_meaning: string;
-  translation?: string;
-  transliteration?: string;
-  meaning?: {
-    en: string;
-    hi: string;
-  };
-  summary?: {
-    en: string;
-    hi: string;
-  };
-}
-
 // Get random verse
 export const getRandomVerse = async (): Promise<Verse | null> => {
   try {
@@ -142,6 +121,7 @@ export const getRandomVerse = async (): Promise<Verse | null> => {
     }
 
     const randomVerse = Math.floor(Math.random() * chapterData.verses_count) + 1;
+    console.log(`Getting random verse from chapter ${randomChapter}, verse ${randomVerse}`);
     return getVerseByChapterAndNumber(randomChapter, randomVerse);
   } catch (error) {
     console.error('Error getting random verse:', error);
@@ -183,3 +163,25 @@ export const getRelatedVerses = async (currentChapter: number, currentVerse: num
     return [];
   }
 };
+
+// Export helper functions
+export const getChapters = () => chaptersData;
+export const preloadVersesByMood = (mood: string) => getVersesByMood(mood).catch(console.error);
+
+// Types
+export interface Chapter {
+  chapter_number: number;
+  verses_count: number;
+  name: string;
+  name_meaning: string;
+  translation?: string;
+  transliteration?: string;
+  meaning?: {
+    en: string;
+    hi: string;
+  };
+  summary?: {
+    en: string;
+    hi: string;
+  };
+}
