@@ -66,21 +66,31 @@ export default function VerseCard({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update bookmark');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update bookmark');
       }
 
       return response.json();
     },
     onMutate: async () => {
+      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
+
+      // Snapshot the previous value
       const previousState = localIsBookmarked;
+
+      // Optimistically update to the new value
       setLocalIsBookmarked(!previousState);
+
+      // Return a context object with the snapshotted value
       return { previousState };
     },
     onError: (error: Error, _, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
       if (context) {
         setLocalIsBookmarked(context.previousState);
       }
+
       toast({
         title: "Error",
         description: error.message,
@@ -90,10 +100,14 @@ export default function VerseCard({
     },
     onSuccess: (_, __, context) => {
       const newBookmarkState = !context?.previousState;
+
       if (onBookmarkChange) {
         onBookmarkChange(newBookmarkState);
       }
+
+      // Invalidate related queries
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+
       toast({
         title: "Success",
         description: newBookmarkState ? "Verse has been bookmarked" : "Bookmark removed",

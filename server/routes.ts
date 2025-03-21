@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 
-// Create schema with proper string types to match storage
+// Create schema with proper string types
 const insertFavoriteSchema = z.object({
   user_id: z.number(),
   chapter: z.string(),
@@ -13,14 +13,15 @@ const insertFavoriteSchema = z.object({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth check middleware - simplified for development
   const requireAuth = (req: any, res: any, next: any) => {
-    // For development, always authenticate with user_id 1
-    req.user = { id: 1 };
+    req.user = { id: 1 }; // For development, always authenticate with user_id 1
     next();
   };
 
   // Favorites routes
   app.post('/api/favorites', requireAuth, async (req, res) => {
     try {
+      console.log('Creating favorite:', { userId: req.user.id, ...req.body });
+
       const favoriteData = insertFavoriteSchema.parse({
         user_id: req.user.id,
         chapter: req.body.chapter.toString(),
@@ -28,6 +29,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const favorite = await storage.createFavorite(favoriteData);
+      console.log('Created favorite:', favorite);
       res.json(favorite);
     } catch (error) {
       console.error('Error creating favorite:', error);
@@ -41,8 +43,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/favorites', requireAuth, async (req, res) => {
     try {
+      console.log('Removing favorite:', { userId: req.user.id, ...req.body });
+
       const { chapter, verse } = req.body;
-      await storage.removeFavorite(req.user.id, chapter.toString(), verse.toString());
+      await storage.removeFavorite(
+        req.user.id,
+        chapter.toString(),
+        verse.toString()
+      );
+
+      console.log('Removed favorite successfully');
       res.json({ success: true });
     } catch (error) {
       console.error('Error removing favorite:', error);
@@ -52,7 +62,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/user/favorites', requireAuth, async (req, res) => {
     try {
+      console.log('Fetching favorites for user:', req.user.id);
+
       const favorites = await storage.getUserFavorites(req.user.id);
+      console.log('Retrieved favorites:', favorites);
+
       res.json(favorites);
     } catch (error) {
       console.error('Error fetching favorites:', error);
