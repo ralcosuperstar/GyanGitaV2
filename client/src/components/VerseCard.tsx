@@ -27,6 +27,7 @@ interface VerseCardProps {
     chinmay?: {
       hc: string;
     };
+    isBookmarked?: boolean;
   };
   showActions?: boolean;
   isBookmarked?: boolean;
@@ -43,13 +44,13 @@ export default function VerseCard({
 }: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const [localIsBookmarked, setLocalIsBookmarked] = useState(initialIsBookmarked);
+  const [localIsBookmarked, setLocalIsBookmarked] = useState(initialIsBookmarked || verse.isBookmarked || false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    setLocalIsBookmarked(initialIsBookmarked);
-  }, [initialIsBookmarked]);
+    setLocalIsBookmarked(initialIsBookmarked || verse.isBookmarked || false);
+  }, [initialIsBookmarked, verse.isBookmarked]);
 
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
@@ -72,20 +73,15 @@ export default function VerseCard({
       return response.json();
     },
     onMutate: async () => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
       await queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] });
 
-      // Snapshot the previous value
       const previousState = localIsBookmarked;
-
-      // Optimistically update to the new value
       setLocalIsBookmarked(!previousState);
 
-      // Return a context object with the snapshotted value
       return { previousState };
     },
-    onError: (error: Error, _, context) => {
+    onError: (_, __, context) => {
       if (context) {
         setLocalIsBookmarked(context.previousState);
       }
@@ -96,15 +92,14 @@ export default function VerseCard({
         duration: 3000,
       });
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
-    },
     onSuccess: (_, __, context) => {
       const newBookmarkState = !context?.previousState;
       if (onBookmarkChange) {
         onBookmarkChange(newBookmarkState);
       }
+
+      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
 
       toast({
         title: "Success",

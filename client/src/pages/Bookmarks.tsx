@@ -11,9 +11,10 @@ import VerseCard from "@/components/VerseCard";
 
 interface Favorite {
   id: number;
+  user_id: number;
   chapter: string;
   verse: string;
-  saved_at: Date;
+  saved_at: string;
   notes: string | null;
 }
 
@@ -75,7 +76,8 @@ export default function Bookmarks() {
 
           return {
             ...verse,
-            id: favorite.id
+            id: favorite.id,
+            isBookmarked: true
           };
         } catch (error) {
           console.error(`Error loading verse ${favorite.chapter}:${favorite.verse}:`, error);
