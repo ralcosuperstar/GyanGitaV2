@@ -29,11 +29,13 @@ export const generateVerseKey = (chapter: number, verse: number) =>
 // Get a verse by chapter and number
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
-    console.log(`Attempting to load verse ${chapter}:${verse}`);
-    const response = await fetch(`https://vedicscriptures.github.io/slok/${chapter}/${verse}`);
+    console.log(`Loading verse ${chapter}:${verse} from local data`);
+
+    // Use relative path from current file to data directory
+    const response = await fetch(`/src/assets/data/slok/${chapter}/${verse}/index.json`);
 
     if (!response.ok) {
-      console.error(`Failed to fetch verse ${chapter}:${verse}. Status: ${response.status}`);
+      console.error(`Failed to load verse ${chapter}:${verse}. Status: ${response.status}`);
       return null;
     }
 
@@ -73,14 +75,19 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     // Load verses
     const verses = await Promise.all(
       moodData.verses.map(async verseRef => {
-        const verse = await getVerseByChapterAndNumber(
-          Number(verseRef.chapter), 
-          Number(verseRef.verse)
-        );
-        if (!verse) {
-          console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${searchMood}`);
+        try {
+          const verse = await getVerseByChapterAndNumber(
+            Number(verseRef.chapter),
+            Number(verseRef.verse)
+          );
+          if (!verse) {
+            console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${searchMood}`);
+          }
+          return verse;
+        } catch (error) {
+          console.error(`Error loading verse ${verseRef.chapter}:${verseRef.verse}:`, error);
+          return null;
         }
-        return verse;
       })
     );
 
