@@ -31,7 +31,7 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
   try {
     console.log(`Loading verse ${chapter}:${verse} from local data`);
 
-    // Use relative path from current file to data directory
+    // Construct proper path for verse data
     const response = await fetch(`/src/assets/data/slok/${chapter}/${verse}/index.json`);
 
     if (!response.ok) {
