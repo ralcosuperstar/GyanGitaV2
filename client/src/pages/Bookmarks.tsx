@@ -14,6 +14,7 @@ interface Favorite {
   chapter: string;
   verse: string;
   saved_at: Date;
+  notes: string | null;
 }
 
 const containerVariants = {
@@ -52,9 +53,7 @@ export default function Bookmarks() {
       }
       const data = await response.json();
       return data as Favorite[];
-    },
-    staleTime: 0, // Always fetch fresh data
-    cacheTime: 0, // Don't cache the results
+    }
   });
 
   const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
@@ -87,9 +86,7 @@ export default function Bookmarks() {
       const results = await Promise.all(versePromises);
       return results.filter((v): v is NonNullable<typeof v> => v !== null);
     },
-    enabled: favorites.length > 0,
-    staleTime: 0, // Always fetch fresh data
-    cacheTime: 0, // Don't cache the results
+    enabled: favorites.length > 0
   });
 
   const isLoading = isLoadingFavorites || isLoadingVerses;

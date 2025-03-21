@@ -4,12 +4,29 @@ import { Share2, Copy, Check, ArrowRight, Heart, Bookmark, BookmarkCheck } from 
 import { useState, useCallback, memo, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Verse } from "@/lib/data";
 import ShareDialog from "./ShareDialog";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface VerseModalProps {
-  verse: Verse | null;
+  verse: {
+    chapter: number;
+    verse: number;
+    slok: string;
+    transliteration: string;
+    tej: {
+      ht: string;
+      et: string;
+    };
+    siva?: {
+      et: string;
+    };
+    purohit?: {
+      et: string;
+    };
+    chinmay?: {
+      hc: string;
+    };
+  } | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isBookmarked?: boolean;
@@ -21,9 +38,9 @@ const VerseContent = memo(({
   isBookmarked = false,
   onBookmarkChange 
 }: { 
-  verse: Verse, 
-  isBookmarked?: boolean,
-  onBookmarkChange?: (isBookmarked: boolean) => void 
+  verse: NonNullable<VerseModalProps["verse"]>;
+  isBookmarked?: boolean;
+  onBookmarkChange?: (isBookmarked: boolean) => void;
 }) => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -37,28 +54,20 @@ const VerseContent = memo(({
 
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Please log in to bookmark verses');
-      }
-
+      const method = localIsBookmarked ? 'DELETE' : 'POST';
       const response = await fetch('/api/favorites', {
-        method: localIsBookmarked ? 'DELETE' : 'POST',
+        method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          chapter: verse.chapter.toString(),
-          verse: verse.verse.toString()
+          chapter: verse.chapter,
+          verse: verse.verse
         })
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Please log in to manage bookmarks');
-        }
-        throw new Error(localIsBookmarked ? 'Failed to remove bookmark' : 'Failed to bookmark verse');
+        throw new Error('Failed to update bookmark');
       }
 
       return response.json();
@@ -67,18 +76,18 @@ const VerseContent = memo(({
       await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
       await queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] });
 
-      const previousBookmarked = localIsBookmarked;
-      setLocalIsBookmarked(!previousBookmarked);
+      const previousState = localIsBookmarked;
+      setLocalIsBookmarked(!previousState);
 
-      return { previousBookmarked };
+      return { previousState };
     },
     onError: (error: Error, _, context) => {
       if (context) {
-        setLocalIsBookmarked(context.previousBookmarked);
+        setLocalIsBookmarked(context.previousState);
       }
       toast({
         title: "Error",
-        description: error.message,
+        description: "Failed to update bookmark",
         variant: "destructive",
         duration: 3000,
       });
@@ -88,7 +97,7 @@ const VerseContent = memo(({
       queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
     },
     onSuccess: (_, __, context) => {
-      const newBookmarkState = !context?.previousBookmarked;
+      const newBookmarkState = !context?.previousState;
       if (onBookmarkChange) {
         onBookmarkChange(newBookmarkState);
       }
@@ -118,6 +127,7 @@ const VerseContent = memo(({
         title: "Failed to copy",
         description: "Please try again",
         variant: "destructive",
+        duration: 2000,
       });
     }
   }, [verse, toast]);
@@ -140,7 +150,7 @@ const VerseContent = memo(({
               </div>
               <div>
                 <span className="text-sm font-medium text-white/60 uppercase tracking-wider block">Bhagavad Gita</span>
-                <span className="text-sm text-white/40">Ancient Wisdom</span>
+                <span className="text-sm text-white/40">Chapter {verse.chapter}, Verse {verse.verse}</span>
               </div>
             </div>
 
@@ -165,7 +175,7 @@ const VerseContent = memo(({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300 h-full"
+                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
               >
                 <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
                   Sanskrit Text
@@ -186,10 +196,10 @@ const VerseContent = memo(({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300 h-full"
+                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
               >
                 <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                  Primary Translation
+                  Translation
                 </h3>
                 <div className="prose prose-invert max-w-none">
                   <p className="text-2xl leading-relaxed text-white/90 font-light break-words">
@@ -203,80 +213,6 @@ const VerseContent = memo(({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="space-y-6"
-            >
-              <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider">
-                Additional Translations
-              </h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                {verse.purohit?.et && (
-                  <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
-                    <div className="mb-4">
-                      <span className="text-sm font-medium text-primary">Purohit Translation</span>
-                    </div>
-                    <p className="text-lg leading-relaxed text-white/90 font-light break-words">
-                      {verse.purohit.et}
-                    </p>
-                  </div>
-                )}
-
-                {verse.siva?.et && (
-                  <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
-                    <div className="mb-4">
-                      <span className="text-sm font-medium text-primary">Sivananda Translation</span>
-                    </div>
-                    <p className="text-lg leading-relaxed text-white/90 font-light break-words">
-                      {verse.siva.et}
-                    </p>
-                  </div>
-                )}
-
-                {verse.tej?.et && (
-                  <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
-                    <div className="mb-4">
-                      <span className="text-sm font-medium text-primary">Tejomayananda Translation</span>
-                    </div>
-                    <p className="text-lg leading-relaxed text-white/90 font-light break-words">
-                      {verse.tej.et}
-                    </p>
-                  </div>
-                )}
-
-                {verse.tej?.ht && (
-                  <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
-                    <div className="mb-4">
-                      <span className="text-sm font-medium text-primary">Hindi Translation</span>
-                    </div>
-                    <p className="text-lg leading-relaxed text-white/90 font-light break-words">
-                      {verse.tej.ht}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-
-            {verse.chinmay?.hc && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
-              >
-                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                  Commentary by Chinmayananda
-                </h3>
-                <div className="prose prose-invert max-w-none">
-                  <p className="text-lg leading-relaxed text-white/90 font-light break-words whitespace-pre-wrap">
-                    {verse.chinmay.hc}
-                  </p>
-                </div>
-              </motion.div>
-            )}
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
               className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/10"
             >
               <Button
@@ -329,7 +265,7 @@ VerseContent.displayName = 'VerseContent';
 export default function VerseModal({ 
   verse, 
   open, 
-  onOpenChange, 
+  onOpenChange,
   isBookmarked,
   onBookmarkChange 
 }: VerseModalProps) {
@@ -345,7 +281,7 @@ export default function VerseModal({
           >
             <VerseContent 
               verse={verse} 
-              isBookmarked={isBookmarked} 
+              isBookmarked={isBookmarked}
               onBookmarkChange={onBookmarkChange}
             />
           </DialogContent>
