@@ -75,9 +75,15 @@ export default function Home() {
     queryKey: ['mood-verses', selectedMood],
     queryFn: async () => {
       if (!selectedMood) return [];
-      return getVersesByMood(selectedMood);
+      console.log('Loading verses for mood:', selectedMood);
+      const results = await getVersesByMood(selectedMood);
+      if (!results.length) {
+        console.error('No verses found for mood:', selectedMood);
+      }
+      return results;
     },
-    enabled: !!selectedMood
+    enabled: !!selectedMood,
+    retry: false
   });
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 // Data utility functions for loading Bhagavad Gita content
 import chaptersData from '@/assets/data/chapters/index.json';
-import moods from '@/assets/data/moods.json';
+import moodsData from '@/assets/data/moods.json';
 
 // Types for verse and chapter data
 export interface Verse {
@@ -84,12 +84,11 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
 // Get verses for a specific mood with better error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
-    const normalizedMood = mood.toLowerCase().trim();
+    // Normalize mood name to match moods.json
+    const normalizedMood = mood.charAt(0).toUpperCase() + mood.slice(1).toLowerCase();
     console.log(`Looking for verses for mood: ${normalizedMood}`);
 
-    const moodData = moods.moods.find(
-      m => m.name.toLowerCase() === normalizedMood
-    );
+    const moodData = moodsData.moods.find(m => m.name === normalizedMood);
 
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: ${mood}`);
