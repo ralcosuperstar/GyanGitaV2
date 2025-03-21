@@ -15,6 +15,42 @@
       ]
     },
     {
+      "name": "Feeling Sinful",
+      "description": "Verses for overcoming guilt and finding redemption",
+      "verses": [
+        { "chapter": 4, "verse": 36, "theme": "Power of spiritual knowledge" },
+        { "chapter": 4, "verse": 37, "theme": "Burning sins through knowledge" },
+        { "chapter": 5, "verse": 10, "theme": "Freedom from sin through detachment" },
+        { "chapter": 9, "verse": 30, "theme": "Transformation through devotion" },
+        { "chapter": 10, "verse": 3, "theme": "Understanding divine nature" },
+        { "chapter": 14, "verse": 6, "theme": "Nature of goodness" },
+        { "chapter": 18, "verse": 66, "theme": "Supreme shelter" }
+      ]
+    },
+    {
+      "name": "Practicing Forgiveness",
+      "description": "Verses about forgiveness and compassion",
+      "verses": [
+        { "chapter": 11, "verse": 44, "theme": "Divine forgiveness" },
+        { "chapter": 12, "verse": 13, "theme": "Universal friendship" },
+        { "chapter": 12, "verse": 14, "theme": "Compassion" },
+        { "chapter": 16, "verse": 1, "theme": "Divine qualities" },
+        { "chapter": 16, "verse": 2, "theme": "Gentleness" },
+        { "chapter": 16, "verse": 3, "theme": "Noble qualities" }
+      ]
+    },
+    {
+      "name": "Death of Loved One",
+      "description": "Verses for dealing with loss and grief",
+      "verses": [
+        { "chapter": 2, "verse": 13, "theme": "Understanding life and death" },
+        { "chapter": 2, "verse": 20, "theme": "Eternal nature of soul" },
+        { "chapter": 2, "verse": 22, "theme": "Changing of bodies" },
+        { "chapter": 2, "verse": 25, "theme": "Invisible nature of soul" },
+        { "chapter": 2, "verse": 27, "theme": "Inevitability of death" }
+      ]
+    },
+    {
       "name": "Seeking Peace",
       "description": "Verses for finding inner peace and tranquility",
       "verses": [
@@ -161,6 +197,25 @@
         { "chapter": 9, "verse": 34, "theme": "Path to the Supreme" },
         { "chapter": 18, "verse": 66, "theme": "Supreme shelter" },
         { "chapter": 18, "verse": 78, "theme": "Victory assured" }
+      ]
+    },
+    {
+      "name": "Demotivated",
+      "description": "Verses for inspiration and motivation",
+      "verses": [
+        { "chapter": 11, "verse": 33, "theme": "Call to action" },
+        { "chapter": 18, "verse": 48, "theme": "Importance of duty" },
+        { "chapter": 18, "verse": 78, "theme": "Victory through dharma" }
+      ]
+    },
+    {
+      "name": "Temptation",
+      "description": "Verses about controlling senses and desires",
+      "verses": [
+        { "chapter": 2, "verse": 60, "theme": "Control of senses" },
+        { "chapter": 2, "verse": 61, "theme": "Mastering senses" },
+        { "chapter": 2, "verse": 70, "theme": "Peace amidst desires" },
+        { "chapter": 7, "verse": 14, "theme": "Overcoming illusion" }
       ]
     }
   ]
