@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, RefreshCw, Heart, Sparkles } from "lucide-react";
+import { ArrowRight, RefreshCw, Heart, Sparkles, BookOpen } from "lucide-react";
 import MoodSelector from "@/components/MoodSelector";
 import VerseDisplay from "@/components/VerseDisplay";
 import VerseModal from "@/components/VerseModal";
@@ -45,7 +45,7 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const { t } = useLanguage();
 
-  // Handle deep linking and verse fetching logic (unchanged)
+  // Handle deep linking and verse fetching logic
   useEffect(() => {
     const handleHashChange = async () => {
       const hash = window.location.hash;
@@ -95,12 +95,10 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-16 sm:py-24">
-        {/* Ambient Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-40" />
         </div>
 
-        {/* Floating Elements */}
         <FloatingElement className="top-20 left-10" delay={0} />
         <FloatingElement className="bottom-40 right-20" delay={5} />
 
@@ -109,8 +107,8 @@ export default function Home() {
             {/* Sacred Badge */}
             <motion.div
               className="inline-flex items-center px-6 py-2 mb-8 rounded-full 
-                        backdrop-blur-xl bg-primary/5 border border-primary/20 shadow-lg
-                        hover:bg-primary/10 transition-all duration-300"
+                      backdrop-blur-xl bg-primary/5 border border-primary/20 shadow-lg
+                      hover:bg-primary/10 transition-all duration-300"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -213,7 +211,47 @@ export default function Home() {
       {!selectedMood && (
         <>
           <USPSection />
-          <VerseOfTheDay />
+
+          {/* Verse of the Day Section */}
+          <section className="py-24 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30" />
+            </div>
+
+            <div className="container mx-auto px-4 relative">
+              <div className="text-center max-w-2xl mx-auto mb-12">
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="inline-flex items-center px-6 py-2 border border-primary/20 rounded-full text-base font-medium text-primary/80 bg-primary/5 mb-6"
+                >
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Today's Divine Wisdom
+                </motion.div>
+
+                <motion.h2 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="text-4xl font-light mb-6"
+                >
+                  Daily Inspiration
+                  <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                    from the Gita
+                  </span>
+                </motion.h2>
+              </div>
+
+              <div className="max-w-4xl mx-auto">
+                <VerseOfTheDay />
+              </div>
+            </div>
+          </section>
+
+          <StatsSection />
           <TestimonialsSection />
           <CallToAction />
         </>

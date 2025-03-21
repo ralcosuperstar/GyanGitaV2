@@ -1,36 +1,36 @@
 import { motion } from "framer-motion";
-import { Heart, Users, BookOpen, Star } from "lucide-react";
+import { Heart, BookOpen, Book, Star } from "lucide-react";
 
 const stats = [
   {
     value: "700+",
-    label: "Gita Verses",
+    label: "Sacred Verses",
     icon: BookOpen,
-    description: "Complete Sanskrit verses with translations"
+    description: "Complete Bhagavad Gita verses"
   },
   {
-    value: "15K+",
-    label: "Active Users",
-    icon: Users,
-    description: "Growing community of seekers"
+    value: "18",
+    label: "Chapters",
+    icon: Book,
+    description: "In-depth spiritual wisdom"
   },
   {
-    value: "50K+",
-    label: "Recommendations",
+    value: "20+",
+    label: "Emotions",
     icon: Heart,
-    description: "Personalized verse suggestions"
+    description: "Mood-based verse matching"
   },
   {
-    value: "4.9",
-    label: "User Rating",
+    value: "3",
+    label: "Translations",
     icon: Star,
-    description: "Average user satisfaction"
+    description: "Multiple interpretations"
   }
 ];
 
 const StatCard = ({ stat, index }: { stat: typeof stats[0], index: number }) => {
   const Icon = stat.icon;
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
