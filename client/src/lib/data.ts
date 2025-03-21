@@ -26,37 +26,18 @@ export interface Verse {
 export const generateVerseKey = (chapter: number, verse: number) =>
   `${chapter}-${verse}`;
 
-// Import verse files directly from the slok directory
-const verseModules = import.meta.glob('../assets/data/slok/*/* ', { eager: true });
-
 // Get a verse by chapter and number
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
     console.log(`Attempting to load verse ${chapter}:${verse}`);
 
-    // Look for the matching verse file
-    const paths = Object.keys(verseModules);
-    console.log('Available verse paths:', paths);
-
-    const matchingPath = paths.find(path => {
-      const pattern = `/slok/${chapter}/${verse}/`;
-      console.log(`Checking path ${path} against pattern ${pattern}`);
-      return path.includes(pattern);
-    });
-
-    if (!matchingPath) {
+    const response = await fetch(`/src/assets/data/slok/${chapter}/${verse}.json`);
+    if (!response.ok) {
       console.error(`No verse file found for chapter ${chapter}, verse ${verse}`);
       return null;
     }
 
-    console.log(`Found verse at path: ${matchingPath}`);
-
-    const verseData = (verseModules[matchingPath] as any).default;
-    if (!verseData) {
-      console.error(`Empty verse data for ${chapter}:${verse}`);
-      return null;
-    }
-
+    const verseData = await response.json();
     return {
       ...verseData,
       chapter,
@@ -93,7 +74,6 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
 
     const validVerses = verses.filter((v): v is Verse => v !== null);
     console.log(`Successfully loaded ${validVerses.length} verses for mood ${searchMood}`);
-
     return validVerses;
   } catch (error) {
     console.error('Error loading verses for mood:', error);
@@ -105,7 +85,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
 export const getChapters = () => chaptersData;
 export const preloadVersesByMood = (mood: string) => getVersesByMood(mood).catch(console.error);
 
-// Types and other exported functions
+// Types
 export interface Chapter {
   chapter_number: number;
   verses_count: number;
