@@ -31,7 +31,6 @@ const VerseContent = memo(({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Update local state when prop changes
   useEffect(() => {
     setLocalIsBookmarked(isBookmarked);
   }, [isBookmarked]);
@@ -64,30 +63,40 @@ const VerseContent = memo(({
 
       return response.json();
     },
-    onSuccess: () => {
-      const newBookmarkState = !localIsBookmarked;
-      setLocalIsBookmarked(newBookmarkState);
-      if (onBookmarkChange) {
-        onBookmarkChange(newBookmarkState);
-      }
-      // Invalidate both favorites and specific verse queries
-      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
-      queryClient.invalidateQueries({ 
-        queryKey: [`verse-${verse.chapter}-${verse.verse}`] 
-      });
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
+      await queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] });
 
-      toast({
-        title: "Success",
-        description: newBookmarkState ? "Verse has been bookmarked" : "Bookmark removed",
-        duration: 2000,
-      });
+      const previousBookmarked = localIsBookmarked;
+      setLocalIsBookmarked(!previousBookmarked);
+
+      return { previousBookmarked };
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _, context) => {
+      if (context) {
+        setLocalIsBookmarked(context.previousBookmarked);
+      }
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
         duration: 3000,
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
+    },
+    onSuccess: (_, __, context) => {
+      const newBookmarkState = !context?.previousBookmarked;
+      if (onBookmarkChange) {
+        onBookmarkChange(newBookmarkState);
+      }
+
+      toast({
+        title: "Success",
+        description: newBookmarkState ? "Verse has been bookmarked" : "Bookmark removed",
+        duration: 2000,
       });
     }
   });
@@ -121,11 +130,9 @@ const VerseContent = memo(({
         exit={{ opacity: 0, y: -20 }}
         className="relative"
       >
-        {/* Decorative Background Pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30" />
 
         <div className="relative p-4 sm:p-6 md:p-8">
-          {/* Header Section */}
           <div className="flex items-center justify-between gap-6 mb-8">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -137,7 +144,6 @@ const VerseContent = memo(({
               </div>
             </div>
 
-            {/* Bookmark Button */}
             <Button
               variant="ghost"
               size="icon"
@@ -146,7 +152,7 @@ const VerseContent = memo(({
               disabled={bookmarkMutation.isPending}
             >
               {localIsBookmarked ? (
-                <BookmarkCheck className="h-5 w-5 text-primary" />
+                <BookmarkCheck className="h-5 w-5 text-primary animate-in" />
               ) : (
                 <Bookmark className="h-5 w-5" />
               )}
@@ -154,9 +160,7 @@ const VerseContent = memo(({
           </div>
 
           <div className="space-y-8">
-            {/* Primary Content Section */}
             <div className="grid lg:grid-cols-2 gap-6">
-              {/* Sanskrit Section */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -178,7 +182,6 @@ const VerseContent = memo(({
                 </div>
               </motion.div>
 
-              {/* Primary Translation */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -196,7 +199,6 @@ const VerseContent = memo(({
               </motion.div>
             </div>
 
-            {/* Additional Translations Grid */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -207,7 +209,6 @@ const VerseContent = memo(({
                 Additional Translations
               </h3>
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Alternative Translations */}
                 {verse.purohit?.et && (
                   <div className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300">
                     <div className="mb-4">
@@ -254,7 +255,6 @@ const VerseContent = memo(({
               </div>
             </motion.div>
 
-            {/* Commentary Section */}
             {verse.chinmay?.hc && (
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -273,7 +273,6 @@ const VerseContent = memo(({
               </motion.div>
             )}
 
-            {/* Actions Section */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
