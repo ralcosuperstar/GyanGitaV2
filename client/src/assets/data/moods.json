@@ -1,7 +1,7 @@
 {
   "moods": [
     {
-      "name": "Anger",
+      "name": "ANGER",
       "description": "Verses to help control and overcome anger",
       "verses": [
         { "chapter": 2, "verse": 56, "theme": "Controlling anger through steady wisdom" },
@@ -15,7 +15,7 @@
       ]
     },
     {
-      "name": "Feeling Sinful",
+      "name": "FEELING SINFUL",
       "description": "Verses for overcoming guilt and finding redemption",
       "verses": [
         { "chapter": 4, "verse": 36, "theme": "Power of spiritual knowledge" },
@@ -28,7 +28,7 @@
       ]
     },
     {
-      "name": "Practicing Forgiveness",
+      "name": "PRACTICING FORGIVENESS",
       "description": "Verses about forgiveness and compassion",
       "verses": [
         { "chapter": 11, "verse": 44, "theme": "Divine forgiveness" },
@@ -40,7 +40,7 @@
       ]
     },
     {
-      "name": "Death of Loved One",
+      "name": "DEATH OF A LOVED ONE",
       "description": "Verses for dealing with loss and grief",
       "verses": [
         { "chapter": 2, "verse": 13, "theme": "Understanding life and death" },
@@ -51,7 +51,7 @@
       ]
     },
     {
-      "name": "Seeking Peace",
+      "name": "SEEKING PEACE",
       "description": "Verses for finding inner peace and tranquility",
       "verses": [
         { "chapter": 2, "verse": 66, "theme": "Peace through mental control" },
@@ -62,7 +62,7 @@
       ]
     },
     {
-      "name": "Depression",
+      "name": "DEPRESSION",
       "description": "Verses offering solace and hope during difficult times",
       "verses": [
         { "chapter": 2, "verse": 3, "theme": "Overcoming weakness of heart" },
@@ -71,7 +71,7 @@
       ]
     },
     {
-      "name": "Confusion",
+      "name": "CONFUSION",
       "description": "Verses providing clarity and direction",
       "verses": [
         { "chapter": 2, "verse": 7, "theme": "Seeking guidance" },
@@ -80,7 +80,7 @@
       ]
     },
     {
-      "name": "Fear",
+      "name": "FEAR",
       "description": "Verses for overcoming fear and anxiety",
       "verses": [
         { "chapter": 4, "verse": 10, "theme": "Freedom from fear" },
@@ -89,7 +89,7 @@
       ]
     },
     {
-      "name": "Greed",
+      "name": "GREED",
       "description": "Verses about overcoming material attachment",
       "verses": [
         { "chapter": 14, "verse": 17, "theme": "Understanding greed" },
@@ -98,40 +98,7 @@
       ]
     },
     {
-      "name": "Pride",
-      "description": "Verses about humility and ego",
-      "verses": [
-        { "chapter": 16, "verse": 14, "theme": "Nature of pride" },
-        { "chapter": 16, "verse": 13, "theme": "Manifestation of pride" },
-        { "chapter": 16, "verse": 15, "theme": "Results of pride" },
-        { "chapter": 18, "verse": 26, "theme": "Actions in pride" },
-        { "chapter": 18, "verse": 58, "theme": "Transcending pride" }
-      ]
-    },
-    {
-      "name": "Death of Loved One",
-      "description": "Verses for dealing with loss and grief",
-      "verses": [
-        { "chapter": 2, "verse": 13, "theme": "Understanding life and death" },
-        { "chapter": 2, "verse": 20, "theme": "Eternal nature of soul" },
-        { "chapter": 2, "verse": 22, "theme": "Changing of bodies" },
-        { "chapter": 2, "verse": 25, "theme": "Invisible nature of soul" },
-        { "chapter": 2, "verse": 27, "theme": "Inevitability of death" }
-      ]
-    },
-    {
-      "name": "Lust",
-      "description": "Verses about transcending physical desires",
-      "verses": [
-        { "chapter": 3, "verse": 37, "theme": "Understanding lust" },
-        { "chapter": 3, "verse": 41, "theme": "Controlling senses" },
-        { "chapter": 3, "verse": 43, "theme": "Conquering desire" },
-        { "chapter": 5, "verse": 22, "theme": "Transcending pleasures" },
-        { "chapter": 16, "verse": 21, "theme": "Avoiding degradation" }
-      ]
-    },
-    {
-      "name": "Uncontrolled Mind",
+      "name": "UNCONTROLLED MIND",
       "description": "Verses about mental discipline and control",
       "verses": [
         { "chapter": 6, "verse": 5, "theme": "Self-elevation" },
@@ -141,7 +108,7 @@
       ]
     },
     {
-      "name": "Dealing with Envy",
+      "name": "DEALING WITH ENVY",
       "description": "Verses about overcoming jealousy",
       "verses": [
         { "chapter": 12, "verse": 13, "theme": "Universal friendship" },
@@ -151,56 +118,7 @@
       ]
     },
     {
-      "name": "Discriminated",
-      "description": "Verses about equality and universal vision",
-      "verses": [
-        { "chapter": 5, "verse": 18, "theme": "Equal vision" },
-        { "chapter": 5, "verse": 19, "theme": "Transcending differences" },
-        { "chapter": 6, "verse": 32, "theme": "Perfect yogi's vision" },
-        { "chapter": 9, "verse": 29, "theme": "Divine equality" }
-      ]
-    },
-    {
-      "name": "Laziness",
-      "description": "Verses for motivation and action",
-      "verses": [
-        { "chapter": 3, "verse": 8, "theme": "Importance of prescribed duties" },
-        { "chapter": 3, "verse": 20, "theme": "Necessity of action" },
-        { "chapter": 6, "verse": 16, "theme": "Balanced lifestyle" },
-        { "chapter": 18, "verse": 39, "theme": "Understanding happiness" }
-      ]
-    },
-    {
-      "name": "Loneliness",
-      "description": "Verses for finding inner companionship",
-      "verses": [
-        { "chapter": 6, "verse": 30, "theme": "Universal consciousness" },
-        { "chapter": 9, "verse": 29, "theme": "Divine companionship" },
-        { "chapter": 13, "verse": 16, "theme": "Omnipresent truth" },
-        { "chapter": 13, "verse": 18, "theme": "Light of consciousness" }
-      ]
-    },
-    {
-      "name": "Forgetfulness",
-      "description": "Verses about mindfulness and remembrance",
-      "verses": [
-        { "chapter": 15, "verse": 15, "theme": "Divine memory" },
-        { "chapter": 18, "verse": 61, "theme": "Supreme guidance" }
-      ]
-    },
-    {
-      "name": "Losing Hope",
-      "description": "Verses offering encouragement and assurance",
-      "verses": [
-        { "chapter": 4, "verse": 11, "theme": "Divine reciprocation" },
-        { "chapter": 9, "verse": 22, "theme": "Divine protection" },
-        { "chapter": 9, "verse": 34, "theme": "Path to the Supreme" },
-        { "chapter": 18, "verse": 66, "theme": "Supreme shelter" },
-        { "chapter": 18, "verse": 78, "theme": "Victory assured" }
-      ]
-    },
-    {
-      "name": "Demotivated",
+      "name": "DEMOTIVATED",
       "description": "Verses for inspiration and motivation",
       "verses": [
         { "chapter": 11, "verse": 33, "theme": "Call to action" },
@@ -209,13 +127,24 @@
       ]
     },
     {
-      "name": "Temptation",
+      "name": "TEMPTATION",
       "description": "Verses about controlling senses and desires",
       "verses": [
         { "chapter": 2, "verse": 60, "theme": "Control of senses" },
         { "chapter": 2, "verse": 61, "theme": "Mastering senses" },
         { "chapter": 2, "verse": 70, "theme": "Peace amidst desires" },
         { "chapter": 7, "verse": 14, "theme": "Overcoming illusion" }
+      ]
+    },
+    {
+      "name": "LOSING HOPE",
+      "description": "Verses offering encouragement and assurance",
+      "verses": [
+        { "chapter": 4, "verse": 11, "theme": "Divine reciprocation" },
+        { "chapter": 9, "verse": 22, "theme": "Divine protection" },
+        { "chapter": 9, "verse": 34, "theme": "Path to the Supreme" },
+        { "chapter": 18, "verse": 66, "theme": "Supreme shelter" },
+        { "chapter": 18, "verse": 78, "theme": "Victory assured" }
       ]
     }
   ]
