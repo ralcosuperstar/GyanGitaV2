@@ -68,44 +68,56 @@ export default function VerseCard({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update bookmark');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update bookmark');
       }
 
       return response.json();
     },
     onMutate: async () => {
+      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
       await queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] });
 
+      // Snapshot the previous value
       const previousState = localIsBookmarked;
+
+      // Optimistically update to the new value
       setLocalIsBookmarked(!previousState);
 
+      // Return a context object with the snapshotted value
       return { previousState };
     },
-    onError: (_error, _variables, context) => {
+    onError: (error: Error, _, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
       if (context) {
         setLocalIsBookmarked(context.previousState);
       }
+
       toast({
         title: "Error",
-        description: "Failed to update bookmark",
+        description: error.message,
         variant: "destructive",
         duration: 3000,
       });
     },
-    onSuccess: () => {
+    onSettled: () => {
+      // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
       queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
+    },
+    onSuccess: () => {
+      const newState = !localIsBookmarked;
+
+      if (onBookmarkChange) {
+        onBookmarkChange(newState);
+      }
 
       toast({
         title: "Success",
         description: localIsBookmarked ? "Bookmark removed" : "Verse has been bookmarked",
         duration: 2000,
       });
-
-      if (onBookmarkChange) {
-        onBookmarkChange(!localIsBookmarked);
-      }
     }
   });
 

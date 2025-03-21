@@ -3,7 +3,6 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 
-// Create schema with proper string types
 const insertFavoriteSchema = z.object({
   user_id: z.number(),
   chapter: z.string(),
@@ -11,13 +10,11 @@ const insertFavoriteSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth check middleware - simplified for development
   const requireAuth = (req: any, res: any, next: any) => {
     req.user = { id: 1 }; // For development, always authenticate with user_id 1
     next();
   };
 
-  // Favorites routes
   app.post('/api/favorites', requireAuth, async (req, res) => {
     try {
       console.log('Creating favorite:', { userId: req.user.id, ...req.body });
@@ -45,11 +42,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Removing favorite:', { userId: req.user.id, ...req.body });
 
-      const { chapter, verse } = req.body;
+      if (!req.body.chapter || !req.body.verse) {
+        return res.status(400).json({ error: 'Missing chapter or verse' });
+      }
+
       await storage.removeFavorite(
         req.user.id,
-        chapter.toString(),
-        verse.toString()
+        req.body.chapter.toString(),
+        req.body.verse.toString()
       );
 
       console.log('Removed favorite successfully');
