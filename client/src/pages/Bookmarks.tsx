@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
 import { BookmarkX } from "lucide-react";
@@ -44,6 +44,7 @@ const itemVariants = {
 
 export default function Bookmarks() {
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
 
   const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery({
     queryKey: ['/api/user/favorites'],
@@ -55,9 +56,8 @@ export default function Bookmarks() {
       const data = await response.json();
       return data as Favorite[];
     },
-    refetchOnWindowFocus: true,
     refetchOnMount: true,
-    staleTime: 1000
+    refetchOnWindowFocus: true,
   });
 
   const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
@@ -92,10 +92,18 @@ export default function Bookmarks() {
       return results.filter((v): v is NonNullable<typeof v> => v !== null);
     },
     enabled: favorites.length > 0,
-    refetchOnWindowFocus: true,
     refetchOnMount: true,
-    staleTime: 1000
+    refetchOnWindowFocus: true
   });
+
+  const handleBookmarkChange = (verseId: number, isBookmarked: boolean) => {
+    if (!isBookmarked) {
+      // Remove verse from verseDetails immediately
+      queryClient.setQueryData(['bookmarked-verses'], (oldData: any) => {
+        return oldData.filter((v: any) => v.id !== verseId);
+      });
+    }
+  };
 
   const isLoading = isLoadingFavorites || isLoadingVerses;
 
@@ -135,6 +143,7 @@ export default function Bookmarks() {
                 verse={verse}
                 isBookmarked={true}
                 showActions={true}
+                onBookmarkChange={(isBookmarked) => handleBookmarkChange(verse.id, isBookmarked)}
               />
             </motion.div>
           ))}

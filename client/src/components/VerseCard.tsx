@@ -101,21 +101,20 @@ export default function VerseCard({
         duration: 3000,
       });
     },
-    onSettled: () => {
-      // Always refetch after error or success
-      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
-    },
-    onSuccess: () => {
-      const newState = !localIsBookmarked;
+    onSuccess: (_, __, context) => {
+      const newState = !context?.previousState;
 
       if (onBookmarkChange) {
         onBookmarkChange(newState);
       }
 
+      // Invalidate and refetch immediately
+      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
+
       toast({
         title: "Success",
-        description: localIsBookmarked ? "Bookmark removed" : "Verse has been bookmarked",
+        description: newState ? "Verse has been bookmarked" : "Bookmark removed",
         duration: 2000,
       });
     }
@@ -206,7 +205,7 @@ export default function VerseCard({
         </CardContent>
       </Card>
 
-      <VerseModal 
+      <VerseModal
         verse={verse}
         open={showModal}
         onOpenChange={setShowModal}
