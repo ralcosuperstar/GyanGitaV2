@@ -1,8 +1,9 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share2, Copy, Check, ArrowRight, Heart } from "lucide-react";
+import { Share2, Copy, Check, ArrowRight, Heart, Bookmark, BookmarkCheck } from "lucide-react";
 import { useState, useCallback, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Verse } from "@/lib/data";
 import ShareDialog from "./ShareDialog";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,12 +12,65 @@ interface VerseModalProps {
   verse: Verse | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isBookmarked?: boolean;
 }
 
-const VerseContent = memo(({ verse }: { verse: Verse }) => {
+const VerseContent = memo(({ verse, isBookmarked = false }: { verse: Verse, isBookmarked?: boolean }) => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const bookmarkMutation = useMutation({
+    mutationFn: async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Please log in to bookmark verses');
+      }
+
+      const response = await fetch('/api/favorites', {
+        method: isBookmarked ? 'DELETE' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          chapter: verse.chapter.toString(),
+          verse: verse.verse.toString()
+        })
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Please log in to manage bookmarks');
+        }
+        throw new Error(isBookmarked ? 'Failed to remove bookmark' : 'Failed to bookmark verse');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      // Invalidate both favorites and specific verse queries
+      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ 
+        queryKey: [`verse-${verse.chapter}-${verse.verse}`] 
+      });
+
+      toast({
+        title: "Success",
+        description: !isBookmarked ? "Verse has been bookmarked" : "Bookmark removed",
+        duration: 2000,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
+  });
 
   const handleCopy = useCallback(async () => {
     const textToCopy = `${verse.purohit?.et || verse.tej.et || verse.siva?.et}\n\n${verse.slok}\n\n${verse.transliteration}`;
@@ -62,24 +116,22 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
                 <span className="text-sm text-white/40">Ancient Wisdom</span>
               </div>
             </div>
-            {/* Highlighted Chapter & Verse Numbers */}
-            <div className="flex items-center gap-4 w-full sm:w-auto">
-              <div className="relative group flex-1 sm:flex-initial">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-xl blur-lg group-hover:blur-xl transition-all duration-500 opacity-50"></div>
-                <div className="relative px-4 py-3 backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20 rounded-xl hover:border-primary/30 transition-colors">
-                  <span className="text-sm text-white/60 block mb-1">Chapter</span>
-                  <span className="text-3xl font-medium text-white/90 block">{verse.chapter}</span>
-                </div>
-              </div>
-              <div className="relative group flex-1 sm:flex-initial">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent rounded-xl blur-lg group-hover:blur-xl transition-all duration-500 opacity-50"></div>
-                <div className="relative px-4 py-3 backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20 rounded-xl hover:border-primary/30 transition-colors">
-                  <span className="text-sm text-white/60 block mb-1">Verse</span>
-                  <span className="text-3xl font-medium text-white/90 block">{verse.verse}</span>
-                </div>
-              </div>
+
+            {/* Bookmark Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => !bookmarkMutation.isPending && bookmarkMutation.mutate()}
+              className="h-9 w-9 rounded-full hover:bg-white/10 transition-all duration-300"
+              disabled={bookmarkMutation.isPending}
+            >
+              {isBookmarked ? (
+                <BookmarkCheck className="h-5 w-5 text-primary" />
+              ) : (
+                <Bookmark className="h-5 w-5" />
+              )}
+            </Button>
             </div>
-          </div>
 
           <div className="space-y-8">
             {/* Primary Content Section */}
@@ -255,7 +307,7 @@ const VerseContent = memo(({ verse }: { verse: Verse }) => {
 
 VerseContent.displayName = 'VerseContent';
 
-export default function VerseModal({ verse, open, onOpenChange }: VerseModalProps) {
+export default function VerseModal({ verse, open, onOpenChange, isBookmarked }: VerseModalProps) {
   if (!verse) return null;
 
   return (
@@ -266,7 +318,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
                                 backdrop-blur-xl bg-gradient-to-br from-black/50 to-black/30 
                                 border border-white/10 rounded-xl shadow-2xl"
           >
-            <VerseContent verse={verse} />
+            <VerseContent verse={verse} isBookmarked={isBookmarked} />
           </DialogContent>
         </Dialog>
       )}

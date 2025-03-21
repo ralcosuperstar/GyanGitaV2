@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Share2, Bookmark, BookmarkCheck, Book, ArrowRight } from "lucide-react";
@@ -46,8 +46,15 @@ export default function VerseCard({
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
   const { toast } = useToast();
 
+  // Update local state when prop changes
+  useEffect(() => {
+    setIsBookmarked(initialIsBookmarked);
+  }, [initialIsBookmarked]);
+
   const handleBookmark = () => {
-    bookmarkMutation.mutate();
+    if (!bookmarkMutation.isPending) {
+      bookmarkMutation.mutate();
+    }
   };
 
   const handleShare = () => {
@@ -88,10 +95,15 @@ export default function VerseCard({
       if (onBookmarkChange) {
         onBookmarkChange(newBookmarkState);
       }
+      // Invalidate both favorites and specific verse queries
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ 
+        queryKey: [`verse-${verse.chapter}-${verse.verse}`] 
+      });
+
       toast({
         title: "Success",
-        description: isBookmarked ? "Bookmark removed" : "Verse has been bookmarked",
+        description: newBookmarkState ? "Verse has been bookmarked" : "Bookmark removed",
         duration: 2000,
       });
     },
