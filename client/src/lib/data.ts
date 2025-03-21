@@ -22,37 +22,34 @@ export interface Verse {
   verse: number;
 }
 
-// Cache configuration
-const VERSE_CACHE_SIZE = 50;
-const verseCache = new Map<string, Verse>();
-
-// Generate cache key for verses
+// Generate key for verses
 export const generateVerseKey = (chapter: number, verse: number) =>
   `${chapter}-${verse}`;
 
-// Import verse files - this matches the structure slok/chapter/verse
-const verseModules = import.meta.glob('@/assets/data/slok/*/*.json', { eager: true });
+// Import verse files directly from the slok directory
+const verseModules = import.meta.glob('../assets/data/slok/*/* ', { eager: true });
 
-// Core function to get a verse by chapter and number
+// Get a verse by chapter and number
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
-    const cacheKey = generateVerseKey(chapter, verse);
+    console.log(`Attempting to load verse ${chapter}:${verse}`);
 
-    // Check cache first
-    if (verseCache.has(cacheKey)) {
-      return verseCache.get(cacheKey) || null;
-    }
+    // Look for the matching verse file
+    const paths = Object.keys(verseModules);
+    console.log('Available verse paths:', paths);
 
-    // Look for the verse file in the imported modules
-    const versePath = `/src/assets/data/slok/${chapter}/${verse}.json`;
-    console.log(`Looking for verse at path: ${versePath}`);
-
-    const matchingPath = Object.keys(verseModules).find(path => path.includes(`${chapter}/${verse}.json`));
+    const matchingPath = paths.find(path => {
+      const pattern = `/slok/${chapter}/${verse}/`;
+      console.log(`Checking path ${path} against pattern ${pattern}`);
+      return path.includes(pattern);
+    });
 
     if (!matchingPath) {
       console.error(`No verse file found for chapter ${chapter}, verse ${verse}`);
       return null;
     }
+
+    console.log(`Found verse at path: ${matchingPath}`);
 
     const verseData = (verseModules[matchingPath] as any).default;
     if (!verseData) {
@@ -60,20 +57,11 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
       return null;
     }
 
-    const verseObject: Verse = {
+    return {
       ...verseData,
       chapter,
       verse
     };
-
-    // Manage cache
-    if (verseCache.size >= VERSE_CACHE_SIZE) {
-      const firstKey = verseCache.keys().next().value;
-      verseCache.delete(firstKey);
-    }
-    verseCache.set(cacheKey, verseObject);
-
-    return verseObject;
   } catch (error) {
     console.error(`Error loading verse ${chapter}:${verse}:`, error);
     return null;
@@ -94,6 +82,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     }
 
     console.log(`Found ${moodData.verses.length} verses to load for mood: ${searchMood}`);
+    console.log('Loading verses:', moodData.verses);
 
     // Load verses
     const verses = await Promise.all(
@@ -104,6 +93,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
 
     const validVerses = verses.filter((v): v is Verse => v !== null);
     console.log(`Successfully loaded ${validVerses.length} verses for mood ${searchMood}`);
+
     return validVerses;
   } catch (error) {
     console.error('Error loading verses for mood:', error);
@@ -111,11 +101,11 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   }
 };
 
-// Export helper functions
+// Helper functions
 export const getChapters = () => chaptersData;
 export const preloadVersesByMood = (mood: string) => getVersesByMood(mood).catch(console.error);
 
-// Types
+// Types and other exported functions
 export interface Chapter {
   chapter_number: number;
   verses_count: number;
