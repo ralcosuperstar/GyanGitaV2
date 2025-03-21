@@ -159,6 +159,16 @@
       ]
     },
     {
+      "name": "PRIDE",
+      "description": "Verses about humility and overcoming ego",
+      "verses": [
+        { "chapter": 16, "verse": 4, "theme": "Understanding pride" },
+        { "chapter": 16, "verse": 13, "theme": "Effects of pride" },
+        { "chapter": 16, "verse": 18, "theme": "Dangers of pride" },
+        { "chapter": 18, "verse": 26, "theme": "Overcoming pride" }
+      ]
+    },
+    {
       "name": "DEMOTIVATED",
       "description": "Verses for inspiration and motivation",
       "verses": [

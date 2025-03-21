@@ -25,7 +25,11 @@ export interface Verse {
 
 // Helper function to normalize mood names
 const normalizeMoodName = (mood: string): string => {
-  return mood.toUpperCase().replace(/_/g, ' ').trim();
+  // Convert to uppercase and handle special characters
+  return mood.toUpperCase()
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')  // Handle multiple spaces
+    .trim();
 };
 
 // Helper function to generate verse key
@@ -69,7 +73,9 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     console.log(`Looking for verses for mood: "${searchMood}"`);
 
     // Find mood data using normalized comparison
-    const moodData = moods.moods.find(m => normalizeMoodName(m.name) === searchMood);
+    const moodData = moods.moods.find(m => 
+      normalizeMoodName(m.name) === searchMood
+    );
 
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: "${searchMood}"`);
