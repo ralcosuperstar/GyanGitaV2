@@ -56,8 +56,6 @@ export default function Bookmarks() {
       const data = await response.json();
       return data as Favorite[];
     },
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
   });
 
   const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
@@ -91,15 +89,14 @@ export default function Bookmarks() {
       const results = await Promise.all(versePromises);
       return results.filter((v): v is NonNullable<typeof v> => v !== null);
     },
-    enabled: favorites.length > 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true
+    enabled: favorites.length > 0
   });
 
   const handleBookmarkChange = (verseId: number, isBookmarked: boolean) => {
     if (!isBookmarked) {
       // Remove verse from verseDetails immediately
       queryClient.setQueryData(['bookmarked-verses'], (oldData: any) => {
+        if (!oldData) return [];
         return oldData.filter((v: any) => v.id !== verseId);
       });
     }

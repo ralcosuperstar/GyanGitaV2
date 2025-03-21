@@ -68,8 +68,8 @@ export default function VerseCard({
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update bookmark');
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update bookmark');
       }
 
       return response.json();
@@ -104,6 +104,7 @@ export default function VerseCard({
     onSuccess: (_, __, context) => {
       const newState = !context?.previousState;
 
+      // Update parent component if callback exists
       if (onBookmarkChange) {
         onBookmarkChange(newState);
       }
