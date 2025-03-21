@@ -26,48 +26,42 @@ export interface Verse {
 const VERSE_CACHE_SIZE = 50;
 const verseCache = new Map<string, Verse>();
 
+// Generate cache key for verses
 export const generateVerseKey = (chapter: number, verse: number) =>
   `${chapter}-${verse}`;
 
-// Import all verse files using Vite's import.meta.glob
-const verseModules = import.meta.glob('/src/assets/data/slok/*/*/index.json', { eager: true });
+// Import all verse files relative to the current file
+const verseModules = import.meta.glob('../assets/data/slok/*/*/index.json', { eager: true });
 
-// Optimize verse fetching with better error handling and logging
+// Core function to get a verse by chapter and number
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
     const cacheKey = generateVerseKey(chapter, verse);
 
     // Check cache first
     if (verseCache.has(cacheKey)) {
-      console.log(`Retrieved verse ${chapter}:${verse} from cache`);
       return verseCache.get(cacheKey) || null;
     }
 
-    // Construct proper path pattern
     const paddedChapter = chapter.toString().padStart(2, '0');
     const paddedVerse = verse.toString().padStart(2, '0');
-    const expectedPattern = `/src/assets/data/slok/${paddedChapter}/${paddedVerse}/index.json`;
 
-    console.log(`Looking for verse file matching pattern: ${expectedPattern}`);
-
-    // Find matching module path
-    const matchingPath = Object.keys(verseModules).find(path => 
-      path.endsWith(`/${paddedChapter}/${paddedVerse}/index.json`)
+    // Look for the matching verse file in the imported modules
+    const matchingPath = Object.keys(verseModules).find(path =>
+      path.includes(`/slok/${paddedChapter}/${paddedVerse}/index.json`)
     );
 
     if (!matchingPath) {
       console.error(`No verse file found for chapter ${chapter}, verse ${verse}`);
-      console.log('Available verse files:', Object.keys(verseModules));
       return null;
     }
 
-    const module = verseModules[matchingPath] as any;
-    if (!module || !module.default) {
-      console.error(`Invalid verse module for ${chapter}:${verse}`);
+    const verseData = (verseModules[matchingPath] as any).default;
+    if (!verseData) {
+      console.error(`Empty verse data for ${chapter}:${verse}`);
       return null;
     }
 
-    const verseData = module.default;
     const verseObject: Verse = {
       ...verseData,
       chapter,
@@ -81,71 +75,47 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
     }
 
     verseCache.set(cacheKey, verseObject);
-    console.log(`Successfully loaded verse ${chapter}:${verse}`);
     return verseObject;
-
   } catch (error) {
-    console.error(`Error loading verse ${chapter}:${verse}:`, error);
+    console.error(`Error in getVerseByChapterAndNumber for ${chapter}:${verse}:`, error);
     return null;
   }
 };
 
-// Get verses for a specific mood with better error handling
+// Get verses for a specific mood
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
-    // Use exact mood name (uppercase)
     const searchMood = mood.toUpperCase().trim();
     console.log(`Looking for verses for mood: "${searchMood}"`);
 
-    // Find mood data with exact name match
+    // Find mood data
     const moodData = moods.moods.find(m => m.name === searchMood);
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: "${searchMood}"`);
-      console.warn('Available moods:', moods.moods.map(m => m.name).join(', '));
       return [];
     }
 
-    console.log(`Found ${moodData.verses.length} verses for mood: ${searchMood}`);
-    console.log('Verse references:', moodData.verses);
+    console.log(`Found ${moodData.verses.length} verses to load for mood: ${searchMood}`);
 
-    const versePromises = moodData.verses.map(async verseRef => {
-      try {
-        console.log(`Loading verse ${verseRef.chapter}:${verseRef.verse}`);
-        const verse = await getVerseByChapterAndNumber(
-          Number(verseRef.chapter),
-          Number(verseRef.verse)
-        );
+    // Load verses for the mood using getVerseByChapterAndNumber
+    const verses = await Promise.all(
+      moodData.verses.map(verseRef =>
+        getVerseByChapterAndNumber(Number(verseRef.chapter), Number(verseRef.verse))
+      )
+    );
 
-        if (!verse) {
-          console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse}`);
-        }
-        return verse;
-      } catch (error) {
-        console.error(`Error processing verse ${verseRef.chapter}:${verseRef.verse}:`, error);
-        return null;
-      }
-    });
-
-    const verses = await Promise.all(versePromises);
     const validVerses = verses.filter((v): v is Verse => v !== null);
-    console.log(`Successfully loaded ${validVerses.length} of ${moodData.verses.length} verses`);
-
+    console.log(`Successfully loaded ${validVerses.length} verses for mood ${searchMood}`);
     return validVerses;
   } catch (error) {
-    console.error('Error in getVersesByMood:', error);
+    console.error('Error loading verses for mood:', error);
     return [];
   }
 };
 
-// Load chapters data
-export const getChapters = (): Chapter[] => {
-  return chaptersData.map(chapter => ({
-    chapter_number: chapter.chapter_number,
-    verses_count: chapter.verses_count,
-    name: chapter.name,
-    name_meaning: chapter.name_meaning
-  }));
-};
+// Helper functions
+export const getChapters = () => chaptersData;
+export const preloadVersesByMood = (mood: string) => getVersesByMood(mood).catch(console.error);
 
 export interface Chapter {
   chapter_number: number;
@@ -164,10 +134,6 @@ export interface Chapter {
   };
 }
 
-export const preloadVersesByMood = (mood: string) => {
-  getVersesByMood(mood).catch(console.error);
-};
-
 // Get random verse
 export const getRandomVerse = async (): Promise<Verse | null> => {
   try {
@@ -181,7 +147,7 @@ export const getRandomVerse = async (): Promise<Verse | null> => {
     }
 
     const randomVerse = Math.floor(Math.random() * chapterData.verses_count) + 1;
-    return await getVerseByChapterAndNumber(randomChapter, randomVerse);
+    return getVerseByChapterAndNumber(randomChapter, randomVerse);
   } catch (error) {
     console.error('Error getting random verse:', error);
     return null;
