@@ -29,6 +29,7 @@ const normalizeMoodName = (mood: string): string => {
   return mood.toUpperCase()
     .replace(/_/g, ' ')
     .replace(/\s+/g, ' ')  // Handle multiple spaces
+    .replace(/OF A/g, 'OF') // Normalize "of a" to "of"
     .trim();
 };
 
