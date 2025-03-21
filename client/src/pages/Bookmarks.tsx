@@ -42,37 +42,17 @@ const itemVariants = {
 export default function Bookmarks() {
   const { t } = useLanguage();
 
-  // Fetch user's favorites
   const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery({
     queryKey: ['/api/user/favorites'],
     queryFn: async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Please log in to view bookmarks');
-      }
-
-      const response = await fetch('/api/user/favorites', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
+      const response = await fetch('/api/user/favorites');
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Please log in to view bookmarks');
-        }
-        throw new Error('Failed to fetch bookmarks');
+        throw new Error('Failed to fetch favorites');
       }
-
-      const data: Favorite[] = await response.json();
-      return data;
-    },
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    staleTime: 0 // Always refetch
+      return response.json();
+    }
   });
 
-  // Then fetch complete verse data for each favorite
   const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
     queryKey: ['bookmarked-verses', favorites],
     queryFn: async () => {
@@ -101,7 +81,7 @@ export default function Bookmarks() {
       });
 
       const results = await Promise.all(versePromises);
-      return results.filter((v): v is (typeof import("@/lib/data").Verse & { id: number }) => v !== null);
+      return results.filter((v): v is NonNullable<typeof v> => v !== null);
     },
     enabled: favorites.length > 0
   });
