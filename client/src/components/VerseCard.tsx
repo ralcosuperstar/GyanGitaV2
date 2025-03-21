@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface VerseCardProps {
   verse: {
+    id?: number;
     chapter: number;
     verse: number;
     slok: string;
@@ -81,7 +82,7 @@ export default function VerseCard({
 
       return { previousState };
     },
-    onError: (_, __, context) => {
+    onError: (_error, _variables, context) => {
       if (context) {
         setLocalIsBookmarked(context.previousState);
       }
@@ -92,20 +93,19 @@ export default function VerseCard({
         duration: 3000,
       });
     },
-    onSuccess: (_, __, context) => {
-      const newBookmarkState = !context?.previousState;
-      if (onBookmarkChange) {
-        onBookmarkChange(newBookmarkState);
-      }
-
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
       queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
 
       toast({
         title: "Success",
-        description: newBookmarkState ? "Verse has been bookmarked" : "Bookmark removed",
+        description: localIsBookmarked ? "Bookmark removed" : "Verse has been bookmarked",
         duration: 2000,
       });
+
+      if (onBookmarkChange) {
+        onBookmarkChange(!localIsBookmarked);
+      }
     }
   });
 

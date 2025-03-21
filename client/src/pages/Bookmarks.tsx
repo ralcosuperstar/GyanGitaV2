@@ -54,11 +54,14 @@ export default function Bookmarks() {
       }
       const data = await response.json();
       return data as Favorite[];
-    }
+    },
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 1000
   });
 
   const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
-    queryKey: ['bookmarked-verses', favorites],
+    queryKey: ['bookmarked-verses', favorites.map(f => `${f.chapter}-${f.verse}`).join(',')],
     queryFn: async () => {
       if (!favorites?.length) return [];
 
@@ -88,7 +91,10 @@ export default function Bookmarks() {
       const results = await Promise.all(versePromises);
       return results.filter((v): v is NonNullable<typeof v> => v !== null);
     },
-    enabled: favorites.length > 0
+    enabled: favorites.length > 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+    staleTime: 1000
   });
 
   const isLoading = isLoadingFavorites || isLoadingVerses;
