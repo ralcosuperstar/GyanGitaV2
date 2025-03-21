@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Share2, Copy, Check, ArrowRight, Heart, Bookmark, BookmarkCheck } from "lucide-react";
-import { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Verse } from "@/lib/data";
@@ -13,13 +13,28 @@ interface VerseModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isBookmarked?: boolean;
+  onBookmarkChange?: (isBookmarked: boolean) => void;
 }
 
-const VerseContent = memo(({ verse, isBookmarked = false }: { verse: Verse, isBookmarked?: boolean }) => {
+const VerseContent = memo(({ 
+  verse, 
+  isBookmarked = false,
+  onBookmarkChange 
+}: { 
+  verse: Verse, 
+  isBookmarked?: boolean,
+  onBookmarkChange?: (isBookmarked: boolean) => void 
+}) => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [localIsBookmarked, setLocalIsBookmarked] = useState(isBookmarked);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Update local state when prop changes
+  useEffect(() => {
+    setLocalIsBookmarked(isBookmarked);
+  }, [isBookmarked]);
 
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
@@ -29,7 +44,7 @@ const VerseContent = memo(({ verse, isBookmarked = false }: { verse: Verse, isBo
       }
 
       const response = await fetch('/api/favorites', {
-        method: isBookmarked ? 'DELETE' : 'POST',
+        method: localIsBookmarked ? 'DELETE' : 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -44,12 +59,17 @@ const VerseContent = memo(({ verse, isBookmarked = false }: { verse: Verse, isBo
         if (response.status === 401) {
           throw new Error('Please log in to manage bookmarks');
         }
-        throw new Error(isBookmarked ? 'Failed to remove bookmark' : 'Failed to bookmark verse');
+        throw new Error(localIsBookmarked ? 'Failed to remove bookmark' : 'Failed to bookmark verse');
       }
 
       return response.json();
     },
     onSuccess: () => {
+      const newBookmarkState = !localIsBookmarked;
+      setLocalIsBookmarked(newBookmarkState);
+      if (onBookmarkChange) {
+        onBookmarkChange(newBookmarkState);
+      }
       // Invalidate both favorites and specific verse queries
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
       queryClient.invalidateQueries({ 
@@ -58,7 +78,7 @@ const VerseContent = memo(({ verse, isBookmarked = false }: { verse: Verse, isBo
 
       toast({
         title: "Success",
-        description: !isBookmarked ? "Verse has been bookmarked" : "Bookmark removed",
+        description: newBookmarkState ? "Verse has been bookmarked" : "Bookmark removed",
         duration: 2000,
       });
     },
@@ -106,7 +126,7 @@ const VerseContent = memo(({ verse, isBookmarked = false }: { verse: Verse, isBo
 
         <div className="relative p-4 sm:p-6 md:p-8">
           {/* Header Section */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
+          <div className="flex items-center justify-between gap-6 mb-8">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Heart className="h-5 w-5 text-primary" />
@@ -125,13 +145,13 @@ const VerseContent = memo(({ verse, isBookmarked = false }: { verse: Verse, isBo
               className="h-9 w-9 rounded-full hover:bg-white/10 transition-all duration-300"
               disabled={bookmarkMutation.isPending}
             >
-              {isBookmarked ? (
+              {localIsBookmarked ? (
                 <BookmarkCheck className="h-5 w-5 text-primary" />
               ) : (
                 <Bookmark className="h-5 w-5" />
               )}
             </Button>
-            </div>
+          </div>
 
           <div className="space-y-8">
             {/* Primary Content Section */}
@@ -307,7 +327,13 @@ const VerseContent = memo(({ verse, isBookmarked = false }: { verse: Verse, isBo
 
 VerseContent.displayName = 'VerseContent';
 
-export default function VerseModal({ verse, open, onOpenChange, isBookmarked }: VerseModalProps) {
+export default function VerseModal({ 
+  verse, 
+  open, 
+  onOpenChange, 
+  isBookmarked,
+  onBookmarkChange 
+}: VerseModalProps) {
   if (!verse) return null;
 
   return (
@@ -318,7 +344,11 @@ export default function VerseModal({ verse, open, onOpenChange, isBookmarked }: 
                                 backdrop-blur-xl bg-gradient-to-br from-black/50 to-black/30 
                                 border border-white/10 rounded-xl shadow-2xl"
           >
-            <VerseContent verse={verse} isBookmarked={isBookmarked} />
+            <VerseContent 
+              verse={verse} 
+              isBookmarked={isBookmarked} 
+              onBookmarkChange={onBookmarkChange}
+            />
           </DialogContent>
         </Dialog>
       )}

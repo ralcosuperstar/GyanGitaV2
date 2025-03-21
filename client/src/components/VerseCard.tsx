@@ -41,14 +41,13 @@ export default function VerseCard({
 }: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const { t } = useLanguage();
-  const queryClient = useQueryClient();
-  const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
+  const [localIsBookmarked, setLocalIsBookmarked] = useState(initialIsBookmarked);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Update local state when prop changes
   useEffect(() => {
-    setIsBookmarked(initialIsBookmarked);
+    setLocalIsBookmarked(initialIsBookmarked);
   }, [initialIsBookmarked]);
 
   const handleBookmark = () => {
@@ -69,7 +68,7 @@ export default function VerseCard({
       }
 
       const response = await fetch('/api/favorites', {
-        method: isBookmarked ? 'DELETE' : 'POST',
+        method: localIsBookmarked ? 'DELETE' : 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -84,14 +83,14 @@ export default function VerseCard({
         if (response.status === 401) {
           throw new Error('Please log in to manage bookmarks');
         }
-        throw new Error(isBookmarked ? 'Failed to remove bookmark' : 'Failed to bookmark verse');
+        throw new Error(localIsBookmarked ? 'Failed to remove bookmark' : 'Failed to bookmark verse');
       }
 
       return response.json();
     },
     onSuccess: () => {
-      const newBookmarkState = !isBookmarked;
-      setIsBookmarked(newBookmarkState);
+      const newBookmarkState = !localIsBookmarked;
+      setLocalIsBookmarked(newBookmarkState);
       if (onBookmarkChange) {
         onBookmarkChange(newBookmarkState);
       }
@@ -150,7 +149,7 @@ export default function VerseCard({
                     className="h-8 w-8 rounded-full hover:bg-white/10 transition-all duration-300"
                     disabled={bookmarkMutation.isPending}
                   >
-                    {isBookmarked ? (
+                    {localIsBookmarked ? (
                       <BookmarkCheck className="h-4 w-4 text-primary" />
                     ) : (
                       <Bookmark className="h-4 w-4" />
@@ -200,11 +199,12 @@ export default function VerseCard({
           </CardContent>
         </Card>
 
-        {/* Modals */}
         <VerseModal 
           verse={verse}
           open={showModal}
           onOpenChange={setShowModal}
+          isBookmarked={localIsBookmarked}
+          onBookmarkChange={setLocalIsBookmarked}
         />
         <ShareDialog
           verse={verse}
@@ -261,7 +261,7 @@ export default function VerseCard({
                   className="absolute top-4 right-4 h-9 w-9 rounded-full hover:bg-white/10 transition-all duration-300 backdrop-blur-sm"
                   disabled={bookmarkMutation.isPending}
                 >
-                  {isBookmarked ? (
+                  {localIsBookmarked ? (
                     <BookmarkCheck className="h-5 w-5 text-primary" />
                   ) : (
                     <Bookmark className="h-5 w-5" />
@@ -319,6 +319,8 @@ export default function VerseCard({
         verse={verse}
         open={showModal}
         onOpenChange={setShowModal}
+        isBookmarked={localIsBookmarked}
+        onBookmarkChange={setLocalIsBookmarked}
       />
       <ShareDialog
         verse={verse}
