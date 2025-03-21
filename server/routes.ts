@@ -11,24 +11,18 @@ const insertFavoriteSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth check middleware
+  // Auth check middleware - simplified for development
   const requireAuth = (req: any, res: any, next: any) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-    // In a real app, verify the token here
+    // For development, always authenticate with user_id 1
+    req.user = { id: 1 };
     next();
   };
 
   // Favorites routes
   app.post('/api/favorites', requireAuth, async (req, res) => {
     try {
-      // In a real app, get user_id from the auth token
-      const userId = 1; // Temporary for testing
-
       const favoriteData = insertFavoriteSchema.parse({
-        user_id: userId,
+        user_id: req.user.id,
         chapter: req.body.chapter.toString(),
         verse: req.body.verse.toString()
       });
@@ -47,11 +41,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/favorites', requireAuth, async (req, res) => {
     try {
-      // In a real app, get user_id from the auth token
-      const userId = 1; // Temporary for testing
-
       const { chapter, verse } = req.body;
-      await storage.removeFavorite(userId, chapter.toString(), verse.toString());
+      await storage.removeFavorite(req.user.id, chapter.toString(), verse.toString());
       res.json({ success: true });
     } catch (error) {
       console.error('Error removing favorite:', error);
@@ -61,10 +52,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/user/favorites', requireAuth, async (req, res) => {
     try {
-      // In a real app, get user_id from the auth token
-      const userId = 1; // Temporary for testing
-
-      const favorites = await storage.getUserFavorites(userId);
+      const favorites = await storage.getUserFavorites(req.user.id);
       res.json(favorites);
     } catch (error) {
       console.error('Error fetching favorites:', error);
