@@ -16,6 +16,33 @@ export default function Browse() {
   const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
   const { t } = useLanguage();
 
+  // Add query for user's bookmarks
+  const { data: bookmarks = [] } = useQuery({
+    queryKey: ['/api/user/favorites'],
+    queryFn: async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return [];
+
+      const response = await fetch('/api/user/favorites', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) return [];
+      return response.json();
+    }
+  });
+
+  // Helper function to check if a verse is bookmarked
+  const isVerseBookmarked = useCallback((chapter: number, verse: number) => {
+    return bookmarks.some(
+      (bookmark: any) => 
+        bookmark.chapter === chapter.toString() && 
+        bookmark.verse === verse.toString()
+    );
+  }, [bookmarks]);
+
   // Reset scroll position when chapter changes
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -158,9 +185,14 @@ export default function Browse() {
                   className={cn(
                     "h-12 w-12 rounded-md border border-input hover:bg-primary/5",
                     "flex items-center justify-center text-sm font-medium",
-                    "transition-colors hover:border-primary/50"
+                    "transition-colors hover:border-primary/50",
+                    isVerseBookmarked(item.chapterNumber, item.verseNumber) && 
+                    "border-primary/50 bg-primary/10"
                   )}
-                  onClick={() => handleVerseSelect(item.chapterNumber.toString(), item.verseNumber.toString())}
+                  onClick={() => handleVerseSelect(
+                    item.chapterNumber.toString(), 
+                    item.verseNumber.toString()
+                  )}
                 >
                   {item.verseNumber}
                 </motion.button>
@@ -177,6 +209,7 @@ export default function Browse() {
             setSelectedChapter("");
             setSelectedVerse("");
           }}
+          isBookmarked={verse ? isVerseBookmarked(verse.chapter, verse.verse) : false}
         />
       </div>
     </div>

@@ -29,13 +29,15 @@ interface VerseCardProps {
   showActions?: boolean;
   isBookmarked?: boolean;
   variant?: 'compact' | 'detailed';
+  onBookmarkChange?: (isBookmarked: boolean) => void;
 }
 
 export default function VerseCard({ 
   verse, 
   showActions = true, 
   isBookmarked: initialIsBookmarked = false,
-  variant = 'compact' 
+  variant = 'compact',
+  onBookmarkChange 
 }: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -54,11 +56,16 @@ export default function VerseCard({
 
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Please log in to bookmark verses');
+      }
+
       const response = await fetch('/api/favorites', {
         method: isBookmarked ? 'DELETE' : 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           chapter: verse.chapter.toString(),
@@ -76,7 +83,11 @@ export default function VerseCard({
       return response.json();
     },
     onSuccess: () => {
-      setIsBookmarked(!isBookmarked);
+      const newBookmarkState = !isBookmarked;
+      setIsBookmarked(newBookmarkState);
+      if (onBookmarkChange) {
+        onBookmarkChange(newBookmarkState);
+      }
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
       toast({
         title: "Success",
