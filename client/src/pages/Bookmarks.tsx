@@ -7,6 +7,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import PageLayout from "@/components/PageLayout";
 import { motion } from "framer-motion";
+import type { Verse } from "@/lib/data";
+
+interface Favorite {
+  id: number;
+  chapter: string;
+  verse: string;
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -37,44 +44,64 @@ export default function Bookmarks() {
 
   // First fetch the user's favorites
   const { data: favorites, isLoading: isLoadingFavorites } = useQuery({
-    queryKey: ['/api/user/favorites'],
+    queryKey: ['favorites'],
     queryFn: async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Please log in to view bookmarks');
+      }
+
       const response = await fetch('/api/user/favorites', {
         headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
+          'Authorization': `Bearer ${token}`
         }
       });
+
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error('Please log in to view bookmarks');
         }
         throw new Error('Failed to fetch bookmarks');
       }
-      return response.json();
-    }
+
+      const data: Favorite[] = await response.json();
+      return data;
+    },
+    staleTime: 0 // Always refetch on mount
   });
 
   // Then fetch complete verse data for each favorite
   const { data: verseDetails, isLoading: isLoadingVerses } = useQuery({
-    queryKey: ['verse-details', favorites],
+    queryKey: ['bookmarked-verses', favorites],
     queryFn: async () => {
       if (!favorites?.length) return [];
 
       const versePromises = favorites.map(async (favorite) => {
-        const response = await fetch(`https://vedicscriptures.github.io/slok/${favorite.chapter}/${favorite.verse}`);
-        if (!response.ok) throw new Error(`Failed to fetch verse ${favorite.chapter}:${favorite.verse}`);
-        const verseData = await response.json();
-        return {
-          ...verseData,
-          id: favorite.id,
-          chapter: parseInt(favorite.chapter),
-          verse: parseInt(favorite.verse)
-        };
+        try {
+          // Build the URL properly
+          const response = await fetch(`/src/assets/data/slok/${favorite.chapter}/${favorite.verse}/index.json`);
+          if (!response.ok) {
+            console.error(`Failed to fetch verse ${favorite.chapter}:${favorite.verse}`);
+            return null;
+          }
+          const verseData = await response.json();
+          return {
+            ...verseData,
+            id: favorite.id,
+            chapter: parseInt(favorite.chapter),
+            verse: parseInt(favorite.verse)
+          };
+        } catch (error) {
+          console.error(`Error loading verse ${favorite.chapter}:${favorite.verse}:`, error);
+          return null;
+        }
       });
 
-      return Promise.all(versePromises);
+      const results = await Promise.all(versePromises);
+      return results.filter((v): v is Verse & { id: number } => v !== null);
     },
-    enabled: !!favorites?.length
+    enabled: !!favorites?.length,
+    staleTime: 0 // Always refetch when favorites change
   });
 
   const isLoading = isLoadingFavorites || isLoadingVerses;
@@ -117,10 +144,10 @@ export default function Bookmarks() {
                   verse: verse.verse,
                   slok: verse.slok,
                   transliteration: verse.transliteration,
-                  tej: verse.tej || {},
-                  siva: verse.siva || {},
-                  purohit: verse.purohit || {},
-                  chinmay: verse.chinmay || {}
+                  tej: verse.tej,
+                  siva: verse.siva,
+                  purohit: verse.purohit,
+                  chinmay: verse.chinmay
                 }}
                 isBookmarked={true}
                 showActions={true}

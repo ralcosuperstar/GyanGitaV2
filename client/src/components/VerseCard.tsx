@@ -94,10 +94,15 @@ export default function VerseCard({
       if (onBookmarkChange) {
         onBookmarkChange(newBookmarkState);
       }
-      // Invalidate both favorites and specific verse queries
+
+      // Invalidate all relevant queries
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
       queryClient.invalidateQueries({ 
         queryKey: [`verse-${verse.chapter}-${verse.verse}`] 
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: ['bookmarked-verses'] 
       });
 
       toast({
