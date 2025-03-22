@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Share2, Book, ArrowRight } from "lucide-react";
-import ShareDialog from "./ShareDialog";
+import { Book, ArrowRight } from "lucide-react";
 import VerseModal from "./VerseModal";
 import { motion } from 'framer-motion';
 
@@ -34,7 +33,6 @@ export default function VerseCard({
   showActions = true,
 }: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
-  const [showShareDialog, setShowShareDialog] = useState(false);
 
   // Get Siva's translation first, fallback to other translations if not available
   const translation = verse.siva?.et || verse.purohit?.et || verse.tej.et;
@@ -86,18 +84,6 @@ export default function VerseCard({
                   <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </span>
               </Button>
-
-              {showActions && (
-                <Button
-                  variant="outline"
-                  onClick={() => setShowShareDialog(true)}
-                  className="px-4 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
-                            border border-white/20 hover:bg-white/10 hover:border-white/30 
-                            shadow-lg hover:shadow-xl transition-all duration-300 py-4 group"
-                >
-                  <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                </Button>
-              )}
             </div>
           </div>
         </CardContent>
@@ -107,12 +93,6 @@ export default function VerseCard({
         verse={verse}
         open={showModal}
         onOpenChange={setShowModal}
-      />
-
-      <ShareDialog
-        verse={verse}
-        open={showShareDialog}
-        onOpenChange={setShowShareDialog}
       />
     </motion.div>
   );
