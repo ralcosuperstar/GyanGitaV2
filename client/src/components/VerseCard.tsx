@@ -63,8 +63,9 @@ export default function VerseCard({
               </div>
             </div>
 
-            {/* Sanskrit Preview */}
+            {/* Content Preview */}
             <div className="flex-grow space-y-4">
+              {/* Sanskrit Preview */}
               <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 border border-white/10">
                 <p className="font-sanskrit text-base leading-relaxed line-clamp-2 text-white/70">
                   {verse.slok}
@@ -77,6 +78,18 @@ export default function VerseCard({
                   {primaryTranslation}
                 </p>
               </div>
+
+              {/* Hindi Preview */}
+              {verse.tej.ht && (
+                <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 border border-white/10">
+                  <h4 className="text-xs font-medium text-primary/80 uppercase tracking-wider mb-2">
+                    हिंदी अनुवाद
+                  </h4>
+                  <p className="text-base text-white/90 leading-relaxed line-clamp-2">
+                    {verse.tej.ht}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Actions */}

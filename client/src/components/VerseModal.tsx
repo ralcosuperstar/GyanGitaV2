@@ -53,10 +53,11 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
     verse.siva?.et ? { author: 'Siva', text: verse.siva.et } : null
   ].filter((t): t is Translation => t !== null);
 
-  // Create available tabs
+  // Create available tabs based on content
   const tabs: Tab[] = [
     { id: 'translation', label: 'Translation' },
     { id: 'sanskrit', label: 'Sanskrit' },
+    verse.tej.ht ? { id: 'hindi', label: 'हिंदी' } : null,
     verse.chinmay?.hc ? { id: 'commentary', label: 'Commentary' } : null
   ].filter((tab): tab is Tab => tab !== null);
 
@@ -161,6 +162,24 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
             </div>
           </motion.div>
         </TabsContent>
+
+        {/* Hindi Content */}
+        {verse.tej.ht && (
+          <TabsContent value="hindi" className="pt-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-2"
+            >
+              <h3 className="text-sm font-medium text-white/60">
+                हिंदी अनुवाद
+              </h3>
+              <p className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90">
+                {verse.tej.ht}
+              </p>
+            </motion.div>
+          </TabsContent>
+        )}
 
         {/* Commentary Content */}
         {verse.chinmay?.hc && (
