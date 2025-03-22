@@ -41,11 +41,7 @@ interface Tab {
   label: string;
 }
 
-const VerseContent = memo(({ 
-  verse
-}: { 
-  verse: NonNullable<VerseModalProps["verse"]>;
-}) => {
+const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["verse"]>; }) => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
@@ -61,35 +57,23 @@ const VerseContent = memo(({
   const hasTranslations = translations.length > 0;
   const hasSanskrit = Boolean(verse.slok && verse.transliteration);
   const hasCommentary = Boolean(verse.chinmay?.hc);
-  const hasHindi = Boolean(verse.tej.ht);
 
   // Create available tabs
   const tabs: Tab[] = [
-    hasTranslations ? { id: 'translations', label: 'Translations' } : null,
+    hasTranslations ? { id: 'translation', label: 'Translation' } : null,
     hasSanskrit ? { id: 'sanskrit', label: 'Sanskrit' } : null,
-    hasCommentary ? { id: 'commentary', label: 'Commentary' } : null,
-    hasHindi ? { id: 'hindi', label: 'हिंदी' } : null
+    hasCommentary ? { id: 'commentary', label: 'Commentary' } : null
   ].filter((tab): tab is Tab => tab !== null);
 
   const handleCopy = useCallback(async () => {
     const textToCopy = `${verse.purohit?.et || verse.tej.et || verse.siva?.et}\n\n${verse.slok}\n\n${verse.transliteration}`;
-
     try {
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
-      toast({
-        title: "Copied!",
-        description: "Verse has been copied to clipboard",
-        duration: 2000,
-      });
+      toast({ title: "Copied!", description: "Verse has been copied to clipboard", duration: 2000 });
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      toast({
-        title: "Failed to copy",
-        description: "Please try again",
-        variant: "destructive",
-        duration: 2000,
-      });
+      toast({ title: "Failed to copy", description: "Please try again", variant: "destructive", duration: 2000 });
     }
   }, [verse, toast]);
 
@@ -97,164 +81,148 @@ const VerseContent = memo(({
 
   return (
     <>
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="relative"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30" />
-
-        <div className="relative p-4 sm:p-6 md:p-8">
-          {/* Header */}
-          <div className="flex items-center justify-between gap-6 mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Heart className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <span className="text-sm font-medium text-white/60 uppercase tracking-wider block">Bhagavad Gita</span>
-                <span className="text-sm text-white/40">Chapter {verse.chapter}, Verse {verse.verse}</span>
-              </div>
-            </div>
+      <div className="relative">
+        {/* Verse Info Header */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <Heart className="h-5 w-5 text-primary" />
           </div>
+          <div>
+            <span className="text-sm font-medium text-white/60 uppercase tracking-wider block">
+              Bhagavad Gita
+            </span>
+            <span className="text-sm text-white/40">
+              Chapter {verse.chapter}, Verse {verse.verse}
+            </span>
+          </div>
+        </div>
 
-          {/* Content */}
-          <Tabs defaultValue={tabs[0]?.id} className="space-y-8">
-            <TabsList className="w-full grid grid-cols-4 h-12 items-center bg-muted/50 backdrop-blur-sm rounded-lg p-1">
-              {tabs.map(tab => (
-                <TabsTrigger key={tab.id} value={tab.id}>{tab.label}</TabsTrigger>
-              ))}
-            </TabsList>
+        {/* Content Tabs */}
+        <Tabs defaultValue={tabs[0]?.id} className="space-y-6">
+          <TabsList className="w-full flex space-x-2 h-12 p-1 bg-transparent border-b border-white/10">
+            {tabs.map(tab => (
+              <TabsTrigger
+                key={tab.id}
+                value={tab.id}
+                className="flex-1 text-sm font-medium data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-            {/* Translations Tab */}
-            {hasTranslations && (
-              <TabsContent value="translations" className="space-y-6">
-                {translations.map((trans, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
-                  >
-                    <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
-                      {trans.author}'s Translation
-                    </h3>
-                    <p className="text-2xl leading-relaxed text-white/90 font-light break-words">
-                      {trans.text}
-                    </p>
-                  </motion.div>
-                ))}
-              </TabsContent>
-            )}
-
-            {/* Sanskrit Tab */}
-            {hasSanskrit && (
-              <TabsContent value="sanskrit" className="space-y-6">
+          {/* Translation Tab */}
+          {hasTranslations && (
+            <TabsContent value="translation" className="space-y-6 mt-6">
+              {translations.map((trans, idx) => (
                 <motion.div
+                  key={idx}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg"
+                  transition={{ delay: idx * 0.1 }}
+                  className="space-y-2"
                 >
-                  <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                    Sanskrit Text
+                  <h3 className="text-sm font-medium text-white/60">
+                    {trans.author}'s Translation
                   </h3>
-                  <p className="text-3xl leading-relaxed text-white/90 font-sanskrit mb-6 break-words">
+                  <p className="text-xl leading-relaxed text-white/90">
+                    {trans.text}
+                  </p>
+                </motion.div>
+              ))}
+            </TabsContent>
+          )}
+
+          {/* Sanskrit Tab */}
+          {hasSanskrit && (
+            <TabsContent value="sanskrit" className="space-y-6 mt-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium text-white/60">
+                    Sanskrit Verse
+                  </h3>
+                  <p className="text-2xl leading-relaxed font-sanskrit text-white/90">
                     {verse.slok}
                   </p>
-                  <div className="pt-6 border-t border-white/10">
-                    <h4 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
-                      Transliteration
-                    </h4>
-                    <p className="text-xl text-white/80 italic break-words">
-                      {verse.transliteration}
-                    </p>
-                  </div>
-                </motion.div>
-              </TabsContent>
-            )}
+                </div>
 
-            {/* Commentary Tab */}
-            {hasCommentary && verse.chinmay?.hc && (
-              <TabsContent value="commentary" className="space-y-6">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg"
-                >
-                  <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                    Chinmay Commentary
+                <div className="space-y-2 pt-6 border-t border-white/10">
+                  <h3 className="text-sm font-medium text-white/60">
+                    Transliteration
                   </h3>
-                  <div className="prose prose-invert max-w-none">
-                    <p className="text-lg leading-relaxed text-white/90 whitespace-pre-wrap">
-                      {verse.chinmay.hc}
-                    </p>
-                  </div>
-                </motion.div>
-              </TabsContent>
-            )}
-
-            {/* Hindi Tab */}
-            {hasHindi && (
-              <TabsContent value="hindi" className="space-y-6">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg"
-                >
-                  <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                    हिंदी अनुवाद
-                  </h3>
-                  <p className="text-2xl leading-relaxed text-white/90 break-words">
-                    {verse.tej.ht}
+                  <p className="text-lg italic text-white/80">
+                    {verse.transliteration}
                   </p>
-                </motion.div>
-              </TabsContent>
-            )}
-          </Tabs>
+                </div>
+              </motion.div>
+            </TabsContent>
+          )}
 
-          {/* Actions */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-4 pt-6 mt-8 border-t border-white/10"
+          {/* Commentary Tab */}
+          {hasCommentary && verse.chinmay?.hc && (
+            <TabsContent value="commentary" className="space-y-6 mt-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-2"
+              >
+                <h3 className="text-sm font-medium text-white/60">
+                  Commentary
+                </h3>
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-lg leading-relaxed text-white/90 whitespace-pre-wrap">
+                    {verse.chinmay.hc}
+                  </p>
+                </div>
+              </motion.div>
+            </TabsContent>
+          )}
+        </Tabs>
+
+        {/* Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex flex-col sm:flex-row gap-4 pt-6 mt-8 border-t border-white/10"
+        >
+          <Button
+            className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70
+                      border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm
+                      transition-all duration-300 text-white py-6 group"
+            onClick={() => setShowShareDialog(true)}
           >
-            <Button
-              className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
-                        border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
-                        transition-all duration-300 text-white py-6 group"
-              onClick={() => setShowShareDialog(true)}
-            >
+            <span className="flex items-center justify-center">
+              <Share2 className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
+              Share Verse
+              <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+            </span>
+          </Button>
+          <Button
+            variant="outline"
+            className="flex-1 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5
+                      border border-white/20 hover:bg-white/10 hover:border-white/30
+                      shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
+            onClick={handleCopy}
+          >
+            {copied ? (
               <span className="flex items-center justify-center">
-                <Share2 className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
-                Share Verse
-                <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                <Check className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                Copied
               </span>
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
-                        border border-white/20 hover:bg-white/10 hover:border-white/30 
-                        shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
-              onClick={handleCopy}
-            >
-              {copied ? (
-                <span className="flex items-center justify-center">
-                  <Check className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Copied
-                </span>
-              ) : (
-                <span className="flex items-center justify-center">
-                  <Copy className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Copy Text
-                </span>
-              )}
-            </Button>
-          </motion.div>
-        </div>
-      </motion.div>
+            ) : (
+              <span className="flex items-center justify-center">
+                <Copy className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                Copy Text
+              </span>
+            )}
+          </Button>
+        </motion.div>
+      </div>
 
       <ShareDialog
         verse={verse}
@@ -267,11 +235,7 @@ const VerseContent = memo(({
 
 VerseContent.displayName = 'VerseContent';
 
-export default function VerseModal({ 
-  verse, 
-  open, 
-  onOpenChange
-}: VerseModalProps) {
+export default function VerseModal({ verse, open, onOpenChange }: VerseModalProps) {
   if (!verse) return null;
 
   return (
@@ -279,9 +243,7 @@ export default function VerseModal({
       {open && (
         <Dialog open={open} onOpenChange={onOpenChange}>
           <DialogContent className="w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] max-w-5xl mx-auto my-4 max-h-[calc(100vh-2rem)] overflow-y-auto 
-                                backdrop-blur-xl bg-gradient-to-br from-black/50 to-black/30 
-                                border border-white/10 rounded-xl shadow-2xl"
-          >
+                                bg-background/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl">
             <VerseContent verse={verse} />
           </DialogContent>
         </Dialog>
