@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { HelmetProvider } from 'react-helmet-async';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
@@ -16,9 +16,14 @@ import NotFound from "@/pages/not-found";
 function Router() {
   const [location] = useLocation();
 
-  // Scroll to top whenever location changes
-  useEffect(() => {
-    window.scrollTo(0, 0);
+  // Use useLayoutEffect instead of useEffect to avoid visual jank
+  useLayoutEffect(() => {
+    // Scroll to top with smooth behavior
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
   }, [location]);
 
   return (
