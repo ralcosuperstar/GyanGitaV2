@@ -11,7 +11,6 @@ export default function Hero() {
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center bg-[#0A0A0A] px-4">
-      {/* Main Content */}
       <div className="max-w-2xl mx-auto text-center space-y-6">
         <motion.h1
           className="text-4xl sm:text-5xl md:text-6xl font-light"
