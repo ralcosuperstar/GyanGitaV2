@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Share2, Copy, Check, ArrowRight, Heart } from "lucide-react";
 import { useState, useCallback, memo } from "react";
@@ -84,17 +84,19 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
   return (
     <div className="relative">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-        <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+      <DialogHeader className="mb-6 pb-4 border-b border-white/10">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+          </div>
+          <div>
+            <DialogTitle className="text-lg sm:text-xl font-medium text-white">
+              Chapter {verse.chapter}, Verse {verse.verse}
+            </DialogTitle>
+            <div className="text-sm text-white/60">Bhagavad Gita</div>
+          </div>
         </div>
-        <div>
-          <h2 className="text-lg sm:text-xl font-medium text-white">
-            Chapter {verse.chapter}, Verse {verse.verse}
-          </h2>
-          <p className="text-sm text-white/60">Bhagavad Gita</p>
-        </div>
-      </div>
+      </DialogHeader>
 
       {/* Content */}
       <Tabs defaultValue="translations" className="space-y-6">
@@ -125,12 +127,12 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
               transition={{ delay: idx * 0.1 }}
               className="space-y-2"
             >
-              <h3 className="text-sm font-medium text-white/60">
+              <div className="text-sm font-medium text-white/60">
                 {trans.author}'s Translation
-              </h3>
-              <p className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90">
+              </div>
+              <div className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90">
                 {trans.text}
-              </p>
+              </div>
             </motion.div>
           ))}
         </TabsContent>
@@ -144,31 +146,33 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
               animate={{ opacity: 1, y: 0 }}
               className="backdrop-blur-sm bg-white/5 rounded-lg p-4 sm:p-6 border border-white/10"
             >
-              <h3 className="text-sm font-medium text-white/60 mb-4">
+              <div className="text-sm font-medium text-white/60 mb-4">
                 Sanskrit Text
-              </h3>
-              <p className="text-xl sm:text-2xl md:text-3xl leading-relaxed font-sanskrit text-white/90 mb-4">
+              </div>
+              <div className="text-xl sm:text-2xl md:text-3xl leading-relaxed font-sanskrit text-white/90 mb-4">
                 {verse.slok}
-              </p>
-              <p className="text-base sm:text-lg italic text-white/70">
+              </div>
+              <div className="text-base sm:text-lg italic text-white/70">
                 {verse.transliteration}
-              </p>
+              </div>
             </motion.div>
 
             {/* Hindi Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="backdrop-blur-sm bg-white/5 rounded-lg p-4 sm:p-6 border border-white/10"
-            >
-              <h3 className="text-sm font-medium text-white/60 mb-4">
-                हिंदी अनुवाद
-              </h3>
-              <p className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90">
-                {verse.tej.ht}
-              </p>
-            </motion.div>
+            {verse.tej.ht && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="backdrop-blur-sm bg-white/5 rounded-lg p-4 sm:p-6 border border-white/10"
+              >
+                <div className="text-sm font-medium text-white/60 mb-4">
+                  हिंदी अनुवाद
+                </div>
+                <div className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90">
+                  {verse.tej.ht}
+                </div>
+              </motion.div>
+            )}
           </div>
         </TabsContent>
 
@@ -180,13 +184,13 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
               animate={{ opacity: 1, y: 0 }}
               className="space-y-2"
             >
-              <h3 className="text-sm font-medium text-white/60">
+              <div className="text-sm font-medium text-white/60">
                 Commentary
-              </h3>
+              </div>
               <div className="prose prose-invert max-w-none">
-                <p className="text-base sm:text-lg leading-relaxed text-white/90 whitespace-pre-wrap">
+                <div className="text-base sm:text-lg leading-relaxed text-white/90 whitespace-pre-wrap">
                   {verse.chinmay.hc}
-                </p>
+                </div>
               </div>
             </motion.div>
           </TabsContent>
@@ -258,6 +262,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
                  overflow-y-auto bg-background/95 backdrop-blur-xl
                  border border-white/10 rounded-lg sm:rounded-xl shadow-2xl
                  p-4 sm:p-6 md:p-8"
+        aria-labelledby="verse-modal-title"
       >
         <VerseContent verse={verse} />
       </DialogContent>
