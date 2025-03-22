@@ -138,9 +138,11 @@ export default function Browse() {
                     "cursor-pointer transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg group relative overflow-hidden",
                     expandedChapter === chapter.chapter_number && "border-primary"
                   )}
-                  onClick={() => {
-                    setSelectedGridChapter(chapter.chapter_number);
-                    setExpandedChapter(expandedChapter === chapter.chapter_number ? null : chapter.chapter_number);
+                  onClick={(e) => {
+                    // Only navigate if not clicking buttons
+                    if (!(e.target as HTMLElement).closest('button')) {
+                      setSelectedGridChapter(chapter.chapter_number);
+                    }
                   }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -183,7 +185,10 @@ export default function Browse() {
                         variant="ghost"
                         size="sm"
                         className="hover:bg-primary/10 hover:text-primary"
-                        onClick={() => setSelectedGridChapter(chapter.chapter_number)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedGridChapter(chapter.chapter_number);
+                        }}
                       >
                         <Grid className="h-4 w-4 mr-2" />
                         View Verses
