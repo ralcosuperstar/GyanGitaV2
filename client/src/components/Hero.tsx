@@ -19,27 +19,21 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16 sm:py-24"
-      aria-label="Welcome to GyanGita"
+      className="relative min-h-[90vh] flex items-center justify-center overflow-visible"
+      style={{ isolation: 'isolate' }}
     >
-      {/* Ambient Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-40" />
-      </div>
-
-      {/* Consciousness Animation */}
-      <div className="absolute inset-0 z-0" style={{ minHeight: '90vh' }}>
+      {/* Animation Layer */}
+      <div className="absolute inset-0" style={{ zIndex: 0 }}>
         <ConsciousnessAnimation />
       </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 relative z-10">
+      {/* Content Layer */}
+      <div className="relative container mx-auto px-4" style={{ zIndex: 1 }}>
         <div className="max-w-4xl mx-auto text-center">
           {/* Sacred Badge */}
           <motion.div
             className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full 
-                      backdrop-blur-xl bg-primary/5 border border-primary/20 shadow-lg
-                      hover:bg-primary/10 transition-all duration-300"
+                      bg-primary/5 border border-primary/20 shadow-lg"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -50,7 +44,7 @@ export default function Hero() {
 
           {/* Main Title */}
           <motion.div
-            className="space-y-6 relative z-10"
+            className="space-y-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
@@ -63,7 +57,7 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed backdrop-blur-sm">
+            <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed">
               Discover timeless Gita wisdom tailored to your emotional needs, 
               helping you navigate life's challenges with clarity and purpose
             </p>
