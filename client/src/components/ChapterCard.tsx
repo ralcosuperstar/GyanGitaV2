@@ -14,16 +14,6 @@ interface ChapterCardProps {
 export default function ChapterCard({ chapter, onViewVerses }: ChapterCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleViewVerses = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onViewVerses(chapter.chapter_number);
-  };
-
-  const handleShowMore = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsExpanded(!isExpanded);
-  };
-
   return (
     <Card className={cn(
       "group relative overflow-hidden transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg",
@@ -49,28 +39,42 @@ export default function ChapterCard({ chapter, onViewVerses }: ChapterCardProps)
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="hover:bg-primary/10 hover:text-primary justify-start"
-            onClick={handleShowMore}
-          >
-            {isExpanded ? (
-              <>Show Less <ChevronUp className="ml-2 h-4 w-4" /></>
-            ) : (
-              <>Show More <ChevronDown className="ml-2 h-4 w-4" /></>
-            )}
-          </Button>
+          <div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="hover:bg-primary/10 hover:text-primary justify-start"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+            >
+              {isExpanded ? (
+                <>Show Less <ChevronUp className="ml-2 h-4 w-4" /></>
+              ) : (
+                <>Show More <ChevronDown className="ml-2 h-4 w-4" /></>
+              )}
+            </Button>
+          </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className="hover:bg-primary/10 hover:text-primary"
-            onClick={handleViewVerses}
-          >
-            <Grid className="h-4 w-4 mr-2" />
-            View Verses
-          </Button>
+          <div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="hover:bg-primary/10 hover:text-primary"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onViewVerses(chapter.chapter_number);
+              }}
+            >
+              <Grid className="h-4 w-4 mr-2" />
+              View Verses
+            </Button>
+          </div>
         </div>
 
         <AnimatePresence>
