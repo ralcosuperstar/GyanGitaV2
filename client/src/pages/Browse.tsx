@@ -1,6 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Grid, ArrowLeft } from "lucide-react";
@@ -14,34 +13,6 @@ export default function Browse() {
   const [selectedChapter, setSelectedChapter] = useState<string>("");
   const [selectedVerse, setSelectedVerse] = useState<string>("");
   const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
-  const { t } = useLanguage();
-
-  // Add query for user's bookmarks
-  const { data: bookmarks = [] } = useQuery({
-    queryKey: ['/api/user/favorites'],
-    queryFn: async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return [];
-
-      const response = await fetch('/api/user/favorites', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) return [];
-      return response.json();
-    }
-  });
-
-  // Helper function to check if a verse is bookmarked
-  const isVerseBookmarked = useCallback((chapter: number, verse: number) => {
-    return bookmarks.some(
-      (bookmark: any) => 
-        bookmark.chapter === chapter.toString() && 
-        bookmark.verse === verse.toString()
-    );
-  }, [bookmarks]);
 
   // Reset scroll position when chapter changes
   useEffect(() => {
@@ -64,15 +35,14 @@ export default function Browse() {
     },
     enabled: !!(selectedChapter && selectedVerse),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    cacheTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
   });
 
-  const handleVerseSelect = useCallback((chapter: string, verse: string) => {
+  const handleVerseSelect = (chapter: string, verse: string) => {
     setSelectedChapter(chapter);
     setSelectedVerse(verse);
-  }, []);
+  };
 
-  // Memoize grid items to prevent unnecessary recalculations
+  // Memoize grid items
   const gridItems = useMemo(() => {
     if (!selectedGridChapter || !chapters) return [];
     const chapterInfo = chapters.find(c => c.chapter_number === selectedGridChapter);
@@ -86,17 +56,16 @@ export default function Browse() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
-      {/* Enhanced Header Section */}
       <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 to-primary/5 border-b">
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
-          <div className="text-center max-w-3xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto">
             <motion.h1
               className="text-4xl font-playfair font-bold mb-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                {t('browse.title')}
+                Browse Verses
               </span>
             </motion.h1>
             <motion.p
@@ -105,14 +74,13 @@ export default function Browse() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              {t('browse.subtitle')}
+              Explore the timeless wisdom of the Bhagavad Gita
             </motion.p>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
-        {/* Chapter Grid */}
         {selectedGridChapter === null ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {chapters?.map((chapter) => (
@@ -185,9 +153,7 @@ export default function Browse() {
                   className={cn(
                     "h-12 w-12 rounded-md border border-input hover:bg-primary/5",
                     "flex items-center justify-center text-sm font-medium",
-                    "transition-colors hover:border-primary/50",
-                    isVerseBookmarked(item.chapterNumber, item.verseNumber) && 
-                    "border-primary/50 bg-primary/10"
+                    "transition-colors hover:border-primary/50"
                   )}
                   onClick={() => handleVerseSelect(
                     item.chapterNumber.toString(), 
@@ -209,7 +175,6 @@ export default function Browse() {
             setSelectedChapter("");
             setSelectedVerse("");
           }}
-          isBookmarked={verse ? isVerseBookmarked(verse.chapter, verse.verse) : false}
         />
       </div>
     </div>

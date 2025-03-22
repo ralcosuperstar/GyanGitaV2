@@ -1,9 +1,8 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share2, Copy, Check, ArrowRight, Heart, Bookmark, BookmarkCheck } from "lucide-react";
-import { useState, useCallback, memo, useEffect } from "react";
+import { Share2, Copy, Check, ArrowRight, Heart } from "lucide-react";
+import { useState, useCallback, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ShareDialog from "./ShareDialog";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -29,86 +28,16 @@ interface VerseModalProps {
   } | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  isBookmarked?: boolean;
-  onBookmarkChange?: (isBookmarked: boolean) => void;
 }
 
 const VerseContent = memo(({ 
-  verse, 
-  isBookmarked = false,
-  onBookmarkChange 
+  verse
 }: { 
   verse: NonNullable<VerseModalProps["verse"]>;
-  isBookmarked?: boolean;
-  onBookmarkChange?: (isBookmarked: boolean) => void;
 }) => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [localIsBookmarked, setLocalIsBookmarked] = useState(isBookmarked);
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    setLocalIsBookmarked(isBookmarked);
-  }, [isBookmarked]);
-
-  const bookmarkMutation = useMutation({
-    mutationFn: async () => {
-      const method = localIsBookmarked ? 'DELETE' : 'POST';
-      const response = await fetch('/api/favorites', {
-        method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          chapter: verse.chapter,
-          verse: verse.verse
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update bookmark');
-      }
-
-      return response.json();
-    },
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
-      await queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] });
-
-      const previousState = localIsBookmarked;
-      setLocalIsBookmarked(!previousState);
-
-      return { previousState };
-    },
-    onError: (error: Error, _, context) => {
-      if (context) {
-        setLocalIsBookmarked(context.previousState);
-      }
-      toast({
-        title: "Error",
-        description: "Failed to update bookmark",
-        variant: "destructive",
-        duration: 3000,
-      });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
-    },
-    onSuccess: (_, __, context) => {
-      const newBookmarkState = !context?.previousState;
-      if (onBookmarkChange) {
-        onBookmarkChange(newBookmarkState);
-      }
-
-      toast({
-        title: "Success",
-        description: newBookmarkState ? "Verse has been bookmarked" : "Bookmark removed",
-        duration: 2000,
-      });
-    }
-  });
 
   const handleCopy = useCallback(async () => {
     const textToCopy = `${verse.purohit?.et || verse.tej.et || verse.siva?.et}\n\n${verse.slok}\n\n${verse.transliteration}`;
@@ -153,20 +82,6 @@ const VerseContent = memo(({
                 <span className="text-sm text-white/40">Chapter {verse.chapter}, Verse {verse.verse}</span>
               </div>
             </div>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => !bookmarkMutation.isPending && bookmarkMutation.mutate()}
-              className="h-9 w-9 rounded-full hover:bg-white/10 transition-all duration-300"
-              disabled={bookmarkMutation.isPending}
-            >
-              {localIsBookmarked ? (
-                <BookmarkCheck className="h-5 w-5 text-primary animate-in" />
-              ) : (
-                <Bookmark className="h-5 w-5" />
-              )}
-            </Button>
           </div>
 
           <div className="space-y-8">
@@ -217,8 +132,8 @@ const VerseContent = memo(({
             >
               <Button
                 className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
-                         border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
-                         transition-all duration-300 text-white py-6 group"
+                       border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
+                       transition-all duration-300 text-white py-6 group"
                 onClick={() => setShowShareDialog(true)}
               >
                 <span className="flex items-center justify-center">
@@ -230,8 +145,8 @@ const VerseContent = memo(({
               <Button
                 variant="outline"
                 className="flex-1 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
-                         border border-white/20 hover:bg-white/10 hover:border-white/30 
-                         shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
+                       border border-white/20 hover:bg-white/10 hover:border-white/30 
+                       shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
                 onClick={handleCopy}
               >
                 {copied ? (
@@ -265,9 +180,7 @@ VerseContent.displayName = 'VerseContent';
 export default function VerseModal({ 
   verse, 
   open, 
-  onOpenChange,
-  isBookmarked,
-  onBookmarkChange 
+  onOpenChange
 }: VerseModalProps) {
   if (!verse) return null;
 
@@ -279,11 +192,7 @@ export default function VerseModal({
                                 backdrop-blur-xl bg-gradient-to-br from-black/50 to-black/30 
                                 border border-white/10 rounded-xl shadow-2xl"
           >
-            <VerseContent 
-              verse={verse} 
-              isBookmarked={isBookmarked}
-              onBookmarkChange={onBookmarkChange}
-            />
+            <VerseContent verse={verse} />
           </DialogContent>
         </Dialog>
       )}

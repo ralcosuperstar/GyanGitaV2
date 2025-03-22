@@ -7,13 +7,12 @@ import {
   Moon,
   Sun,
   Sprout,
-  Flower2 // Replacing Lotus with Flower2
+  Flower2
 } from "lucide-react";
-import { useLanguage } from "@/contexts/language-context";
 
 const features = [
   {
-    icon: Flower2, // Changed from Lotus to Flower2
+    icon: Flower2,
     title: "Inner Peace",
     description: "Find tranquility in ancient wisdom"
   },
@@ -80,7 +79,6 @@ const FeatureCard = ({ icon: Icon, title, description, index }: {
 export default function FeaturesSection() {
   return (
     <section className="py-24 sm:py-32 relative overflow-hidden">
-      {/* Ambient Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30" />
       </div>

@@ -1,16 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Share2, Bookmark, BookmarkCheck, Book, ArrowRight } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Share2, Book, ArrowRight } from "lucide-react";
 import ShareDialog from "./ShareDialog";
 import VerseModal from "./VerseModal";
 import { motion } from 'framer-motion';
 
 interface VerseCardProps {
   verse: {
-    id?: number;
     chapter: number;
     verse: number;
     slok: string;
@@ -28,173 +25,18 @@ interface VerseCardProps {
     chinmay?: {
       hc: string;
     };
-    isBookmarked?: boolean;
   };
   showActions?: boolean;
-  isBookmarked?: boolean;
   variant?: 'compact' | 'detailed';
-  onBookmarkChange?: (isBookmarked: boolean) => void;
 }
 
 export default function VerseCard({
   verse,
   showActions = true,
-  isBookmarked: initialIsBookmarked = false,
-  variant = 'compact',
-  onBookmarkChange
+  variant = 'compact'
 }: VerseCardProps) {
   const [showModal, setShowModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const [localIsBookmarked, setLocalIsBookmarked] = useState(initialIsBookmarked || verse.isBookmarked || false);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  // Create a unique identifier for this verse
-  const verseKey = `${verse.chapter}-${verse.verse}`;
-
-  useEffect(() => {
-    setLocalIsBookmarked(initialIsBookmarked || verse.isBookmarked || false);
-  }, [initialIsBookmarked, verse.isBookmarked]);
-
-  const bookmarkMutation = useMutation({
-    mutationFn: async () => {
-      const method = localIsBookmarked ? 'DELETE' : 'POST';
-      const response = await fetch('/api/favorites', {
-        method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          chapter: verse.chapter,
-          verse: verse.verse
-        })
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to update bookmark');
-      }
-
-      return response.json();
-    },
-    onMutate: async () => {
-      // Cancel any outgoing refetches
-      await Promise.all([
-        queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] }),
-        queryClient.cancelQueries({ queryKey: ['verse', verseKey] }),
-        queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] })
-      ]);
-
-      // Snapshot the previous value
-      const previousState = localIsBookmarked;
-
-      // Optimistically update to the new value
-      const newState = !previousState;
-      setLocalIsBookmarked(newState);
-
-      // Store previous data for potential rollback
-      const previousFavorites = queryClient.getQueryData(['/api/user/favorites']) as any[];
-      const previousVerseDetails = queryClient.getQueryData(['verse', verseKey]);
-      const previousBookmarkedVerses = queryClient.getQueryData(['bookmarked-verses']) as any[];
-
-      // Update all caches optimistically
-      if (newState) {
-        // Adding bookmark
-        const newFavorite = {
-          id: Date.now(),
-          user_id: 1,
-          chapter: verse.chapter.toString(),
-          verse: verse.verse.toString(),
-          saved_at: new Date().toISOString(),
-          notes: null
-        };
-
-        queryClient.setQueryData(['/api/user/favorites'], 
-          (old: any[] = []) => [...old, newFavorite]
-        );
-
-        queryClient.setQueryData(['bookmarked-verses'],
-          (old: any[] = []) => [...old, { ...verse, isBookmarked: true }]
-        );
-      } else {
-        // Removing bookmark
-        queryClient.setQueryData(['/api/user/favorites'],
-          (old: any[] = []) => old.filter(f => 
-            !(f.chapter === verse.chapter.toString() && f.verse === verse.verse.toString())
-          )
-        );
-
-        queryClient.setQueryData(['bookmarked-verses'],
-          (old: any[] = []) => old.filter(v => 
-            !(v.chapter === verse.chapter && v.verse === verse.verse)
-          )
-        );
-      }
-
-      // Update verse cache
-      queryClient.setQueryData(['verse', verseKey], {
-        ...verse,
-        isBookmarked: newState
-      });
-
-      // Return context with all data needed for rollback
-      return {
-        previousState,
-        previousFavorites,
-        previousVerseDetails,
-        previousBookmarkedVerses,
-        verseKey
-      };
-    },
-    onError: (error, _, context) => {
-      if (context) {
-        // Roll back to previous state
-        setLocalIsBookmarked(context.previousState);
-
-        // Restore all cached data
-        queryClient.setQueryData(['/api/user/favorites'], context.previousFavorites);
-        queryClient.setQueryData(['verse', context.verseKey], context.previousVerseDetails);
-        queryClient.setQueryData(['bookmarked-verses'], context.previousBookmarkedVerses);
-      }
-
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-        duration: 3000,
-      });
-    },
-    onSuccess: (_, __, context) => {
-      if (!context) return;
-
-      const newState = !context.previousState;
-
-      // Notify parent component
-      if (onBookmarkChange) {
-        onBookmarkChange(newState);
-      }
-
-      toast({
-        title: "Success",
-        description: newState ? "Verse has been bookmarked" : "Bookmark removed",
-        duration: 2000,
-      });
-    },
-    onSettled: () => {
-      // Refetch all related queries to ensure consistency
-      Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] }),
-        queryClient.invalidateQueries({ queryKey: ['verse', verseKey] }),
-        queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] })
-      ]);
-    }
-  });
-
-  const handleBookmarkClick = () => {
-    if (!bookmarkMutation.isPending) {
-      bookmarkMutation.mutate();
-    }
-  };
 
   return (
     <motion.div
@@ -216,21 +58,6 @@ export default function VerseCard({
                   <span className="text-sm text-white/60">V.{verse.verse}</span>
                 </div>
               </div>
-              {showActions && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleBookmarkClick}
-                  className="h-8 w-8 rounded-full hover:bg-white/10 transition-all duration-300"
-                  disabled={bookmarkMutation.isPending}
-                >
-                  {localIsBookmarked ? (
-                    <BookmarkCheck className="h-4 w-4 text-primary animate-in" />
-                  ) : (
-                    <Bookmark className="h-4 w-4" />
-                  )}
-                </Button>
-              )}
             </div>
 
             <div className="flex-grow mb-6">
@@ -275,8 +102,6 @@ export default function VerseCard({
         verse={verse}
         open={showModal}
         onOpenChange={setShowModal}
-        isBookmarked={localIsBookmarked}
-        onBookmarkChange={setLocalIsBookmarked}
       />
 
       <ShareDialog

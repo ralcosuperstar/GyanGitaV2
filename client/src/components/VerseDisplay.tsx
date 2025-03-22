@@ -4,10 +4,10 @@
  * loading states, and accessibility features.
  */
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Book, Bookmark, ArrowRight, Share2 } from "lucide-react"; // Added imports
+import { RefreshCw, Book, ArrowRight, Share2 } from "lucide-react";
 import { moods } from "@/lib/moods";
 import { motion, AnimatePresence } from "framer-motion";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
@@ -21,10 +21,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useQuery } from '@tanstack/react-query';
 
-
-// Animation variants refined for smoother transitions
+// Animation variants for smoother transitions
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -78,28 +76,9 @@ interface VerseDisplayProps {
 export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
-  const [favoriteVerses, setFavoriteVerses] = useState<Set<string>>(new Set());
   const selectedMoodData = moods.find(m => m.id === selectedMood);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-
-  // Fetch user's favorites
-  const { data: userFavorites } = useQuery({
-    queryKey: ['favorites'],
-    queryFn: async () => {
-      const response = await fetch('/api/user/favorites');
-      if (!response.ok) throw new Error('Failed to fetch favorites');
-      const data = await response.json();
-      return new Set(data.map((f: any) => `${f.chapter}-${f.verse}`));
-    }
-  });
-
-  useEffect(() => {
-    if (userFavorites) {
-      setFavoriteVerses(userFavorites);
-    }
-  }, [userFavorites]);
 
   const handleShare = (verse: VerseResponse) => {
     setSelectedVerse(verse);
@@ -112,63 +91,15 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
 
     try {
       await navigator.clipboard.writeText(textToCopy);
-      setCopiedVerseId(verseId);
       toast({
         title: "Copied!",
         description: "Verse has been copied to clipboard",
         duration: 2000,
       });
-
-      setTimeout(() => {
-        setCopiedVerseId(null);
-      }, 2000);
     } catch (err) {
       toast({
         title: "Failed to copy",
         description: "Please try again",
-        variant: "destructive",
-        duration: 2000,
-      });
-    }
-  };
-
-  const handleBookmark = async (verse: VerseResponse) => {
-    const verseId = `${verse.chapter}-${verse.verse}`;
-    const isCurrentlyFavorited = favoriteVerses.has(verseId);
-
-    try {
-      const response = await fetch('/api/favorites', {
-        method: isCurrentlyFavorited ? 'DELETE' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer dummy-token' // In real app, use actual auth token
-        },
-        body: JSON.stringify({
-          chapter: verse.chapter,
-          verse: verse.verse
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to update favorite');
-
-      // Update local state
-      const newFavorites = new Set(favoriteVerses);
-      if (isCurrentlyFavorited) {
-        newFavorites.delete(verseId);
-      } else {
-        newFavorites.add(verseId);
-      }
-      setFavoriteVerses(newFavorites);
-
-      toast({
-        title: isCurrentlyFavorited ? "Removed from favorites" : "Added to favorites",
-        description: isCurrentlyFavorited ? "Verse removed from your favorites" : "Verse saved to your favorites",
-        duration: 2000,
-      });
-    } catch (err) {
-      toast({
-        title: "Action failed",
-        description: "Please try again later",
         variant: "destructive",
         duration: 2000,
       });
@@ -296,73 +227,15 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
             custom={index}
             className="h-full"
           >
-            <Card className="h-full backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="p-6 flex flex-col h-full relative">
-                {/* Decorative Background */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30" />
-
-                {/* Content Container */}
-                <div className="relative z-10 flex flex-col h-full">
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div className="px-3 py-1.5 rounded-lg backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
-                        <span className="text-sm text-white/60">Ch.{verse.chapter}</span>
-                      </div>
-                      <div className="px-3 py-1.5 rounded-lg backdrop-blur-md bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/20">
-                        <span className="text-sm text-white/60">V.{verse.verse}</span>
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleBookmark(verse)}
-                      className="h-9 w-9 rounded-full hover:bg-white/10 transition-all duration-300"
-                      disabled={false}
-                    >
-                      <Bookmark className="h-4 w-4" />
-                    </Button>
-                  </div>
-
-                  {/* Main Content */}
-                  <div className="flex-1 mb-6">
-                    <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
-                      <p className="text-lg text-white/90 leading-relaxed font-light">
-                        {verse.purohit?.et || verse.tej.et || verse.siva?.et}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-3 pt-4 border-t border-white/10">
-                    <Button
-                      onClick={() => setSelectedVerse(verse)}
-                      className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70 
-                                   border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm 
-                                   transition-all duration-300 text-white py-5 group"
-                    >
-                      <span className="flex items-center justify-center">
-                        <Book className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
-                        Read Full Verse
-                        <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                      </span>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleShare(verse)}
-                      className="px-5 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5 
-                                   border border-white/20 hover:bg-white/10 hover:border-white/30 
-                                   shadow-lg hover:shadow-xl transition-all duration-300 py-5 group"
-                    >
-                      <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
+            <VerseCard
+              verse={verse}
+              showActions={true}
+              variant="compact"
+            />
           </motion.div>
         ))}
       </motion.div>
+
       {/* Share Dialog */}
       <AnimatePresence>
         {selectedVerse && (
@@ -370,6 +243,8 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
             verse={selectedVerse}
             open={showShareDialog}
             onOpenChange={setShowShareDialog}
+            handleCopy={handleCopy}
+            onClose={() => setSelectedVerse(null)}
           />
         )}
       </AnimatePresence>
@@ -389,9 +264,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                 <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
                   Sanskrit
                 </span>
-                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                  Commentary
-                </span>
               </div>
             </DialogDescription>
           </DialogHeader>
@@ -408,23 +280,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
                   {selectedVerse?.tej.et}
                 </p>
               </div>
-
-              {(selectedVerse?.siva?.et || selectedVerse?.purohit?.et) && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {selectedVerse?.siva?.et && (
-                    <div className="bg-card rounded-lg p-4">
-                      <p className="text-base text-foreground mb-2">{selectedVerse.siva.et}</p>
-                      <p className="text-sm text-primary font-medium">Sivananda Translation</p>
-                    </div>
-                  )}
-                  {selectedVerse?.purohit?.et && (
-                    <div className="bg-card rounded-lg p-4">
-                      <p className="text-base text-foreground mb-2">{selectedVerse.purohit.et}</p>
-                      <p className="text-sm text-primary font-medium">Purohit Translation</p>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Sanskrit Text Section */}
