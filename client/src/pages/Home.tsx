@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, RefreshCw, Heart, Sparkles, BookOpen } from "lucide-react";
@@ -43,7 +42,6 @@ export default function Home() {
   const [showVerseModal, setShowVerseModal] = useState(false);
   const verseSectionRef = useRef<HTMLDivElement>(null);
   const [, setLocation] = useLocation();
-  const { t } = useLanguage();
 
   // Handle deep linking and verse fetching logic
   useEffect(() => {
@@ -191,14 +189,14 @@ export default function Home() {
                   onClick={() => setSelectedMood(null)}
                 >
                   <RefreshCw className="h-4 w-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
-                  {t('home.mood.change')}
+                  Change Mood
                 </Button>
                 <Button
                   size="lg"
                   className="h-14 w-full sm:w-auto group"
                   onClick={() => setLocation("/browse")}
                 >
-                  {t('home.explore')}
+                  Explore More
                   <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                 </Button>
               </motion.div>

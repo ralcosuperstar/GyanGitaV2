@@ -261,9 +261,6 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
                 <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
                   Sanskrit
                 </span>
-                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                  Commentary
-                </span>
               </div>
             </DialogDescription>
           </DialogHeader>
@@ -294,21 +291,6 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
                   {activeVerse?.transliteration}
                 </p>
               </div>
-
-              {/* Commentary Section */}
-              {activeVerse?.chinmay?.hc && (
-                <div className="bg-card rounded-lg p-6 space-y-4">
-                  <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
-                    <span className="w-2 h-2 rounded-full bg-primary"></span>
-                    Commentary
-                  </h3>
-                  <div className="prose prose-lg max-w-none">
-                    <p className="text-base text-foreground whitespace-pre-wrap">
-                      {activeVerse.chinmay.hc}
-                    </p>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </DialogContent>

@@ -1,5 +1,4 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
 import { BookmarkX } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -43,7 +42,6 @@ const itemVariants = {
 };
 
 export default function Bookmarks() {
-  const { t } = useLanguage();
   const queryClient = useQueryClient();
 
   const { data: favorites = [], isLoading: isLoadingFavorites } = useQuery({
@@ -57,7 +55,6 @@ export default function Bookmarks() {
       return data as Favorite[];
     },
     staleTime: 30000, // Consider data fresh for 30 seconds
-    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
   const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
@@ -77,11 +74,9 @@ export default function Bookmarks() {
             return null;
           }
 
-          // Set the verse as bookmarked and add the favorite ID
           return {
             ...verse,
-            id: favorite.id,
-            isBookmarked: true
+            id: favorite.id
           };
         } catch (error) {
           console.error(`Error loading verse ${favorite.chapter}:${favorite.verse}:`, error);
@@ -94,63 +89,15 @@ export default function Bookmarks() {
     },
     enabled: favorites.length > 0,
     staleTime: 30000, // Consider data fresh for 30 seconds
-    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
-
-  const handleBookmarkChange = async (verseId: number, isBookmarked: boolean) => {
-    if (!isBookmarked) {
-      const verseToRemove = verseDetails.find(v => v.id === verseId);
-      if (!verseToRemove) return;
-
-      // Create a unique key for this verse
-      const verseKey = `${verseToRemove.chapter}-${verseToRemove.verse}`;
-
-      // Store previous values for potential rollback
-      const previousBookmarkedVerses = queryClient.getQueryData(['bookmarked-verses']);
-      const previousFavorites = queryClient.getQueryData(['/api/user/favorites']);
-      const previousVerseDetails = queryClient.getQueryData(['verse', verseKey]);
-
-      try {
-        // Optimistically update UI
-        queryClient.setQueryData(['bookmarked-verses'], (oldData: any) => {
-          if (!oldData) return [];
-          return oldData.filter((v: any) => v.id !== verseId);
-        });
-
-        // Update favorites cache
-        queryClient.setQueryData(['/api/user/favorites'], (oldData: any) => {
-          if (!oldData) return [];
-          return oldData.filter((f: any) => f.id !== verseId);
-        });
-
-        // Update individual verse cache
-        queryClient.setQueryData(['verse', verseKey], {
-          ...verseToRemove,
-          isBookmarked: false
-        });
-
-        // Refetch to ensure consistency
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] }),
-          queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] }),
-          queryClient.invalidateQueries({ queryKey: ['verse', verseKey] })
-        ]);
-      } catch (error) {
-        // Rollback on error
-        queryClient.setQueryData(['bookmarked-verses'], previousBookmarkedVerses);
-        queryClient.setQueryData(['/api/user/favorites'], previousFavorites);
-        queryClient.setQueryData(['verse', verseKey], previousVerseDetails);
-      }
-    }
-  };
 
   const isLoading = isLoadingFavorites || isLoadingVerses;
 
   if (isLoading) {
     return (
       <PageLayout
-        title={t('bookmarks.title')}
-        subtitle={t('bookmarks.subtitle')}
+        title="My Bookmarks"
+        subtitle="Your personal collection of sacred verses"
       >
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {[...Array(3)].map((_, i) => (
@@ -163,8 +110,8 @@ export default function Bookmarks() {
 
   return (
     <PageLayout
-      title={t('bookmarks.title')}
-      subtitle={t('bookmarks.subtitle')}
+      title="My Bookmarks"
+      subtitle="Your personal collection of sacred verses"
     >
       {verseDetails?.length > 0 ? (
         <motion.div
@@ -180,9 +127,7 @@ export default function Bookmarks() {
             >
               <VerseCard
                 verse={verse}
-                isBookmarked={true}
                 showActions={true}
-                onBookmarkChange={(isBookmarked) => handleBookmarkChange(verse.id!, isBookmarked)}
               />
             </motion.div>
           ))}
@@ -198,10 +143,10 @@ export default function Bookmarks() {
             <div className="absolute inset-0 bg-primary/5 rounded-full blur-xl" />
             <BookmarkX className="mx-auto h-12 w-12 text-muted-foreground relative" />
           </div>
-          <h3 className="text-lg font-medium mb-2">{t('bookmarks.empty.title')}</h3>
-          <p className="text-muted-foreground mb-6">{t('bookmarks.empty.description')}</p>
+          <h3 className="text-lg font-medium mb-2">No bookmarks yet</h3>
+          <p className="text-muted-foreground mb-6">Start exploring verses and bookmark your favorites for quick access</p>
           <Button asChild className="transition-transform hover:scale-105">
-            <Link href="/browse">{t('bookmarks.empty.action')}</Link>
+            <Link href="/browse">Browse Verses</Link>
           </Button>
         </motion.div>
       )}

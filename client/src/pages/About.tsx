@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { useLanguage } from "@/contexts/language-context";
 import PageLayout from "@/components/PageLayout";
 import { Quote } from "lucide-react";
 
@@ -18,13 +17,11 @@ const cardVariants = {
 };
 
 export default function About() {
-  const { t } = useLanguage();
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
       <PageLayout
-        title={t('about.title')}
-        subtitle={t('about.subtitle')}
+        title="About GyanGita"
+        subtitle="Your spiritual companion for discovering the timeless wisdom of Bhagavad Gita"
       >
         <div className="max-w-4xl mx-auto space-y-12">
           {/* Story Section */}

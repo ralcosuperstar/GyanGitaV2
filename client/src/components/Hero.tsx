@@ -1,8 +1,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Heart, Quote, ArrowDown } from "lucide-react";
-import { useLanguage } from "@/contexts/language-context";
+import { Sparkles, Heart, ArrowDown } from "lucide-react";
 
 // Floating Mandala pattern component
 const FloatingMandala = ({ className = "", delay = 0 }) => (
@@ -28,7 +27,6 @@ const FloatingMandala = ({ className = "", delay = 0 }) => (
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null);
-  const { t } = useLanguage();
   const { scrollY } = useScroll();
   const fadeOpacity = useTransform(scrollY, [0, 300], [1, 0]);
 
