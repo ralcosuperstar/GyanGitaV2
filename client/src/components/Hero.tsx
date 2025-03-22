@@ -16,113 +16,109 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-[90vh] flex items-center justify-center px-4 sm:px-6 py-12 sm:py-16"
+      className="relative min-h-screen flex items-center bg-[#0A0A0A]"
     >
-      {/* Main Content Container */}
-      <div className="relative w-full max-w-3xl mx-auto">
-        {/* Animated Frame */}
-        <motion.div
-          className="absolute -inset-4 sm:-inset-6 md:-inset-8 rounded-[60px] sm:rounded-[80px]"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          {/* Frame Layers */}
-          <div className="absolute inset-0 rounded-[60px] sm:rounded-[80px] bg-gradient-to-b from-primary/5 to-transparent" />
-          <div className="absolute inset-0 rounded-[60px] sm:rounded-[80px] border-[3px] border-primary/20" />
-          <div className="absolute inset-0 rounded-[60px] sm:rounded-[80px] border-2 border-primary/10 blur-[2px]" />
-
-          {/* Glowing Border Effect */}
-          <motion.div 
-            className="absolute inset-0 rounded-[60px] sm:rounded-[80px] border-[3px] border-primary/40"
-            style={{
-              boxShadow: '0 0 15px var(--primary), inset 0 0 15px var(--primary)',
-            }}
-            animate={{
-              opacity: [0.4, 1, 0.4],
-              boxShadow: [
-                '0 0 10px var(--primary), inset 0 0 10px var(--primary)',
-                '0 0 20px var(--primary), inset 0 0 20px var(--primary)',
-                '0 0 10px var(--primary), inset 0 0 10px var(--primary)'
-              ]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          />
-
-          {/* Moving Light Effect */}
+      <div className="container max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 px-4">
+        {/* Content Section */}
+        <div className="relative">
+          {/* Content Border */}
           <motion.div
-            className="absolute inset-0 rounded-[60px] sm:rounded-[80px] overflow-hidden"
-            style={{ clipPath: 'inset(0 0 0 0 round 60px)' }}
-          >
-            <motion.div
-              className="absolute w-[10px] h-[200%] bg-gradient-to-b from-transparent via-primary/40 to-transparent rotate-45"
-              animate={{
-                left: ['-10%', '110%'],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "linear",
-                repeatDelay: 1
-              }}
-            />
-          </motion.div>
-        </motion.div>
-
-        {/* Content */}
-        <div className="relative bg-background/50 backdrop-blur-sm rounded-[52px] sm:rounded-[72px] p-8 sm:p-12 text-center">
-          {/* Badge */}
-          <motion.div
-            className="inline-flex items-center px-4 py-1.5 mb-8 rounded-full 
-                      bg-primary/5 border border-primary/20"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Heart className="h-4 w-4 mr-2 text-primary" />
-            <span className="text-sm text-white/90 font-medium">Your Daily Spiritual Guide</span>
-          </motion.div>
-
-          {/* Main Question */}
-          <motion.div
-            className="space-y-6"
+            className="absolute -inset-6 rounded-3xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight">
-              <span className="block leading-tight text-white/90">
-                How are you feeling
-                <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                  right now?
-                </span>
-              </span>
-            </h1>
+            {/* Border Layers */}
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-primary/10 to-transparent" />
+            <div className="absolute inset-0 rounded-3xl border-2 border-primary/20" />
 
-            <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed">
-              Let the ancient wisdom of the Bhagavad Gita guide you through your current emotional state
-            </p>
+            {/* Glowing Effect */}
+            <motion.div
+              className="absolute inset-0 rounded-3xl border-2 border-primary/40"
+              style={{
+                boxShadow: '0 0 15px var(--primary), inset 0 0 15px var(--primary)',
+              }}
+              animate={{
+                opacity: [0.4, 1, 0.4],
+                boxShadow: [
+                  '0 0 10px var(--primary), inset 0 0 10px var(--primary)',
+                  '0 0 20px var(--primary), inset 0 0 20px var(--primary)',
+                  '0 0 10px var(--primary), inset 0 0 10px var(--primary)'
+                ]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            />
+          </motion.div>
 
-            {/* CTA Button */}
-            <motion.div 
-              className="mt-10"
+          {/* Content */}
+          <div className="relative space-y-6 p-6">
+            <motion.h1 
+              className="text-4xl sm:text-5xl font-bold"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              Begin Your Spiritual Journey with GyanGita Today
+            </motion.h1>
+
+            <motion.p 
+              className="text-lg text-gray-400"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              Discover personalized verses, insightful commentaries, and a supportive community 
+              to guide you on your path to spiritual growth and inner peace.
+            </motion.p>
+
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 pt-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
             >
               <Button
-                className="px-8 py-6 text-lg font-normal
-                        bg-primary/90 hover:bg-primary/80 border border-primary/30
-                        shadow-lg hover:shadow-xl transition-all duration-300 group"
+                size="lg"
+                className="bg-primary/90 hover:bg-primary text-white px-8"
                 onClick={handleScrollToMood}
               >
-                <Heart className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
-                Choose Your Mood
+                <Heart className="mr-2 h-5 w-5" />
+                Start Now
+              </Button>
+
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-primary/20 hover:bg-primary/10"
+                onClick={handleScrollToMood}
+              >
+                Explore Verses →
               </Button>
             </motion.div>
-          </motion.div>
+          </div>
+        </div>
+
+        {/* Right side pattern/decoration */}
+        <div className="hidden lg:flex items-center justify-center">
+          <motion.div
+            className="w-80 h-80 rounded-full border-2 border-primary/20"
+            style={{
+              background: 'radial-gradient(circle at center, var(--primary) 0%, transparent 70%)',
+              opacity: 0.1
+            }}
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.1, 0.2, 0.1]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
         </div>
       </div>
     </section>
