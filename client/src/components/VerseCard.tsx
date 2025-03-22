@@ -49,7 +49,7 @@ export default function VerseCard({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Use unique verse identifier
+  // Create a unique identifier for this verse
   const verseKey = `${verse.chapter}-${verse.verse}`;
 
   useEffect(() => {
@@ -88,11 +88,48 @@ export default function VerseCard({
       // Snapshot the previous value
       const previousState = localIsBookmarked;
 
-      // Optimistically update the UI
-      setLocalIsBookmarked(!previousState);
-
-      // Update all related caches optimistically
+      // Optimistically update to the new value
       const newState = !previousState;
+      setLocalIsBookmarked(newState);
+
+      // Store previous data for potential rollback
+      const previousFavorites = queryClient.getQueryData(['/api/user/favorites']) as any[];
+      const previousVerseDetails = queryClient.getQueryData(['verse', verseKey]);
+      const previousBookmarkedVerses = queryClient.getQueryData(['bookmarked-verses']) as any[];
+
+      // Update all caches optimistically
+      if (newState) {
+        // Adding bookmark
+        const newFavorite = {
+          id: Date.now(),
+          user_id: 1,
+          chapter: verse.chapter.toString(),
+          verse: verse.verse.toString(),
+          saved_at: new Date().toISOString(),
+          notes: null
+        };
+
+        queryClient.setQueryData(['/api/user/favorites'], 
+          (old: any[] = []) => [...old, newFavorite]
+        );
+
+        queryClient.setQueryData(['bookmarked-verses'],
+          (old: any[] = []) => [...old, { ...verse, isBookmarked: true }]
+        );
+      } else {
+        // Removing bookmark
+        queryClient.setQueryData(['/api/user/favorites'],
+          (old: any[] = []) => old.filter(f => 
+            !(f.chapter === verse.chapter.toString() && f.verse === verse.verse.toString())
+          )
+        );
+
+        queryClient.setQueryData(['bookmarked-verses'],
+          (old: any[] = []) => old.filter(v => 
+            !(v.chapter === verse.chapter && v.verse === verse.verse)
+          )
+        );
+      }
 
       // Update verse cache
       queryClient.setQueryData(['verse', verseKey], {
@@ -100,39 +137,24 @@ export default function VerseCard({
         isBookmarked: newState
       });
 
-      // Update favorites cache
-      if (newState) {
-        queryClient.setQueryData(['/api/user/favorites'], (old: any[] = []) => {
-          const newFavorite = {
-            id: Date.now(), // Temporary ID
-            user_id: 1,
-            chapter: verse.chapter.toString(),
-            verse: verse.verse.toString(),
-            saved_at: new Date().toISOString(),
-            notes: null
-          };
-          return [...old, newFavorite];
-        });
-      } else {
-        queryClient.setQueryData(['/api/user/favorites'], (old: any[] = []) => {
-          return old.filter(f => 
-            !(f.chapter === verse.chapter.toString() && f.verse === verse.verse.toString())
-          );
-        });
-      }
-
-      // Return context for rollback
-      return { previousState, verseKey };
+      // Return context with all data needed for rollback
+      return {
+        previousState,
+        previousFavorites,
+        previousVerseDetails,
+        previousBookmarkedVerses,
+        verseKey
+      };
     },
     onError: (error, _, context) => {
       if (context) {
-        // Roll back all optimistic updates
+        // Roll back to previous state
         setLocalIsBookmarked(context.previousState);
 
-        queryClient.setQueryData(['verse', context.verseKey], {
-          ...verse,
-          isBookmarked: context.previousState
-        });
+        // Restore all cached data
+        queryClient.setQueryData(['/api/user/favorites'], context.previousFavorites);
+        queryClient.setQueryData(['verse', context.verseKey], context.previousVerseDetails);
+        queryClient.setQueryData(['bookmarked-verses'], context.previousBookmarkedVerses);
       }
 
       toast({
@@ -142,19 +164,12 @@ export default function VerseCard({
         duration: 3000,
       });
     },
-    onSettled: () => {
-      // Refetch to ensure consistency
-      Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] }),
-        queryClient.invalidateQueries({ queryKey: ['verse', verseKey] }),
-        queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] })
-      ]);
-    },
     onSuccess: (_, __, context) => {
       if (!context) return;
 
       const newState = !context.previousState;
 
+      // Notify parent component
       if (onBookmarkChange) {
         onBookmarkChange(newState);
       }
@@ -164,6 +179,14 @@ export default function VerseCard({
         description: newState ? "Verse has been bookmarked" : "Bookmark removed",
         duration: 2000,
       });
+    },
+    onSettled: () => {
+      // Refetch all related queries to ensure consistency
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] }),
+        queryClient.invalidateQueries({ queryKey: ['verse', verseKey] }),
+        queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] })
+      ]);
     }
   });
 

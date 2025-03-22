@@ -55,7 +55,9 @@ export default function Bookmarks() {
       }
       const data = await response.json();
       return data as Favorite[];
-    }
+    },
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
   const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
@@ -75,6 +77,7 @@ export default function Bookmarks() {
             return null;
           }
 
+          // Set the verse as bookmarked and add the favorite ID
           return {
             ...verse,
             id: favorite.id,
@@ -89,7 +92,9 @@ export default function Bookmarks() {
       const results = await Promise.all(versePromises);
       return results.filter((v): v is NonNullable<typeof v> => v !== null);
     },
-    enabled: favorites.length > 0
+    enabled: favorites.length > 0,
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
   const handleBookmarkChange = async (verseId: number, isBookmarked: boolean) => {
@@ -97,26 +102,45 @@ export default function Bookmarks() {
       const verseToRemove = verseDetails.find(v => v.id === verseId);
       if (!verseToRemove) return;
 
-      // Update all related caches immediately
+      // Create a unique key for this verse
       const verseKey = `${verseToRemove.chapter}-${verseToRemove.verse}`;
 
-      // Update bookmarked verses
-      queryClient.setQueryData(['bookmarked-verses'], (oldData: any) => {
-        if (!oldData) return [];
-        return oldData.filter((v: any) => v.id !== verseId);
-      });
+      // Store previous values for potential rollback
+      const previousBookmarkedVerses = queryClient.getQueryData(['bookmarked-verses']);
+      const previousFavorites = queryClient.getQueryData(['/api/user/favorites']);
+      const previousVerseDetails = queryClient.getQueryData(['verse', verseKey]);
 
-      // Update favorites
-      queryClient.setQueryData(['/api/user/favorites'], (oldData: any) => {
-        if (!oldData) return [];
-        return oldData.filter((f: any) => f.id !== verseId);
-      });
+      try {
+        // Optimistically update UI
+        queryClient.setQueryData(['bookmarked-verses'], (oldData: any) => {
+          if (!oldData) return [];
+          return oldData.filter((v: any) => v.id !== verseId);
+        });
 
-      // Update individual verse cache
-      queryClient.setQueryData(['verse', verseKey], {
-        ...verseToRemove,
-        isBookmarked: false
-      });
+        // Update favorites cache
+        queryClient.setQueryData(['/api/user/favorites'], (oldData: any) => {
+          if (!oldData) return [];
+          return oldData.filter((f: any) => f.id !== verseId);
+        });
+
+        // Update individual verse cache
+        queryClient.setQueryData(['verse', verseKey], {
+          ...verseToRemove,
+          isBookmarked: false
+        });
+
+        // Refetch to ensure consistency
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] }),
+          queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] }),
+          queryClient.invalidateQueries({ queryKey: ['verse', verseKey] })
+        ]);
+      } catch (error) {
+        // Rollback on error
+        queryClient.setQueryData(['bookmarked-verses'], previousBookmarkedVerses);
+        queryClient.setQueryData(['/api/user/favorites'], previousFavorites);
+        queryClient.setQueryData(['verse', verseKey], previousVerseDetails);
+      }
     }
   };
 
