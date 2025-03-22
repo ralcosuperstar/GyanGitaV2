@@ -2,28 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Heart, ArrowDown } from "lucide-react";
-
-// Floating Mandala pattern component
-const FloatingMandala = ({ className = "", delay = 0 }) => (
-  <motion.div
-    className={`absolute pointer-events-none ${className}`}
-    initial={{ opacity: 0, scale: 0.8 }}
-    animate={{ 
-      opacity: [0.1, 0.3, 0.1],
-      scale: [0.8, 1, 0.8],
-      rotate: [0, 180, 360]
-    }}
-    transition={{
-      duration: 20,
-      delay,
-      repeat: Infinity,
-      ease: "linear"
-    }}
-  >
-    <div className="w-72 h-72 rounded-full border border-primary/20 backdrop-blur-3xl" />
-    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0%,var(--primary)_25%,transparent_50%)] opacity-10" />
-  </motion.div>
-);
+import ConsciousnessAnimation from "./ConsciousnessAnimation";
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null);
@@ -48,9 +27,8 @@ export default function Hero() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-40" />
       </div>
 
-      {/* Floating Mandalas */}
-      <FloatingMandala className="top-20 -left-20 lg:left-10" delay={0} />
-      <FloatingMandala className="bottom-40 -right-20 lg:right-10" delay={5} />
+      {/* Consciousness Animation */}
+      <ConsciousnessAnimation />
 
       {/* Main Content */}
       <div className="container mx-auto px-4 relative z-10">
