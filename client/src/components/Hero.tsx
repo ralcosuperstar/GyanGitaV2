@@ -1,6 +1,14 @@
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 export default function Hero() {
+  const handleScrollToMood = () => {
+    const moodSection = document.getElementById('mood-section');
+    if (moodSection) {
+      moodSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <section className="min-h-screen flex flex-col items-center justify-center bg-[#0A0A0A] px-4">
       {/* Main Content */}
@@ -26,6 +34,22 @@ export default function Hero() {
           Select your current mood and discover timeless Gita verses that will
           guide you through this moment
         </motion.p>
+
+        <motion.div
+          className="pt-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Button
+            variant="ghost"
+            size="lg"
+            className="text-primary hover:text-primary/80 hover:bg-primary/10"
+            onClick={handleScrollToMood}
+          >
+            Select Your Mood
+          </Button>
+        </motion.div>
       </div>
     </section>
   );
