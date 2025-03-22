@@ -5,6 +5,7 @@ import { Share2, Book, ArrowRight } from "lucide-react";
 import ShareDialog from "./ShareDialog";
 import VerseModal from "./VerseModal";
 import { motion } from 'framer-motion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface VerseCardProps {
   verse: {
@@ -65,31 +66,39 @@ export default function VerseCard({
 
             {/* Content Preview */}
             <div className="flex-grow space-y-4">
-              {/* Sanskrit Preview */}
-              <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 border border-white/10">
-                <p className="font-sanskrit text-base leading-relaxed line-clamp-2 text-white/70">
-                  {verse.slok}
-                </p>
-              </div>
-
-              {/* Translation Preview */}
+              {/* English Translation */}
               <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 border border-white/10">
                 <p className="text-base text-white/90 leading-relaxed line-clamp-3">
                   {primaryTranslation}
                 </p>
               </div>
 
-              {/* Hindi Preview */}
-              {verse.tej.ht && (
-                <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 border border-white/10">
-                  <h4 className="text-xs font-medium text-primary/80 uppercase tracking-wider mb-2">
-                    हिंदी अनुवाद
-                  </h4>
-                  <p className="text-base text-white/90 leading-relaxed line-clamp-2">
-                    {verse.tej.ht}
-                  </p>
-                </div>
-              )}
+              {/* Sanskrit and Hindi Tabs */}
+              <Tabs defaultValue="sanskrit" className="space-y-2">
+                <TabsList className="w-full grid grid-cols-2 h-8 bg-white/5 border border-white/10">
+                  <TabsTrigger value="sanskrit">Sanskrit</TabsTrigger>
+                  <TabsTrigger value="hindi">हिंदी</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="sanskrit" className="mt-0">
+                  <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 border border-white/10">
+                    <p className="font-sanskrit text-base leading-relaxed line-clamp-2 text-white/70">
+                      {verse.slok}
+                    </p>
+                    <p className="text-xs italic text-white/50 line-clamp-1 mt-1">
+                      {verse.transliteration}
+                    </p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="hindi" className="mt-0">
+                  <div className="backdrop-blur-sm bg-white/5 rounded-lg p-3 border border-white/10">
+                    <p className="text-base text-white/90 leading-relaxed line-clamp-2">
+                      {verse.tej.ht}
+                    </p>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
 
             {/* Actions */}
