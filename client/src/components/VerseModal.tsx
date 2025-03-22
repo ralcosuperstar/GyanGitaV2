@@ -4,7 +4,7 @@ import { Share2, Copy, Check, ArrowRight, Heart } from "lucide-react";
 import { useState, useCallback, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import ShareDialog from "./ShareDialog";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Translation {
@@ -46,23 +46,22 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  // Get all available translations
+  // Get available translations
   const translations: Translation[] = [
+    verse.siva?.et ? { author: 'Siva', text: verse.siva.et } : null,
     verse.purohit?.et ? { author: 'Purohit', text: verse.purohit.et } : null,
-    { author: 'Tej', text: verse.tej.et },
-    verse.siva?.et ? { author: 'Siva', text: verse.siva.et } : null
+    { author: 'Tej', text: verse.tej.et }
   ].filter((t): t is Translation => t !== null);
 
-  // Create available tabs based on content
+  // Create available tabs
   const tabs: Tab[] = [
-    { id: 'translation', label: 'Translation' },
-    { id: 'sanskrit', label: 'Sanskrit' },
-    verse.tej.ht ? { id: 'hindi', label: 'हिंदी' } : null,
+    { id: 'translations', label: 'Translations' },
+    { id: 'original', label: 'Original Text' },
     verse.chinmay?.hc ? { id: 'commentary', label: 'Commentary' } : null
   ].filter((tab): tab is Tab => tab !== null);
 
   const handleCopy = useCallback(async () => {
-    const textToCopy = `${verse.purohit?.et || verse.tej.et || verse.siva?.et}\n\n${verse.slok}\n\n${verse.transliteration}`;
+    const textToCopy = `${verse.siva?.et || verse.purohit?.et || verse.tej.et}\n\n${verse.slok}\n\n${verse.transliteration}`;
     try {
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
@@ -97,8 +96,8 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
         </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs defaultValue="translation" className="space-y-6">
+      {/* Content */}
+      <Tabs defaultValue="translations" className="space-y-6">
         <TabsList className="flex w-full border-b border-white/10">
           {tabs.map(tab => (
             <TabsTrigger
@@ -116,8 +115,8 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
           ))}
         </TabsList>
 
-        {/* Translation Content */}
-        <TabsContent value="translation" className="pt-4 space-y-6">
+        {/* Translations Content */}
+        <TabsContent value="translations" className="pt-4 space-y-6">
           {translations.map((trans, idx) => (
             <motion.div
               key={idx}
@@ -136,50 +135,42 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
           ))}
         </TabsContent>
 
-        {/* Sanskrit Content */}
-        <TabsContent value="sanskrit" className="pt-4 space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
-          >
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-white/60">
-                Sanskrit Text
-              </h3>
-              <p className="text-xl sm:text-2xl md:text-3xl leading-relaxed font-sanskrit text-white/90">
-                {verse.slok}
-              </p>
-            </div>
-
-            <div className="space-y-2 pt-6 border-t border-white/10">
-              <h3 className="text-sm font-medium text-white/60">
-                Transliteration
-              </h3>
-              <p className="text-base sm:text-lg md:text-xl italic text-white/80">
-                {verse.transliteration}
-              </p>
-            </div>
-          </motion.div>
-        </TabsContent>
-
-        {/* Hindi Content */}
-        {verse.tej.ht && (
-          <TabsContent value="hindi" className="pt-4">
+        {/* Original Text Content */}
+        <TabsContent value="original" className="pt-4">
+          <div className="grid gap-6">
+            {/* Sanskrit Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-2"
+              className="backdrop-blur-sm bg-white/5 rounded-lg p-4 sm:p-6 border border-white/10"
             >
-              <h3 className="text-sm font-medium text-white/60">
+              <h3 className="text-sm font-medium text-white/60 mb-4">
+                Sanskrit Text
+              </h3>
+              <p className="text-xl sm:text-2xl md:text-3xl leading-relaxed font-sanskrit text-white/90 mb-4">
+                {verse.slok}
+              </p>
+              <p className="text-base sm:text-lg italic text-white/70">
+                {verse.transliteration}
+              </p>
+            </motion.div>
+
+            {/* Hindi Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="backdrop-blur-sm bg-white/5 rounded-lg p-4 sm:p-6 border border-white/10"
+            >
+              <h3 className="text-sm font-medium text-white/60 mb-4">
                 हिंदी अनुवाद
               </h3>
               <p className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90">
                 {verse.tej.ht}
               </p>
             </motion.div>
-          </TabsContent>
-        )}
+          </div>
+        </TabsContent>
 
         {/* Commentary Content */}
         {verse.chinmay?.hc && (
@@ -210,11 +201,9 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
         className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-white/10"
       >
         <Button
-          className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 
-                    hover:from-primary/80 hover:to-primary/70
-                    border border-primary/30 shadow-lg hover:shadow-xl 
-                    backdrop-blur-sm transition-all duration-300 
-                    h-12 sm:h-14 text-white group"
+          className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70
+                    border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm
+                    transition-all duration-300 h-12 sm:h-14 text-white group"
           onClick={() => setShowShareDialog(true)}
         >
           <span className="flex items-center justify-center text-sm sm:text-base">
@@ -228,8 +217,7 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
           variant="outline"
           className="flex-1 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5
                     border border-white/20 hover:bg-white/10 hover:border-white/30
-                    shadow-lg hover:shadow-xl transition-all duration-300 
-                    h-12 sm:h-14 group"
+                    shadow-lg hover:shadow-xl transition-all duration-300 h-12 sm:h-14 group"
           onClick={handleCopy}
         >
           <span className="flex items-center justify-center text-sm sm:text-base">
@@ -263,20 +251,16 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
   if (!verse) return null;
 
   return (
-    <AnimatePresence>
-      {open && (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-          <DialogContent 
-            className="w-[calc(100%-1rem)] sm:w-[calc(100%-4rem)] max-w-4xl mx-auto 
-                     my-2 sm:my-4 max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-2rem)] 
-                     overflow-y-auto bg-background/95 backdrop-blur-xl
-                     border border-white/10 rounded-lg sm:rounded-xl shadow-2xl
-                     p-4 sm:p-6 md:p-8"
-          >
-            <VerseContent verse={verse} />
-          </DialogContent>
-        </Dialog>
-      )}
-    </AnimatePresence>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent 
+        className="w-[calc(100%-1rem)] sm:w-[calc(100%-4rem)] max-w-4xl mx-auto 
+                 my-2 sm:my-4 max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-2rem)] 
+                 overflow-y-auto bg-background/95 backdrop-blur-xl
+                 border border-white/10 rounded-lg sm:rounded-xl shadow-2xl
+                 p-4 sm:p-6 md:p-8"
+      >
+        <VerseContent verse={verse} />
+      </DialogContent>
+    </Dialog>
   );
 }
