@@ -13,6 +13,8 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import CallToAction from "@/components/CallToAction";
 import StatsSection from "@/components/StatsSection";
 import USPSection from "@/components/USPSection";
+import SEO from '@/components/SEO';
+import { Helmet } from 'react-helmet-async';
 
 // Floating Element Component
 const FloatingElement = ({ className = "", delay = 0 }) => (
@@ -91,6 +93,48 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      <SEO 
+        title="Find Peace in Ancient Wisdom"
+        description="Experience the transformative power of the Bhagavad Gita. Get personalized verse recommendations based on your current emotional state and discover timeless wisdom for modern life challenges."
+        keywords={[
+          "Bhagavad Gita",
+          "spiritual guidance",
+          "emotional wisdom",
+          "Krishna teachings",
+          "mood based verses",
+          "ancient wisdom",
+          "Hindu scripture",
+          "spiritual peace",
+          "divine knowledge",
+          "Sanskrit verses"
+        ]}
+      />
+      <Helmet>
+        {/* Schema.org markup for spiritual/religious content */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SpiritualOrReligiousOrganization",
+            "name": "Bhagavad Gita Wisdom",
+            "description": "A modern platform providing personalized spiritual guidance from the Bhagavad Gita based on emotional states.",
+            "url": window.location.origin,
+            "sameAs": [
+              "https://en.wikipedia.org/wiki/Bhagavad_Gita"
+            ],
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": window.location.href
+            },
+            "image": `${window.location.origin}/og-image.jpg`,
+            "offers": {
+              "@type": "Offer",
+              "name": "Spiritual Wisdom",
+              "description": "Access timeless wisdom from the Bhagavad Gita through an innovative mood-based verse recommendation system"
+            }
+          })}
+        </script>
+      </Helmet>
+
       {/* Hero Section */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden py-16 sm:py-24">
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background">

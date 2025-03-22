@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { generateVerseKey, getChapters, getVerseByChapterAndNumber, type Chapter, type Verse } from "@/lib/data";
 import VerseModal from "@/components/VerseModal";
+import SEO from '@/components/SEO';
+import { Helmet } from 'react-helmet-async';
 
 export default function Browse() {
   const [selectedChapter, setSelectedChapter] = useState<string>("");
@@ -56,6 +58,47 @@ export default function Browse() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
+      <SEO 
+        title="Browse Bhagavad Gita Verses"
+        description="Explore all 700+ verses of the Bhagavad Gita. Navigate through 18 chapters of profound wisdom, with multiple translations and expert commentary."
+        keywords={[
+          "Bhagavad Gita verses",
+          "Gita chapters",
+          "Sanskrit verses",
+          "Krishna's teachings",
+          "Hindu scripture browse",
+          "spiritual text",
+          "verse translations",
+          "Gita commentary",
+          "chapter meanings",
+          "verse search"
+        ]}
+      />
+      <Helmet>
+        {/* Schema.org markup for scripture content */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Chapter",
+            "name": selectedGridChapter 
+              ? `Chapter ${selectedGridChapter} - ${chapters?.find(c => c.chapter_number === selectedGridChapter)?.name}`
+              : "Bhagavad Gita Chapters",
+            "description": "Browse and explore the complete collection of Bhagavad Gita verses with translations and commentary",
+            "isPartOf": {
+              "@type": "Book",
+              "name": "The Bhagavad Gita",
+              "author": {
+                "@type": "Person",
+                "name": "Vyasa"
+              }
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": window.location.href
+            }
+          })}
+        </script>
+      </Helmet>
       <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 to-primary/5 border-b">
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
           <div className="text-center max-w-2xl mx-auto">

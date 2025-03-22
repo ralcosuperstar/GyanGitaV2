@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { HelmetProvider } from 'react-helmet-async';
 import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -39,20 +40,22 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider storageKey="gyangita-theme">
-        <SmoothScroll className="bg-background">
-          <div className="min-h-screen flex flex-col relative">
-            <Header />
-            <main className="flex-grow relative z-10">
-              <Router />
-            </main>
-            <Footer />
-          </div>
-          <Toaster />
-        </SmoothScroll>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider storageKey="gyangita-theme">
+          <SmoothScroll className="bg-background">
+            <div className="min-h-screen flex flex-col relative">
+              <Header />
+              <main className="flex-grow relative z-10">
+                <Router />
+              </main>
+              <Footer />
+            </div>
+            <Toaster />
+          </SmoothScroll>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 
