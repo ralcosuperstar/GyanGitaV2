@@ -14,13 +14,23 @@ interface ChapterCardProps {
 export default function ChapterCard({ chapter, onViewVerses }: ChapterCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const handleViewVerses = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onViewVerses(chapter.chapter_number);
+  };
+
+  const handleShowMore = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <Card className={cn(
       "group relative overflow-hidden transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg",
       isExpanded && "border-primary"
     )}>
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      
+
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="font-playfair">Chapter {chapter.chapter_number}</CardTitle>
@@ -43,7 +53,7 @@ export default function ChapterCard({ chapter, onViewVerses }: ChapterCardProps)
             variant="ghost"
             size="sm"
             className="hover:bg-primary/10 hover:text-primary justify-start"
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={handleShowMore}
           >
             {isExpanded ? (
               <>Show Less <ChevronUp className="ml-2 h-4 w-4" /></>
@@ -56,7 +66,7 @@ export default function ChapterCard({ chapter, onViewVerses }: ChapterCardProps)
             variant="ghost"
             size="sm"
             className="hover:bg-primary/10 hover:text-primary"
-            onClick={() => onViewVerses(chapter.chapter_number)}
+            onClick={handleViewVerses}
           >
             <Grid className="h-4 w-4 mr-2" />
             View Verses
