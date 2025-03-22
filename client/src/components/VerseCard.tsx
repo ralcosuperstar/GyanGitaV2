@@ -53,6 +53,9 @@ export default function VerseCard({
     setLocalIsBookmarked(initialIsBookmarked || verse.isBookmarked || false);
   }, [initialIsBookmarked, verse.isBookmarked]);
 
+  // Create a unique query key for this verse's bookmark status
+  const verseQueryKey = `${verse.chapter}-${verse.verse}`;
+
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
       const method = localIsBookmarked ? 'DELETE' : 'POST';
@@ -77,20 +80,31 @@ export default function VerseCard({
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
       await queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] });
+      await queryClient.cancelQueries({ queryKey: ['verse', verseQueryKey] });
 
-      // Store the previous state
+      // Snapshot the previous state
       const previousState = localIsBookmarked;
 
-      // Optimistically update UI
+      // Optimistically update the UI
       setLocalIsBookmarked(!previousState);
 
-      // Return context for rollback
+      // Optimistically update the cache
+      queryClient.setQueryData(['verse', verseQueryKey], (old: any) => ({
+        ...old,
+        isBookmarked: !previousState
+      }));
+
+      // Return context for potential rollback
       return { previousState };
     },
     onError: (_error, _vars, context) => {
       // Rollback on error
       if (context) {
         setLocalIsBookmarked(context.previousState);
+        queryClient.setQueryData(['verse', verseQueryKey], (old: any) => ({
+          ...old,
+          isBookmarked: context.previousState
+        }));
       }
       toast({
         title: "Error",
@@ -102,20 +116,25 @@ export default function VerseCard({
     onSuccess: (_data, _vars, context) => {
       const newState = !context!.previousState;
 
-      // Notify parent component
+      // Update the local state
+      setLocalIsBookmarked(newState);
+
+      // Notify parent component if callback exists
       if (onBookmarkChange) {
         onBookmarkChange(newState);
       }
 
+      // Show success message
       toast({
         title: "Success",
         description: newState ? "Verse has been bookmarked" : "Bookmark removed",
         duration: 2000,
       });
 
-      // Refresh queries after successful mutation
+      // Invalidate and refetch affected queries
       queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
       queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
+      queryClient.invalidateQueries({ queryKey: ['verse', verseQueryKey] });
     }
   });
 
