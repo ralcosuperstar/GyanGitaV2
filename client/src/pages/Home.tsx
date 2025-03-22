@@ -42,6 +42,7 @@ export default function Home() {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [deepLinkedVerse, setDeepLinkedVerse] = useState<Verse | null>(null);
   const [showVerseModal, setShowVerseModal] = useState(false);
+  const moodSectionRef = useRef<HTMLDivElement>(null);
   const verseSectionRef = useRef<HTMLDivElement>(null);
   const [, setLocation] = useLocation();
 
@@ -90,6 +91,13 @@ export default function Home() {
       verseSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [selectedMood]);
+
+  const handleChangeMood = () => {
+    setSelectedMood(null);
+    if (moodSectionRef.current) {
+      moodSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -183,7 +191,7 @@ export default function Home() {
       </section>
 
       {/* Mood Selection Section */}
-      <section id="mood-section" className="py-16 relative overflow-hidden">
+      <section id="mood-section" ref={moodSectionRef} className="py-16 relative overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -217,7 +225,12 @@ export default function Home() {
                 </Button>
               </div>
             ) : (
-              <VerseDisplay verses={verses} selectedMood={selectedMood} isLoading={isLoading} />
+              <VerseDisplay 
+                verses={verses} 
+                selectedMood={selectedMood} 
+                isLoading={isLoading} 
+                onChangeMood={handleChangeMood}
+              />
             )}
 
             {selectedMood && verses && verses.length > 0 && (
@@ -230,7 +243,7 @@ export default function Home() {
                   variant="outline"
                   size="lg"
                   className="h-14 w-full sm:w-auto group"
-                  onClick={() => setSelectedMood(null)}
+                  onClick={handleChangeMood}
                 >
                   <RefreshCw className="h-4 w-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
                   Change Mood

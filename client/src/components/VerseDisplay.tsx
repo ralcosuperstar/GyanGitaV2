@@ -71,9 +71,10 @@ interface VerseDisplayProps {
   verses: VerseResponse[] | null;
   selectedMood: string | null;
   isLoading: boolean;
+  onChangeMood: () => void;
 }
 
-export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
+export default function VerseDisplay({ verses, selectedMood, isLoading, onChangeMood }: VerseDisplayProps) {
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const selectedMoodData = moods.find(m => m.id === selectedMood);
@@ -328,6 +329,15 @@ export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseD
           </div>
         </DialogContent>
       </Dialog>
+      <Button
+        variant="outline"
+        size="lg"
+        className="h-14 w-full sm:w-auto group mt-8"
+        onClick={onChangeMood}
+      >
+        <RefreshCw className="h-4 w-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
+        Change Mood
+      </Button>
     </div>
   );
 }
