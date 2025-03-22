@@ -1,13 +1,11 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Grid, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
-import VerseCard from "@/components/VerseCard";
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { ArrowLeft } from "lucide-react";
+import { motion } from 'framer-motion';
 import { generateVerseKey, getChapters, getVerseByChapterAndNumber, type Chapter, type Verse } from "@/lib/data";
 import VerseModal from "@/components/VerseModal";
+import ChapterCard from "@/components/ChapterCard";
 import SEO from '@/components/SEO';
 import { Helmet } from 'react-helmet-async';
 
@@ -15,7 +13,6 @@ export default function Browse() {
   const [selectedChapter, setSelectedChapter] = useState<string>("");
   const [selectedVerse, setSelectedVerse] = useState<string>("");
   const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
-  const [expandedChapter, setExpandedChapter] = useState<number | null>(null);
 
   // Reset scroll position when chapter changes
   useEffect(() => {
@@ -45,17 +42,14 @@ export default function Browse() {
     setSelectedVerse(verse);
   };
 
-  // Memoize grid items
-  const gridItems = useMemo(() => {
-    if (!selectedGridChapter || !chapters) return [];
-    const chapterInfo = chapters.find(c => c.chapter_number === selectedGridChapter);
-    if (!chapterInfo) return [];
-
-    return Array.from({ length: chapterInfo.verses_count }).map((_, i) => ({
-      verseNumber: i + 1,
-      chapterNumber: selectedGridChapter
-    }));
-  }, [selectedGridChapter, chapters]);
+  // Generate grid items for the selected chapter
+  const gridItems = selectedGridChapter && chapters
+    ? Array.from({ length: chapters.find(c => c.chapter_number === selectedGridChapter)?.verses_count || 0 })
+        .map((_, i) => ({
+          verseNumber: i + 1,
+          chapterNumber: selectedGridChapter
+        }))
+    : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
@@ -99,6 +93,7 @@ export default function Browse() {
           })}
         </script>
       </Helmet>
+
       <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 to-primary/5 border-b">
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
           <div className="text-center max-w-2xl mx-auto">
@@ -133,101 +128,10 @@ export default function Browse() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <Card
-                  className={cn(
-                    "cursor-pointer transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg group relative overflow-hidden",
-                    expandedChapter === chapter.chapter_number && "border-primary"
-                  )}
-                  onClick={(e) => {
-                    // Only navigate if not clicking buttons
-                    if (!(e.target as HTMLElement).closest('button')) {
-                      setSelectedGridChapter(chapter.chapter_number);
-                    }
-                  }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="font-playfair">Chapter {chapter.chapter_number}</CardTitle>
-                      <span className="text-sm text-primary/70">{chapter.verses_count} verses</span>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <h3 className="font-medium text-lg mb-1 group-hover:text-primary transition-colors">
-                        {chapter.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {chapter.translation}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="hover:bg-primary/10 hover:text-primary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedChapter(
-                            expandedChapter === chapter.chapter_number ? null : chapter.chapter_number
-                          );
-                        }}
-                      >
-                        {expandedChapter === chapter.chapter_number ? (
-                          <>Show Less <ChevronUp className="ml-2 h-4 w-4" /></>
-                        ) : (
-                          <>Show More <ChevronDown className="ml-2 h-4 w-4" /></>
-                        )}
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="hover:bg-primary/10 hover:text-primary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedGridChapter(chapter.chapter_number);
-                        }}
-                      >
-                        <Grid className="h-4 w-4 mr-2" />
-                        View Verses
-                      </Button>
-                    </div>
-
-                    <AnimatePresence>
-                      {expandedChapter === chapter.chapter_number && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="space-y-4 overflow-hidden"
-                        >
-                          {/* Chapter Meaning */}
-                          <div className="pt-4 border-t border-border/50">
-                            <h4 className="text-sm font-medium text-primary/80 uppercase tracking-wider mb-2">
-                              Meaning
-                            </h4>
-                            <p className="text-sm text-muted-foreground">
-                              {chapter.meaning?.en}
-                            </p>
-                          </div>
-
-                          {/* Chapter Summary */}
-                          <div className="pt-4 border-t border-border/50">
-                            <h4 className="text-sm font-medium text-primary/80 uppercase tracking-wider mb-2">
-                              Summary
-                            </h4>
-                            <p className="text-sm text-muted-foreground">
-                              {chapter.summary?.en}
-                            </p>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
+                <ChapterCard 
+                  chapter={chapter}
+                  onViewVerses={setSelectedGridChapter}
+                />
               </motion.div>
             ))}
           </div>
@@ -250,7 +154,7 @@ export default function Browse() {
               </div>
             </div>
 
-            <div className="grid gap-4 grid-cols-6 sm:grid-cols-8 md:grid-cols-10">
+            <div className="grid gap-4 grid-cols-4 sm:grid-cols-8 md:grid-cols-10">
               {gridItems.map((item) => (
                 <motion.button
                   key={item.verseNumber}
@@ -264,11 +168,7 @@ export default function Browse() {
                     damping: 17,
                     delay: item.verseNumber * 0.02
                   }}
-                  className={cn(
-                    "h-12 w-12 rounded-md border border-input hover:bg-primary/5",
-                    "flex items-center justify-center text-sm font-medium",
-                    "transition-colors hover:border-primary/50"
-                  )}
+                  className="h-12 w-12 rounded-md border border-input hover:bg-primary/5 flex items-center justify-center text-sm font-medium transition-colors hover:border-primary/50"
                   onClick={() => handleVerseSelect(
                     item.chapterNumber.toString(), 
                     item.verseNumber.toString()
