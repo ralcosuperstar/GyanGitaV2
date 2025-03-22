@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MessageSquare } from "lucide-react";
-import { useLanguage } from "@/contexts/language-context";
 import PageLayout from "@/components/PageLayout";
 
 const cardVariants = {
@@ -47,7 +46,6 @@ const inputVariants = {
 
 export default function Contact() {
   const { toast } = useToast();
-  const { t } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,8 +57,8 @@ export default function Contact() {
 
   return (
     <PageLayout
-      title={t('contact.title')}
-      subtitle={t('contact.subtitle')}
+      title="Contact Us"
+      subtitle="Have questions or feedback? We'd love to hear from you."
     >
       <div className="grid gap-8 md:grid-cols-2">
         <motion.div
@@ -71,7 +69,7 @@ export default function Contact() {
         >
           <Card className="h-full transform hover:scale-105 transition-all duration-300">
             <CardContent className="p-8">
-              <h2 className="font-playfair text-2xl font-semibold mb-6">{t('contact.get_in_touch')}</h2>
+              <h2 className="font-playfair text-2xl font-semibold mb-6">Get in Touch</h2>
               <div className="space-y-6">
                 <motion.div 
                   className="flex items-center gap-4 group"
@@ -114,7 +112,7 @@ export default function Contact() {
                     <MessageSquare className="h-6 w-6 text-primary" />
                   </div>
                   <p className="text-lg text-muted-foreground">
-                    {t('contact.response_time')}
+                    Response within 24 hours
                   </p>
                 </motion.div>
               </div>
@@ -140,10 +138,10 @@ export default function Contact() {
               >
                 <motion.div variants={inputVariants}>
                   <label className="block text-sm font-medium mb-2">
-                    {t('contact.form.name')}
+                    Name
                   </label>
                   <Input 
-                    placeholder={t('contact.form.name')}
+                    placeholder="Your name"
                     required 
                     className="h-12 transition-all focus:scale-[1.02]"
                   />
@@ -151,11 +149,11 @@ export default function Contact() {
 
                 <motion.div variants={inputVariants}>
                   <label className="block text-sm font-medium mb-2">
-                    {t('contact.form.email')}
+                    Email
                   </label>
                   <Input 
                     type="email" 
-                    placeholder={t('contact.form.email')}
+                    placeholder="Your email"
                     required 
                     className="h-12 transition-all focus:scale-[1.02]"
                   />
@@ -163,10 +161,10 @@ export default function Contact() {
 
                 <motion.div variants={inputVariants}>
                   <label className="block text-sm font-medium mb-2">
-                    {t('contact.form.message')}
+                    Message
                   </label>
                   <Textarea 
-                    placeholder={t('contact.form.message')}
+                    placeholder="Your message"
                     className="min-h-[150px] resize-none transition-all focus:scale-[1.02]"
                     required
                   />
@@ -182,7 +180,7 @@ export default function Contact() {
                     size="lg" 
                     className="w-full h-12 transition-transform"
                   >
-                    {t('contact.form.submit')}
+                    Send Message
                   </Button>
                 </motion.div>
               </motion.form>
