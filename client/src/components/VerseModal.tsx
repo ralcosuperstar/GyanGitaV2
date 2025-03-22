@@ -53,16 +53,11 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
     verse.siva?.et ? { author: 'Siva', text: verse.siva.et } : null
   ].filter((t): t is Translation => t !== null);
 
-  // Check what content is available
-  const hasTranslations = translations.length > 0;
-  const hasSanskrit = Boolean(verse.slok && verse.transliteration);
-  const hasCommentary = Boolean(verse.chinmay?.hc);
-
   // Create available tabs
   const tabs: Tab[] = [
-    hasTranslations ? { id: 'translation', label: 'Translation' } : null,
-    hasSanskrit ? { id: 'sanskrit', label: 'Sanskrit' } : null,
-    hasCommentary ? { id: 'commentary', label: 'Commentary' } : null
+    { id: 'translation', label: 'Translation' },
+    { id: 'sanskrit', label: 'Sanskrit' },
+    verse.chinmay?.hc ? { id: 'commentary', label: 'Commentary' } : null
   ].filter((tab): tab is Tab => tab !== null);
 
   const handleCopy = useCallback(async () => {
@@ -71,8 +66,8 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
       toast({ 
-        title: "Copied to clipboard",
-        description: "Verse text has been copied",
+        title: "Copied!",
+        description: "Verse has been copied to clipboard",
         duration: 2000 
       });
       setTimeout(() => setCopied(false), 2000);
@@ -86,103 +81,100 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
     }
   }, [verse, toast]);
 
-  if (tabs.length === 0) return null;
-
   return (
     <div className="relative">
-      {/* Header with Chapter/Verse Info */}
-      <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/10">
-        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <Heart className="h-6 w-6 text-primary" />
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+        <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center">
+          <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-medium text-white">
+          <h2 className="text-lg sm:text-xl font-medium text-white">
             Chapter {verse.chapter}, Verse {verse.verse}
           </h2>
           <p className="text-sm text-white/60">Bhagavad Gita</p>
         </div>
       </div>
 
-      {/* Content Tabs */}
-      <Tabs defaultValue={tabs[0]?.id} className="space-y-6">
-        <TabsList className="flex w-full space-x-2 bg-transparent border-b border-white/10">
+      {/* Tabs */}
+      <Tabs defaultValue="translation" className="space-y-6">
+        <TabsList className="flex w-full bg-transparent border-b border-white/10">
           {tabs.map(tab => (
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              className="flex-1 data-[state=active]:bg-transparent data-[state=active]:border-b-2 
-                        data-[state=active]:border-primary data-[state=active]:text-primary
-                        rounded-none py-3 text-sm font-medium text-white/70"
+              className="flex-1 h-12 text-sm font-medium text-white/70
+                        data-[state=active]:bg-transparent 
+                        data-[state=active]:border-b-2
+                        data-[state=active]:border-primary 
+                        data-[state=active]:text-primary
+                        rounded-none"
             >
               {tab.label}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {/* Translation Tab */}
-        {hasTranslations && (
-          <TabsContent value="translation" className="pt-6 space-y-8">
-            {translations.map((trans, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="space-y-3"
-              >
-                <h3 className="text-sm font-medium text-white/60">
-                  {trans.author}'s Translation
-                </h3>
-                <p className="text-2xl leading-relaxed text-white/90">
-                  {trans.text}
-                </p>
-              </motion.div>
-            ))}
-          </TabsContent>
-        )}
-
-        {/* Sanskrit Tab */}
-        {hasSanskrit && (
-          <TabsContent value="sanskrit" className="pt-6 space-y-8">
+        {/* Translation Content */}
+        <TabsContent value="translation" className="pt-4 space-y-6">
+          {translations.map((trans, idx) => (
             <motion.div
+              key={idx}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-8"
+              transition={{ delay: idx * 0.1 }}
+              className="space-y-2"
             >
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-white/60">
-                  Sanskrit Text
-                </h3>
-                <p className="text-3xl leading-relaxed font-sanskrit text-white/90">
-                  {verse.slok}
-                </p>
-              </div>
-
-              <div className="space-y-3 pt-8 border-t border-white/10">
-                <h3 className="text-sm font-medium text-white/60">
-                  Transliteration
-                </h3>
-                <p className="text-xl italic text-white/80">
-                  {verse.transliteration}
-                </p>
-              </div>
+              <h3 className="text-sm font-medium text-white/60">
+                {trans.author}'s Translation
+              </h3>
+              <p className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90">
+                {trans.text}
+              </p>
             </motion.div>
-          </TabsContent>
-        )}
+          ))}
+        </TabsContent>
 
-        {/* Commentary Tab */}
-        {hasCommentary && verse.chinmay?.hc && (
-          <TabsContent value="commentary" className="pt-6">
+        {/* Sanskrit Content */}
+        <TabsContent value="sanskrit" className="pt-4 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-white/60">
+                Sanskrit Text
+              </h3>
+              <p className="text-xl sm:text-2xl md:text-3xl leading-relaxed font-sanskrit text-white/90">
+                {verse.slok}
+              </p>
+            </div>
+
+            <div className="space-y-2 pt-6 border-t border-white/10">
+              <h3 className="text-sm font-medium text-white/60">
+                Transliteration
+              </h3>
+              <p className="text-base sm:text-lg md:text-xl italic text-white/80">
+                {verse.transliteration}
+              </p>
+            </div>
+          </motion.div>
+        </TabsContent>
+
+        {/* Commentary Content */}
+        {verse.chinmay?.hc && (
+          <TabsContent value="commentary" className="pt-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-3"
+              className="space-y-2"
             >
               <h3 className="text-sm font-medium text-white/60">
                 Commentary
               </h3>
               <div className="prose prose-invert max-w-none">
-                <p className="text-lg leading-relaxed text-white/90 whitespace-pre-wrap">
+                <p className="text-base sm:text-lg leading-relaxed text-white/90 whitespace-pre-wrap">
                   {verse.chinmay.hc}
                 </p>
               </div>
@@ -196,38 +188,44 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="flex flex-col sm:flex-row gap-4 pt-6 mt-8 border-t border-white/10"
+        className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-white/10"
       >
         <Button
-          className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70
-                    border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm
-                    transition-all duration-300 text-white py-6 group"
+          className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 
+                    hover:from-primary/80 hover:to-primary/70
+                    border border-primary/30 shadow-lg hover:shadow-xl 
+                    backdrop-blur-sm transition-all duration-300 
+                    h-12 sm:h-14 text-white group"
           onClick={() => setShowShareDialog(true)}
         >
-          <span className="flex items-center justify-center">
+          <span className="flex items-center justify-center text-sm sm:text-base">
             <Share2 className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
             Share Verse
             <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
           </span>
         </Button>
+
         <Button
           variant="outline"
           className="flex-1 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5
                     border border-white/20 hover:bg-white/10 hover:border-white/30
-                    shadow-lg hover:shadow-xl transition-all duration-300 py-6 group"
+                    shadow-lg hover:shadow-xl transition-all duration-300 
+                    h-12 sm:h-14 group"
           onClick={handleCopy}
         >
-          {copied ? (
-            <span className="flex items-center justify-center">
-              <Check className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-              Copied to Clipboard
-            </span>
-          ) : (
-            <span className="flex items-center justify-center">
-              <Copy className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-              Copy Text
-            </span>
-          )}
+          <span className="flex items-center justify-center text-sm sm:text-base">
+            {copied ? (
+              <>
+                <Check className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                Copy Text
+              </>
+            )}
+          </span>
         </Button>
       </motion.div>
 
@@ -249,8 +247,13 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
     <AnimatePresence>
       {open && (
         <Dialog open={open} onOpenChange={onOpenChange}>
-          <DialogContent className="w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] max-w-4xl mx-auto my-4 max-h-[calc(100vh-2rem)] overflow-y-auto 
-                                bg-background/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl p-6 sm:p-8">
+          <DialogContent 
+            className="w-[calc(100%-1rem)] sm:w-[calc(100%-4rem)] max-w-4xl mx-auto 
+                     my-2 sm:my-4 max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-2rem)] 
+                     overflow-y-auto bg-background/95 backdrop-blur-xl
+                     border border-white/10 rounded-lg sm:rounded-xl shadow-2xl
+                     p-4 sm:p-6 md:p-8"
+          >
             <VerseContent verse={verse} />
           </DialogContent>
         </Dialog>
