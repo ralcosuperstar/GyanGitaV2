@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ShareDialog from "./ShareDialog";
 import VerseModal from "./VerseModal";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface VerseCardProps {
   verse: {
@@ -49,12 +49,12 @@ export default function VerseCard({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Create a unique query key for this verse's bookmark status
+  const verseQueryKey = `${verse.chapter}-${verse.verse}`;
+
   useEffect(() => {
     setLocalIsBookmarked(initialIsBookmarked || verse.isBookmarked || false);
   }, [initialIsBookmarked, verse.isBookmarked]);
-
-  // Create a unique query key for this verse's bookmark status
-  const verseQueryKey = `${verse.chapter}-${verse.verse}`;
 
   const bookmarkMutation = useMutation({
     mutationFn: async () => {
@@ -71,7 +71,8 @@ export default function VerseCard({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update bookmark');
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update bookmark');
       }
 
       return response.json();
@@ -85,56 +86,65 @@ export default function VerseCard({
       // Snapshot the previous state
       const previousState = localIsBookmarked;
 
-      // Optimistically update the UI
+      // Optimistically update to the new value
       setLocalIsBookmarked(!previousState);
 
-      // Optimistically update the cache
-      queryClient.setQueryData(['verse', verseQueryKey], (old: any) => ({
-        ...old,
-        isBookmarked: !previousState
-      }));
+      // Update the cache
+      const newState = !previousState;
+      queryClient.setQueryData(['verse', verseQueryKey], {
+        ...verse,
+        isBookmarked: newState
+      });
 
-      // Return context for potential rollback
+      if (newState) {
+        // Add to favorites cache
+        queryClient.setQueryData(['/api/user/favorites'], (old: any[] = []) => {
+          return [...old, { chapter: verse.chapter.toString(), verse: verse.verse.toString() }];
+        });
+      } else {
+        // Remove from favorites cache
+        queryClient.setQueryData(['/api/user/favorites'], (old: any[] = []) => {
+          return old.filter(f => !(f.chapter === verse.chapter.toString() && f.verse === verse.verse.toString()));
+        });
+      }
+
       return { previousState };
     },
-    onError: (_error, _vars, context) => {
-      // Rollback on error
+    onError: (error, _, context) => {
       if (context) {
+        // Revert all optimistic updates
         setLocalIsBookmarked(context.previousState);
-        queryClient.setQueryData(['verse', verseQueryKey], (old: any) => ({
-          ...old,
+        queryClient.setQueryData(['verse', verseQueryKey], {
+          ...verse,
           isBookmarked: context.previousState
-        }));
+        });
       }
+
       toast({
         title: "Error",
-        description: "Failed to update bookmark",
+        description: error.message || "Failed to update bookmark",
         variant: "destructive",
         duration: 3000,
       });
     },
-    onSuccess: (_data, _vars, context) => {
+    onSettled: () => {
+      // Refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
+      queryClient.invalidateQueries({ queryKey: ['verse', verseQueryKey] });
+    },
+    onSuccess: (_, __, context) => {
       const newState = !context!.previousState;
 
-      // Update the local state
-      setLocalIsBookmarked(newState);
-
-      // Notify parent component if callback exists
       if (onBookmarkChange) {
         onBookmarkChange(newState);
       }
 
-      // Show success message
       toast({
         title: "Success",
         description: newState ? "Verse has been bookmarked" : "Bookmark removed",
         duration: 2000,
       });
-
-      // Invalidate and refetch affected queries
-      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
-      queryClient.invalidateQueries({ queryKey: ['verse', verseQueryKey] });
     }
   });
 
@@ -165,29 +175,19 @@ export default function VerseCard({
                 </div>
               </div>
               {showActions && (
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={localIsBookmarked ? 'bookmarked' : 'unbookmarked'}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleBookmarkClick}
-                      className="h-8 w-8 rounded-full hover:bg-white/10 transition-all duration-300"
-                      disabled={bookmarkMutation.isPending}
-                    >
-                      {localIsBookmarked ? (
-                        <BookmarkCheck className="h-4 w-4 text-primary animate-in" />
-                      ) : (
-                        <Bookmark className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </motion.div>
-                </AnimatePresence>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleBookmarkClick}
+                  className="h-8 w-8 rounded-full hover:bg-white/10 transition-all duration-300"
+                  disabled={bookmarkMutation.isPending}
+                >
+                  {localIsBookmarked ? (
+                    <BookmarkCheck className="h-4 w-4 text-primary animate-in" />
+                  ) : (
+                    <Bookmark className="h-4 w-4" />
+                  )}
+                </Button>
               )}
             </div>
 

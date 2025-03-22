@@ -3,30 +3,29 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 
-const insertFavoriteSchema = z.object({
-  user_id: z.number(),
-  chapter: z.string(),
-  verse: z.string()
+const favoriteSchema = z.object({
+  chapter: z.coerce.string(),
+  verse: z.coerce.string()
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const requireAuth = (req: any, res: any, next: any) => {
-    req.user = { id: 1 }; // For development, always authenticate with user_id 1
+    req.user = { id: 1 }; // For development
     next();
   };
 
   app.post('/api/favorites', requireAuth, async (req, res) => {
     try {
-      console.log('Creating favorite:', { userId: req.user.id, ...req.body });
+      const { chapter, verse } = favoriteSchema.parse(req.body);
+      console.log('Creating favorite:', { userId: req.user.id, chapter, verse });
 
-      const favoriteData = insertFavoriteSchema.parse({
+      const favorite = await storage.createFavorite({
         user_id: req.user.id,
-        chapter: req.body.chapter.toString(),
-        verse: req.body.verse.toString()
+        chapter,
+        verse,
+        notes: null
       });
 
-      const favorite = await storage.createFavorite(favoriteData);
-      console.log('Created favorite:', favorite);
       res.json(favorite);
     } catch (error) {
       console.error('Error creating favorite:', error);
@@ -40,33 +39,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/favorites', requireAuth, async (req, res) => {
     try {
-      console.log('Removing favorite:', { userId: req.user.id, ...req.body });
-
-      if (!req.body.chapter || !req.body.verse) {
-        return res.status(400).json({ error: 'Missing chapter or verse' });
-      }
+      const { chapter, verse } = favoriteSchema.parse(req.body);
+      console.log('Removing favorite:', { userId: req.user.id, chapter, verse });
 
       await storage.removeFavorite(
         req.user.id,
-        req.body.chapter.toString(),
-        req.body.verse.toString()
+        chapter,
+        verse
       );
 
-      console.log('Removed favorite successfully');
       res.json({ success: true });
     } catch (error) {
       console.error('Error removing favorite:', error);
-      res.status(500).json({ error: 'Failed to remove favorite' });
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: 'Invalid data format' });
+      } else {
+        res.status(500).json({ error: 'Failed to remove favorite' });
+      }
     }
   });
 
   app.get('/api/user/favorites', requireAuth, async (req, res) => {
     try {
       console.log('Fetching favorites for user:', req.user.id);
-
       const favorites = await storage.getUserFavorites(req.user.id);
-      console.log('Retrieved favorites:', favorites);
-
       res.json(favorites);
     } catch (error) {
       console.error('Error fetching favorites:', error);
