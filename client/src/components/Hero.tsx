@@ -28,7 +28,9 @@ export default function Hero() {
       </div>
 
       {/* Consciousness Animation */}
-      <ConsciousnessAnimation />
+      <div className="absolute inset-0 z-0">
+        <ConsciousnessAnimation />
+      </div>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 relative z-10">
@@ -48,7 +50,7 @@ export default function Hero() {
 
           {/* Main Title */}
           <motion.div
-            className="space-y-6"
+            className="space-y-6 relative z-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
@@ -61,7 +63,7 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed">
+            <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed backdrop-blur-sm">
               Discover timeless Gita wisdom tailored to your emotional needs, 
               helping you navigate life's challenges with clarity and purpose
             </p>
@@ -75,7 +77,8 @@ export default function Hero() {
               <Button
                 className="w-full sm:w-auto px-8 py-6 text-lg font-normal
                         bg-primary/90 hover:bg-primary/80 border border-primary/30
-                        shadow-lg hover:shadow-xl transition-all duration-300 group"
+                        shadow-lg hover:shadow-xl transition-all duration-300 group
+                        backdrop-blur-sm"
                 onClick={handleScrollToMood}
               >
                 <Sparkles className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
