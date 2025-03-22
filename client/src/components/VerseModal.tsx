@@ -82,77 +82,74 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
   }, [verse, toast]);
 
   return (
-    <div className="relative">
+    <div className="flex flex-col h-full">
       {/* Header */}
-      <DialogHeader className="mb-4 pb-4 border-b border-white/10">
+      <DialogHeader className="flex-none pb-4 border-b border-border">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <Heart className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <DialogTitle className="text-base sm:text-lg font-medium text-white">
+            <DialogTitle className="text-lg font-medium">
               Chapter {verse.chapter}, Verse {verse.verse}
             </DialogTitle>
-            <div className="text-xs sm:text-sm text-white/60">Bhagavad Gita</div>
+            <div className="text-sm text-muted-foreground">Bhagavad Gita</div>
           </div>
         </div>
       </DialogHeader>
 
       {/* Content */}
-      <Tabs defaultValue="translations" className="space-y-4">
-        <TabsList className="flex w-full border-b border-white/10 overflow-x-auto">
+      <Tabs defaultValue="translations" className="flex-1 flex flex-col min-h-0">
+        <TabsList className="flex border-b border-border">
           {tabs.map(tab => (
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              className="flex-1 h-10 text-xs sm:text-sm font-medium text-white/70
-                        data-[state=active]:bg-transparent 
-                        data-[state=active]:border-b-2
-                        data-[state=active]:border-primary 
-                        data-[state=active]:text-primary
-                        rounded-none whitespace-nowrap px-2 sm:px-4"
+              className="flex-1 px-4 py-2 text-sm font-medium text-muted-foreground
+                        data-[state=active]:border-b-2 data-[state=active]:border-primary 
+                        data-[state=active]:text-foreground"
             >
               {tab.label}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {/* Translations Content */}
-        <TabsContent value="translations" className="pt-2 space-y-6 overflow-y-auto max-h-[60vh]">
-          {translations.map((trans, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className="space-y-2"
-            >
-              <div className="text-xs sm:text-sm font-medium text-white/60">
-                {trans.author}'s Translation
-              </div>
-              <div className="text-base sm:text-lg md:text-xl leading-relaxed text-white/90">
-                {trans.text}
-              </div>
-            </motion.div>
-          ))}
-        </TabsContent>
+        <div className="flex-1 overflow-y-auto min-h-0">
+          {/* Translations Content */}
+          <TabsContent value="translations" className="p-4 space-y-6">
+            {translations.map((trans, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className="space-y-2"
+              >
+                <div className="text-sm font-medium text-muted-foreground">
+                  {trans.author}'s Translation
+                </div>
+                <div className="text-lg leading-relaxed">
+                  {trans.text}
+                </div>
+              </motion.div>
+            ))}
+          </TabsContent>
 
-        {/* Original Text Content */}
-        <TabsContent value="original" className="pt-2 overflow-y-auto max-h-[60vh]">
-          <div className="grid gap-4">
+          {/* Original Text Content */}
+          <TabsContent value="original" className="p-4 space-y-4">
             {/* Sanskrit Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="backdrop-blur-sm bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10"
+              className="p-4 rounded-lg border border-border bg-muted/50"
             >
-              <div className="text-xs sm:text-sm font-medium text-white/60 mb-3">
+              <div className="text-sm font-medium text-muted-foreground mb-3">
                 Sanskrit Text
               </div>
-              <div className="text-lg sm:text-xl md:text-2xl leading-relaxed font-sanskrit text-white/90 mb-3">
+              <div className="text-xl leading-relaxed font-sanskrit mb-3">
                 {verse.slok}
               </div>
-              <div className="text-sm sm:text-base italic text-white/70">
+              <div className="text-sm italic text-muted-foreground">
                 {verse.transliteration}
               </div>
             </motion.div>
@@ -163,82 +160,63 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="backdrop-blur-sm bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10"
+                className="p-4 rounded-lg border border-border bg-muted/50"
               >
-                <div className="text-xs sm:text-sm font-medium text-white/60 mb-3">
+                <div className="text-sm font-medium text-muted-foreground mb-3">
                   हिंदी अनुवाद
                 </div>
-                <div className="text-base sm:text-lg md:text-xl leading-relaxed text-white/90">
+                <div className="text-lg leading-relaxed">
                   {verse.tej.ht}
                 </div>
               </motion.div>
             )}
-          </div>
-        </TabsContent>
+          </TabsContent>
 
-        {/* Commentary Content */}
-        {verse.chinmay?.hc && (
-          <TabsContent value="commentary" className="pt-2 overflow-y-auto max-h-[60vh]">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-2"
-            >
-              <div className="text-xs sm:text-sm font-medium text-white/60">
-                Commentary
-              </div>
-              <div className="prose prose-invert max-w-none">
-                <div className="text-sm sm:text-base leading-relaxed text-white/90 whitespace-pre-wrap">
+          {/* Commentary Content */}
+          {verse.chinmay?.hc && (
+            <TabsContent value="commentary" className="p-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="prose prose-invert max-w-none"
+              >
+                <div className="text-sm leading-relaxed whitespace-pre-wrap">
                   {verse.chinmay.hc}
                 </div>
-              </div>
-            </motion.div>
-          </TabsContent>
-        )}
+              </motion.div>
+            </TabsContent>
+          )}
+        </div>
       </Tabs>
 
       {/* Actions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="flex flex-col sm:flex-row gap-2 pt-4 mt-4 border-t border-white/10"
-      >
+      <div className="flex-none border-t border-border pt-4 mt-4 space-x-2">
         <Button
-          className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70
-                    border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm
-                    transition-all duration-300 h-10 sm:h-12 text-white group"
+          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
           onClick={() => setShowShareDialog(true)}
         >
-          <span className="flex items-center justify-center text-sm">
-            <Share2 className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
-            Share Verse
-            <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-          </span>
+          <Share2 className="h-4 w-4 mr-2" />
+          Share Verse
         </Button>
 
         <Button
           variant="outline"
-          className="flex-1 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5
-                    border border-white/20 hover:bg-white/10 hover:border-white/30
-                    shadow-lg hover:shadow-xl transition-all duration-300 h-10 sm:h-12 group"
+          className="flex-1"
           onClick={handleCopy}
         >
-          <span className="flex items-center justify-center text-sm">
-            {copied ? (
-              <>
-                <Check className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                Copied
-              </>
-            ) : (
-              <>
-                <Copy className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                Copy Text
-              </>
-            )}
-          </span>
+          {copied ? (
+            <>
+              <Check className="h-4 w-4 mr-2" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="h-4 w-4 mr-2" />
+              Copy Text
+            </>
+          )}
         </Button>
-      </motion.div>
+      </div>
 
       <ShareDialog
         verse={verse}
@@ -256,14 +234,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
-        className="w-[calc(100%-1rem)] sm:w-[calc(100%-4rem)] max-w-4xl mx-auto 
-                 my-2 sm:my-4 max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-2rem)] 
-                 overflow-y-auto bg-background/95 backdrop-blur-xl
-                 border border-white/10 rounded-lg sm:rounded-xl shadow-2xl
-                 p-3 sm:p-4 md:p-6"
-        aria-labelledby="verse-modal-title"
-      >
+      <DialogContent className="h-[80vh] max-h-[800px] w-[90vw] max-w-3xl mx-auto p-6">
         <VerseContent verse={verse} />
       </DialogContent>
     </Dialog>
