@@ -10,8 +10,6 @@ import VerseModal from "@/components/VerseModal";
 import VerseOfTheDay from "@/components/VerseOfTheDay";
 import { getVersesByMood, getVerseByChapterAndNumber, type Verse } from "@/lib/data";
 import TestimonialsSection from "@/components/TestimonialsSection";
-import CallToAction from "@/components/CallToAction";
-import StatsSection from "@/components/StatsSection";
 import USPSection from "@/components/USPSection";
 import SEO from '@/components/SEO';
 import { Helmet } from 'react-helmet-async';
@@ -75,7 +73,6 @@ export default function Home() {
     queryKey: ['mood-verses', selectedMood],
     queryFn: async () => {
       if (!selectedMood) return [];
-      console.log('Loading verses for mood:', selectedMood);
       const results = await getVersesByMood(selectedMood);
       if (!results.length) {
         console.error('No verses found for mood:', selectedMood);
@@ -118,7 +115,6 @@ export default function Home() {
         ]}
       />
       <Helmet>
-        {/* Schema.org markup for spiritual/religious content */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -154,7 +150,6 @@ export default function Home() {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            {/* Sacred Badge */}
             <motion.div
               className="inline-flex items-center px-6 py-2 mb-8 rounded-full 
                       backdrop-blur-xl bg-primary/5 border border-primary/20 shadow-lg
@@ -167,7 +162,6 @@ export default function Home() {
               <span className="text-white/90 font-medium">Find Peace in Ancient Wisdom</span>
             </motion.div>
 
-            {/* Main Title */}
             <motion.div
               className="space-y-6"
               initial={{ opacity: 0 }}
@@ -306,9 +300,7 @@ export default function Home() {
             </div>
           </section>
 
-          <StatsSection />
           <TestimonialsSection />
-          <CallToAction />
         </>
       )}
 
