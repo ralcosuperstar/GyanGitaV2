@@ -1,6 +1,6 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Share2, Copy, Check, ArrowRight, Heart } from "lucide-react";
+import { Share2, Copy, Check, Heart } from "lucide-react";
 import { useState, useCallback, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import ShareDialog from "./ShareDialog";
@@ -41,7 +41,7 @@ interface Tab {
   label: string;
 }
 
-const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["verse"]>; }) => {
+const VerseContent = memo(({ verse, onClose }: { verse: NonNullable<VerseModalProps["verse"]>; onClose: () => void }) => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
@@ -82,15 +82,16 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
   }, [verse, toast]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-[85vh] sm:h-[80vh] flex-col">
       {/* Header */}
-      <DialogHeader className="flex-none pb-4 border-b border-border">
+      <DialogHeader className="flex-none p-4 sm:p-6 pb-4 border-b relative">
+        <DialogClose onClick={onClose} />
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
             <Heart className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <DialogTitle className="text-lg font-medium">
+            <DialogTitle>
               Chapter {verse.chapter}, Verse {verse.verse}
             </DialogTitle>
             <div className="text-sm text-muted-foreground">Bhagavad Gita</div>
@@ -100,23 +101,21 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
 
       {/* Content */}
       <Tabs defaultValue="translations" className="flex-1 flex flex-col min-h-0">
-        <TabsList className="flex border-b border-border">
+        <TabsList className="flex border-b px-4 sm:px-6 overflow-x-auto">
           {tabs.map(tab => (
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              className="flex-1 px-4 py-2 text-sm font-medium text-muted-foreground
-                        data-[state=active]:border-b-2 data-[state=active]:border-primary 
-                        data-[state=active]:text-foreground"
+              className="flex-1 whitespace-nowrap"
             >
               {tab.label}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="flex-1 overflow-y-auto">
           {/* Translations Content */}
-          <TabsContent value="translations" className="p-4 space-y-6">
+          <TabsContent value="translations" className="p-4 sm:p-6 space-y-6">
             {translations.map((trans, idx) => (
               <motion.div
                 key={idx}
@@ -136,12 +135,11 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
           </TabsContent>
 
           {/* Original Text Content */}
-          <TabsContent value="original" className="p-4 space-y-4">
-            {/* Sanskrit Section */}
+          <TabsContent value="original" className="p-4 sm:p-6 space-y-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-4 rounded-lg border border-border bg-muted/50"
+              className="p-4 rounded-lg border bg-muted/50"
             >
               <div className="text-sm font-medium text-muted-foreground mb-3">
                 Sanskrit Text
@@ -154,13 +152,12 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
               </div>
             </motion.div>
 
-            {/* Hindi Section */}
             {verse.tej.ht && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="p-4 rounded-lg border border-border bg-muted/50"
+                className="p-4 rounded-lg border bg-muted/50"
               >
                 <div className="text-sm font-medium text-muted-foreground mb-3">
                   हिंदी अनुवाद
@@ -174,7 +171,7 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
 
           {/* Commentary Content */}
           {verse.chinmay?.hc && (
-            <TabsContent value="commentary" className="p-4">
+            <TabsContent value="commentary" className="p-4 sm:p-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -190,7 +187,7 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
       </Tabs>
 
       {/* Actions */}
-      <div className="flex-none border-t border-border pt-4 mt-4 space-x-2">
+      <div className="flex-none p-4 sm:p-6 pt-4 border-t space-x-2">
         <Button
           className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
           onClick={() => setShowShareDialog(true)}
@@ -234,8 +231,8 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-[80vh] max-h-[800px] w-[90vw] max-w-3xl mx-auto p-6">
-        <VerseContent verse={verse} />
+      <DialogContent className="h-full sm:h-auto max-h-full sm:max-h-[85vh] w-full max-w-4xl p-0">
+        <VerseContent verse={verse} onClose={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );

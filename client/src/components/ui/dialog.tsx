@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
+import { X } from "lucide-react"
 
 interface DialogProps {
   open: boolean;
@@ -37,18 +38,17 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
             className="fixed inset-0 z-50 bg-black/80"
             onClick={() => onOpenChange(false)}
           />
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-4">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={(e) => e.stopPropagation()}
-              className="min-h-[200px] w-full max-w-lg overflow-hidden"
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              className="w-full max-w-3xl relative flex flex-col"
             >
               {children}
             </motion.div>
@@ -67,7 +67,7 @@ export function DialogContent({
   return (
     <div
       className={cn(
-        "relative grid gap-4 bg-background/95 backdrop-blur-xl p-6 shadow-lg sm:rounded-lg border border-border",
+        "flex flex-col overflow-hidden bg-background/95 backdrop-blur-xl shadow-lg sm:rounded-lg border border-border",
         className
       )}
       {...props}
@@ -134,5 +134,25 @@ export function DialogDescription({
       )}
       {...props}
     />
+  );
+}
+
+export function DialogClose({ 
+  className,
+  onClick,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      className={cn(
+        "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground",
+        className
+      )}
+      onClick={onClick}
+      {...props}
+    >
+      <X className="h-4 w-4" />
+      <span className="sr-only">Close</span>
+    </button>
   );
 }
