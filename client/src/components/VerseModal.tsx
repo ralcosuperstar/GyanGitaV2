@@ -84,33 +84,33 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
   return (
     <div className="relative">
       {/* Header */}
-      <DialogHeader className="mb-6 pb-4 border-b border-white/10">
+      <DialogHeader className="mb-4 pb-4 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Heart className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+          <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
           </div>
           <div>
-            <DialogTitle className="text-lg sm:text-xl font-medium text-white">
+            <DialogTitle className="text-base sm:text-lg font-medium text-white">
               Chapter {verse.chapter}, Verse {verse.verse}
             </DialogTitle>
-            <div className="text-sm text-white/60">Bhagavad Gita</div>
+            <div className="text-xs sm:text-sm text-white/60">Bhagavad Gita</div>
           </div>
         </div>
       </DialogHeader>
 
       {/* Content */}
-      <Tabs defaultValue="translations" className="space-y-6">
-        <TabsList className="flex w-full border-b border-white/10">
+      <Tabs defaultValue="translations" className="space-y-4">
+        <TabsList className="flex w-full border-b border-white/10 overflow-x-auto">
           {tabs.map(tab => (
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              className="flex-1 h-12 text-sm font-medium text-white/70
+              className="flex-1 h-10 text-xs sm:text-sm font-medium text-white/70
                         data-[state=active]:bg-transparent 
                         data-[state=active]:border-b-2
                         data-[state=active]:border-primary 
                         data-[state=active]:text-primary
-                        rounded-none"
+                        rounded-none whitespace-nowrap px-2 sm:px-4"
             >
               {tab.label}
             </TabsTrigger>
@@ -118,7 +118,7 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
         </TabsList>
 
         {/* Translations Content */}
-        <TabsContent value="translations" className="pt-4 space-y-6">
+        <TabsContent value="translations" className="pt-2 space-y-6 overflow-y-auto max-h-[60vh]">
           {translations.map((trans, idx) => (
             <motion.div
               key={idx}
@@ -127,10 +127,10 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
               transition={{ delay: idx * 0.1 }}
               className="space-y-2"
             >
-              <div className="text-sm font-medium text-white/60">
+              <div className="text-xs sm:text-sm font-medium text-white/60">
                 {trans.author}'s Translation
               </div>
-              <div className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90">
+              <div className="text-base sm:text-lg md:text-xl leading-relaxed text-white/90">
                 {trans.text}
               </div>
             </motion.div>
@@ -138,21 +138,21 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
         </TabsContent>
 
         {/* Original Text Content */}
-        <TabsContent value="original" className="pt-4">
-          <div className="grid gap-6">
+        <TabsContent value="original" className="pt-2 overflow-y-auto max-h-[60vh]">
+          <div className="grid gap-4">
             {/* Sanskrit Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="backdrop-blur-sm bg-white/5 rounded-lg p-4 sm:p-6 border border-white/10"
+              className="backdrop-blur-sm bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10"
             >
-              <div className="text-sm font-medium text-white/60 mb-4">
+              <div className="text-xs sm:text-sm font-medium text-white/60 mb-3">
                 Sanskrit Text
               </div>
-              <div className="text-xl sm:text-2xl md:text-3xl leading-relaxed font-sanskrit text-white/90 mb-4">
+              <div className="text-lg sm:text-xl md:text-2xl leading-relaxed font-sanskrit text-white/90 mb-3">
                 {verse.slok}
               </div>
-              <div className="text-base sm:text-lg italic text-white/70">
+              <div className="text-sm sm:text-base italic text-white/70">
                 {verse.transliteration}
               </div>
             </motion.div>
@@ -163,12 +163,12 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="backdrop-blur-sm bg-white/5 rounded-lg p-4 sm:p-6 border border-white/10"
+                className="backdrop-blur-sm bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10"
               >
-                <div className="text-sm font-medium text-white/60 mb-4">
+                <div className="text-xs sm:text-sm font-medium text-white/60 mb-3">
                   हिंदी अनुवाद
                 </div>
-                <div className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90">
+                <div className="text-base sm:text-lg md:text-xl leading-relaxed text-white/90">
                   {verse.tej.ht}
                 </div>
               </motion.div>
@@ -178,17 +178,17 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
 
         {/* Commentary Content */}
         {verse.chinmay?.hc && (
-          <TabsContent value="commentary" className="pt-4">
+          <TabsContent value="commentary" className="pt-2 overflow-y-auto max-h-[60vh]">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="space-y-2"
             >
-              <div className="text-sm font-medium text-white/60">
+              <div className="text-xs sm:text-sm font-medium text-white/60">
                 Commentary
               </div>
               <div className="prose prose-invert max-w-none">
-                <div className="text-base sm:text-lg leading-relaxed text-white/90 whitespace-pre-wrap">
+                <div className="text-sm sm:text-base leading-relaxed text-white/90 whitespace-pre-wrap">
                   {verse.chinmay.hc}
                 </div>
               </div>
@@ -202,15 +202,15 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-white/10"
+        className="flex flex-col sm:flex-row gap-2 pt-4 mt-4 border-t border-white/10"
       >
         <Button
           className="flex-1 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary/80 hover:to-primary/70
                     border border-primary/30 shadow-lg hover:shadow-xl backdrop-blur-sm
-                    transition-all duration-300 h-12 sm:h-14 text-white group"
+                    transition-all duration-300 h-10 sm:h-12 text-white group"
           onClick={() => setShowShareDialog(true)}
         >
-          <span className="flex items-center justify-center text-sm sm:text-base">
+          <span className="flex items-center justify-center text-sm">
             <Share2 className="h-4 w-4 mr-2 transition-transform group-hover:scale-110" />
             Share Verse
             <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
@@ -221,10 +221,10 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
           variant="outline"
           className="flex-1 backdrop-blur-md bg-gradient-to-r from-white/10 to-white/5
                     border border-white/20 hover:bg-white/10 hover:border-white/30
-                    shadow-lg hover:shadow-xl transition-all duration-300 h-12 sm:h-14 group"
+                    shadow-lg hover:shadow-xl transition-all duration-300 h-10 sm:h-12 group"
           onClick={handleCopy}
         >
-          <span className="flex items-center justify-center text-sm sm:text-base">
+          <span className="flex items-center justify-center text-sm">
             {copied ? (
               <>
                 <Check className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
@@ -261,7 +261,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
                  my-2 sm:my-4 max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-2rem)] 
                  overflow-y-auto bg-background/95 backdrop-blur-xl
                  border border-white/10 rounded-lg sm:rounded-xl shadow-2xl
-                 p-4 sm:p-6 md:p-8"
+                 p-3 sm:p-4 md:p-6"
         aria-labelledby="verse-modal-title"
       >
         <VerseContent verse={verse} />
