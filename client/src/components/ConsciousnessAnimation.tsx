@@ -1,6 +1,11 @@
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 const ConsciousnessAnimation = () => {
+  useEffect(() => {
+    console.log('ConsciousnessAnimation mounted');
+  }, []);
+
   // Generate random points for neural network
   const generatePoints = (count: number) => {
     return Array.from({ length: count }, () => ({
@@ -13,15 +18,18 @@ const ConsciousnessAnimation = () => {
   const points = generatePoints(30);
 
   return (
-    <div className="absolute inset-0 w-full h-full overflow-hidden">
-      {/* Background glow effect */}
-      <div className="absolute inset-0 bg-gradient-radial from-primary/20 via-transparent to-transparent" />
-
+    <div 
+      className="absolute inset-0 w-full h-full min-h-[600px] flex items-center justify-center"
+      style={{ 
+        backgroundColor: 'rgba(255, 0, 0, 0.1)',  // Debug background
+        border: '2px solid yellow' // Debug border
+      }}
+    >
       {/* Neural network points */}
       <svg className="absolute inset-0 w-full h-full">
         <defs>
           <radialGradient id="point-gradient" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.5" />
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.8" />
             <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
           </radialGradient>
         </defs>
@@ -30,27 +38,26 @@ const ConsciousnessAnimation = () => {
             key={i}
             cx={`${point.x}%`}
             cy={`${point.y}%`}
-            r={point.radius}
+            r={point.radius * 2}
             fill="url(#point-gradient)"
             initial={{ scale: 0, opacity: 0 }}
             animate={{
               scale: [1, 1.5, 1],
-              opacity: [0, 0.8, 0],
+              opacity: [0, 1, 0],
             }}
             transition={{
               duration: 3,
               repeat: Infinity,
               delay: i * 0.2,
-              ease: "easeInOut",
             }}
           />
         ))}
       </svg>
 
       {/* Animated globe in the center */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div className="relative w-40 h-40">
         <motion.div
-          className="w-40 h-40 rounded-full bg-gradient-to-r from-primary/30 to-primary/20 backdrop-blur-xl"
+          className="w-full h-full rounded-full bg-gradient-to-r from-primary/60 to-primary/40"
           animate={{
             scale: [1, 1.1, 1],
             rotate: [0, 360],
@@ -68,8 +75,8 @@ const ConsciousnessAnimation = () => {
                 key={i}
                 d={`M 0,${i * 14 + 2} L 100,${i * 14 + 2}`}
                 stroke="var(--primary)"
-                strokeWidth="0.5"
-                strokeOpacity="0.3"
+                strokeWidth="1"
+                strokeOpacity="0.5"
                 fill="none"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
@@ -87,20 +94,14 @@ const ConsciousnessAnimation = () => {
 
       {/* Oval frame */}
       <motion.div
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[150%] border-2 border-primary/20 rounded-[100%] backdrop-blur-sm"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[150%] border-4 border-primary/40 rounded-[100%]"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1 }}
       />
 
       {/* Neural connection rays */}
-      <svg className="absolute inset-0 w-full h-full opacity-50">
-        <defs>
-          <linearGradient id="ray-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
-          </linearGradient>
-        </defs>
+      <svg className="absolute inset-0 w-full h-full">
         {Array.from({ length: 12 }).map((_, i) => (
           <motion.line
             key={i}
@@ -108,18 +109,17 @@ const ConsciousnessAnimation = () => {
             y1={`${Math.random() * 100}%`}
             x2={`${Math.random() * 100}%`}
             y2={`${Math.random() * 100}%`}
-            stroke="url(#ray-gradient)"
-            strokeWidth="2"
+            stroke="var(--primary)"
+            strokeWidth="3"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{
               pathLength: [0, 1, 0],
-              opacity: [0, 0.7, 0],
+              opacity: [0, 1, 0],
             }}
             transition={{
               duration: 4,
               repeat: Infinity,
               delay: i * 0.5,
-              ease: "easeInOut",
             }}
           />
         ))}
