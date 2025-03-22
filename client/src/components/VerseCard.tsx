@@ -38,8 +38,11 @@ export default function VerseCard({
   const [showModal, setShowModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
 
-  // Get the primary translation
+  // Get the primary translation, prioritizing Purohit's translation
   const primaryTranslation = verse.purohit?.et || verse.tej.et || verse.siva?.et;
+
+  // Check if we have any Sanskrit content
+  const hasSanskrit = verse.slok && verse.transliteration;
 
   return (
     <motion.div
@@ -67,21 +70,25 @@ export default function VerseCard({
             {/* Main Content */}
             <div className="flex-grow space-y-6">
               {/* English Translation */}
-              <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
-                <p className="text-lg text-white/90 leading-relaxed font-light">
-                  {primaryTranslation}
-                </p>
-              </div>
+              {primaryTranslation && (
+                <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
+                  <p className="text-lg text-white/90 leading-relaxed font-light">
+                    {primaryTranslation}
+                  </p>
+                </div>
+              )}
 
-              {/* Sanskrit Preview */}
-              <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
-                <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-2 text-white/70">
-                  {verse.slok}
-                </p>
-                <p className="text-sm italic text-white/50 line-clamp-1">
-                  {verse.transliteration}
-                </p>
-              </div>
+              {/* Sanskrit Preview - Only show if we have both slok and transliteration */}
+              {hasSanskrit && (
+                <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
+                  <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-2 text-white/70">
+                    {verse.slok}
+                  </p>
+                  <p className="text-sm italic text-white/50 line-clamp-1">
+                    {verse.transliteration}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Actions */}

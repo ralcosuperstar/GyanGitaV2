@@ -7,6 +7,11 @@ import ShareDialog from "./ShareDialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+interface Translation {
+  author: string;
+  text: string;
+}
+
 interface VerseModalProps {
   verse: {
     chapter: number;
@@ -31,6 +36,11 @@ interface VerseModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface Tab {
+  id: string;
+  label: string;
+}
+
 const VerseContent = memo(({ 
   verse
 }: { 
@@ -40,12 +50,26 @@ const VerseContent = memo(({
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  // Get all available translations
-  const translations = [
+  // Get available translations
+  const translations: Translation[] = [
+    verse.purohit?.et ? { author: 'Purohit', text: verse.purohit.et } : null,
     { author: 'Tej', text: verse.tej.et },
-    ...(verse.purohit?.et ? [{ author: 'Purohit', text: verse.purohit.et }] : []),
-    ...(verse.siva?.et ? [{ author: 'Siva', text: verse.siva.et }] : [])
-  ];
+    verse.siva?.et ? { author: 'Siva', text: verse.siva.et } : null
+  ].filter((t): t is Translation => t !== null);
+
+  // Check what content is available
+  const hasTranslations = translations.length > 0;
+  const hasSanskrit = Boolean(verse.slok && verse.transliteration);
+  const hasCommentary = Boolean(verse.chinmay?.hc);
+  const hasHindi = Boolean(verse.tej.ht);
+
+  // Create available tabs
+  const tabs: Tab[] = [
+    hasTranslations ? { id: 'translations', label: 'Translations' } : null,
+    hasSanskrit ? { id: 'sanskrit', label: 'Sanskrit' } : null,
+    hasCommentary ? { id: 'commentary', label: 'Commentary' } : null,
+    hasHindi ? { id: 'hindi', label: 'हिंदी' } : null
+  ].filter((tab): tab is Tab => tab !== null);
 
   const handleCopy = useCallback(async () => {
     const textToCopy = `${verse.purohit?.et || verse.tej.et || verse.siva?.et}\n\n${verse.slok}\n\n${verse.transliteration}`;
@@ -68,6 +92,8 @@ const VerseContent = memo(({
       });
     }
   }, [verse, toast]);
+
+  if (tabs.length === 0) return null;
 
   return (
     <>
@@ -94,61 +120,64 @@ const VerseContent = memo(({
           </div>
 
           {/* Content */}
-          <Tabs defaultValue="translations" className="space-y-8">
+          <Tabs defaultValue={tabs[0]?.id} className="space-y-8">
             <TabsList className="w-full grid grid-cols-4 h-12 items-center bg-muted/50 backdrop-blur-sm rounded-lg p-1">
-              <TabsTrigger value="translations">Translations</TabsTrigger>
-              <TabsTrigger value="sanskrit">Sanskrit</TabsTrigger>
-              <TabsTrigger value="commentary">Commentary</TabsTrigger>
-              <TabsTrigger value="hindi">हिंदी</TabsTrigger>
+              {tabs.map(tab => (
+                <TabsTrigger key={tab.id} value={tab.id}>{tab.label}</TabsTrigger>
+              ))}
             </TabsList>
 
             {/* Translations Tab */}
-            <TabsContent value="translations" className="space-y-6">
-              {translations.map((trans, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
-                >
-                  <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
-                    {trans.author}'s Translation
-                  </h3>
-                  <p className="text-2xl leading-relaxed text-white/90 font-light break-words">
-                    {trans.text}
-                  </p>
-                </motion.div>
-              ))}
-            </TabsContent>
+            {hasTranslations && (
+              <TabsContent value="translations" className="space-y-6">
+                {translations.map((trans, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg group hover:bg-white/[0.07] transition-all duration-300"
+                  >
+                    <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
+                      {trans.author}'s Translation
+                    </h3>
+                    <p className="text-2xl leading-relaxed text-white/90 font-light break-words">
+                      {trans.text}
+                    </p>
+                  </motion.div>
+                ))}
+              </TabsContent>
+            )}
 
             {/* Sanskrit Tab */}
-            <TabsContent value="sanskrit" className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg"
-              >
-                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                  Sanskrit Text
-                </h3>
-                <p className="text-3xl leading-relaxed text-white/90 font-sanskrit mb-6 break-words">
-                  {verse.slok}
-                </p>
-                <div className="pt-6 border-t border-white/10">
-                  <h4 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
-                    Transliteration
-                  </h4>
-                  <p className="text-xl text-white/80 italic break-words">
-                    {verse.transliteration}
+            {hasSanskrit && (
+              <TabsContent value="sanskrit" className="space-y-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg"
+                >
+                  <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
+                    Sanskrit Text
+                  </h3>
+                  <p className="text-3xl leading-relaxed text-white/90 font-sanskrit mb-6 break-words">
+                    {verse.slok}
                   </p>
-                </div>
-              </motion.div>
-            </TabsContent>
+                  <div className="pt-6 border-t border-white/10">
+                    <h4 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-4">
+                      Transliteration
+                    </h4>
+                    <p className="text-xl text-white/80 italic break-words">
+                      {verse.transliteration}
+                    </p>
+                  </div>
+                </motion.div>
+              </TabsContent>
+            )}
 
             {/* Commentary Tab */}
-            <TabsContent value="commentary" className="space-y-6">
-              {verse.chinmay?.hc ? (
+            {hasCommentary && verse.chinmay?.hc && (
+              <TabsContent value="commentary" className="space-y-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -163,28 +192,26 @@ const VerseContent = memo(({
                     </p>
                   </div>
                 </motion.div>
-              ) : (
-                <div className="text-center py-12 text-white/60">
-                  No commentary available for this verse
-                </div>
-              )}
-            </TabsContent>
+              </TabsContent>
+            )}
 
             {/* Hindi Tab */}
-            <TabsContent value="hindi" className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg"
-              >
-                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
-                  हिंदी अनुवाद
-                </h3>
-                <p className="text-2xl leading-relaxed text-white/90 break-words">
-                  {verse.tej.ht}
-                </p>
-              </motion.div>
-            </TabsContent>
+            {hasHindi && (
+              <TabsContent value="hindi" className="space-y-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="backdrop-blur-lg bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl p-6 border border-white/10 shadow-lg"
+                >
+                  <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider mb-6">
+                    हिंदी अनुवाद
+                  </h3>
+                  <p className="text-2xl leading-relaxed text-white/90 break-words">
+                    {verse.tej.ht}
+                  </p>
+                </motion.div>
+              </TabsContent>
+            )}
           </Tabs>
 
           {/* Actions */}
