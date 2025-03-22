@@ -1,1 +1,0 @@
-// This file is being removed as the search functionality is not being used in the project
