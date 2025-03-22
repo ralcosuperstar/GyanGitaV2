@@ -1,5 +1,1 @@
-import * as AspectRatioPrimitive from "@radix-ui/react-aspect-ratio"
-
-const AspectRatio = AspectRatioPrimitive.Root
-
-export { AspectRatio }
+// This file can be removed as the aspect ratio functionality is not being used
