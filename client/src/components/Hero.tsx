@@ -27,7 +27,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-40" />
       </div>
 
-      {/* Consciousness Animation - explicitly set z-index */}
+      {/* Consciousness Animation */}
       <div className="absolute inset-0 z-0" style={{ minHeight: '90vh' }}>
         <ConsciousnessAnimation />
       </div>
