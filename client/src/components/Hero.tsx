@@ -3,17 +3,6 @@ import { motion } from "framer-motion";
 export default function Hero() {
   return (
     <section className="min-h-screen flex flex-col items-center justify-center bg-[#0A0A0A] px-4">
-      {/* Badge */}
-      <motion.div
-        className="mb-16 text-center"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div className="inline-flex items-center px-6 py-2 rounded-full bg-black/40 border border-white/10">
-          <span className="text-sm text-white/80">Find Peace in Ancient Wisdom</span>
-        </div>
-      </motion.div>
-
       {/* Main Content */}
       <div className="max-w-2xl mx-auto text-center space-y-6">
         <motion.h1
