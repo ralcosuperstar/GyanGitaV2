@@ -55,9 +55,7 @@ export default function Bookmarks() {
       }
       const data = await response.json();
       return data as Favorite[];
-    },
-    refetchOnWindowFocus: true,
-    refetchOnMount: true
+    }
   });
 
   const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
@@ -91,9 +89,7 @@ export default function Bookmarks() {
       const results = await Promise.all(versePromises);
       return results.filter((v): v is NonNullable<typeof v> => v !== null);
     },
-    enabled: favorites.length > 0,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true
+    enabled: favorites.length > 0
   });
 
   const handleBookmarkChange = async (verseId: number, isBookmarked: boolean) => {
@@ -101,21 +97,23 @@ export default function Bookmarks() {
       const verseToRemove = verseDetails.find(v => v.id === verseId);
       if (!verseToRemove) return;
 
-      // Optimistically update UI
+      // Update all related caches immediately
+      const verseKey = `${verseToRemove.chapter}-${verseToRemove.verse}`;
+
+      // Update bookmarked verses
       queryClient.setQueryData(['bookmarked-verses'], (oldData: any) => {
         if (!oldData) return [];
         return oldData.filter((v: any) => v.id !== verseId);
       });
 
-      // Update favorites cache
+      // Update favorites
       queryClient.setQueryData(['/api/user/favorites'], (oldData: any) => {
         if (!oldData) return [];
         return oldData.filter((f: any) => f.id !== verseId);
       });
 
       // Update individual verse cache
-      const verseQueryKey = `${verseToRemove.chapter}-${verseToRemove.verse}`;
-      queryClient.setQueryData(['verse', verseQueryKey], {
+      queryClient.setQueryData(['verse', verseKey], {
         ...verseToRemove,
         isBookmarked: false
       });

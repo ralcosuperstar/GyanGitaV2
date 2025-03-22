@@ -49,8 +49,8 @@ export default function VerseCard({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Create a unique query key for this verse's bookmark status
-  const verseQueryKey = `${verse.chapter}-${verse.verse}`;
+  // Use unique verse identifier
+  const verseKey = `${verse.chapter}-${verse.verse}`;
 
   useEffect(() => {
     setLocalIsBookmarked(initialIsBookmarked || verse.isBookmarked || false);
@@ -79,42 +79,57 @@ export default function VerseCard({
     },
     onMutate: async () => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
-      await queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] });
-      await queryClient.cancelQueries({ queryKey: ['verse', verseQueryKey] });
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] }),
+        queryClient.cancelQueries({ queryKey: ['verse', verseKey] }),
+        queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] })
+      ]);
 
-      // Snapshot the previous state
+      // Snapshot the previous value
       const previousState = localIsBookmarked;
 
-      // Optimistically update to the new value
+      // Optimistically update the UI
       setLocalIsBookmarked(!previousState);
 
-      // Update the cache
+      // Update all related caches optimistically
       const newState = !previousState;
-      queryClient.setQueryData(['verse', verseQueryKey], {
+
+      // Update verse cache
+      queryClient.setQueryData(['verse', verseKey], {
         ...verse,
         isBookmarked: newState
       });
 
+      // Update favorites cache
       if (newState) {
-        // Add to favorites cache
         queryClient.setQueryData(['/api/user/favorites'], (old: any[] = []) => {
-          return [...old, { chapter: verse.chapter.toString(), verse: verse.verse.toString() }];
+          const newFavorite = {
+            id: Date.now(), // Temporary ID
+            user_id: 1,
+            chapter: verse.chapter.toString(),
+            verse: verse.verse.toString(),
+            saved_at: new Date().toISOString(),
+            notes: null
+          };
+          return [...old, newFavorite];
         });
       } else {
-        // Remove from favorites cache
         queryClient.setQueryData(['/api/user/favorites'], (old: any[] = []) => {
-          return old.filter(f => !(f.chapter === verse.chapter.toString() && f.verse === verse.verse.toString()));
+          return old.filter(f => 
+            !(f.chapter === verse.chapter.toString() && f.verse === verse.verse.toString())
+          );
         });
       }
 
-      return { previousState };
+      // Return context for rollback
+      return { previousState, verseKey };
     },
     onError: (error, _, context) => {
       if (context) {
-        // Revert all optimistic updates
+        // Roll back all optimistic updates
         setLocalIsBookmarked(context.previousState);
-        queryClient.setQueryData(['verse', verseQueryKey], {
+
+        queryClient.setQueryData(['verse', context.verseKey], {
           ...verse,
           isBookmarked: context.previousState
         });
@@ -122,19 +137,23 @@ export default function VerseCard({
 
       toast({
         title: "Error",
-        description: error.message || "Failed to update bookmark",
+        description: error.message,
         variant: "destructive",
         duration: 3000,
       });
     },
     onSettled: () => {
       // Refetch to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
-      queryClient.invalidateQueries({ queryKey: ['verse', verseQueryKey] });
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] }),
+        queryClient.invalidateQueries({ queryKey: ['verse', verseKey] }),
+        queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] })
+      ]);
     },
     onSuccess: (_, __, context) => {
-      const newState = !context!.previousState;
+      if (!context) return;
+
+      const newState = !context.previousState;
 
       if (onBookmarkChange) {
         onBookmarkChange(newState);
