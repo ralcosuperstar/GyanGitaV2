@@ -2,7 +2,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Heart, ArrowDown } from "lucide-react";
-import ConsciousnessAnimation from "./ConsciousnessAnimation";
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null);
@@ -20,14 +19,18 @@ export default function Hero() {
     <section
       ref={heroRef}
       className="relative min-h-[90vh] flex items-center justify-center"
-      style={{ zIndex: 0 }}
     >
-      {/* Animation */}
-      <ConsciousnessAnimation />
-
       {/* Content */}
-      <div className="relative container mx-auto px-4" style={{ zIndex: 2 }}>
+      <div className="relative container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
+          {/* Oval Frame */}
+          <motion.div
+            className="absolute inset-0 rounded-[100px] border-2 border-primary/20"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          />
+
           {/* Badge */}
           <motion.div
             className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full 
