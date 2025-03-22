@@ -20,24 +20,30 @@ export default function Hero() {
     >
       {/* Main Content Container */}
       <div className="relative w-full max-w-3xl mx-auto">
-        {/* Animated Neon Frame */}
+        {/* Animated Frame */}
         <motion.div
           className="absolute -inset-4 sm:-inset-6 md:-inset-8 rounded-[60px] sm:rounded-[80px]"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
         >
-          {/* Multiple borders for neon effect */}
-          <div className="absolute inset-0 rounded-[60px] sm:rounded-[80px] border-2 border-primary/20" />
-          <div className="absolute inset-0 rounded-[60px] sm:rounded-[80px] border border-primary/10 blur-[1px]" />
+          {/* Frame Layers */}
+          <div className="absolute inset-0 rounded-[60px] sm:rounded-[80px] bg-gradient-to-b from-primary/5 to-transparent" />
+          <div className="absolute inset-0 rounded-[60px] sm:rounded-[80px] border-[3px] border-primary/20" />
+          <div className="absolute inset-0 rounded-[60px] sm:rounded-[80px] border-2 border-primary/10 blur-[2px]" />
+
+          {/* Glowing Border Effect */}
           <motion.div 
-            className="absolute inset-0 rounded-[60px] sm:rounded-[80px] border-2 border-primary/30"
+            className="absolute inset-0 rounded-[60px] sm:rounded-[80px] border-[3px] border-primary/40"
+            style={{
+              boxShadow: '0 0 15px var(--primary), inset 0 0 15px var(--primary)',
+            }}
             animate={{
-              opacity: [0.3, 1, 0.3],
-              filter: [
-                'drop-shadow(0 0 5px var(--primary))',
-                'drop-shadow(0 0 10px var(--primary))',
-                'drop-shadow(0 0 5px var(--primary))'
+              opacity: [0.4, 1, 0.4],
+              boxShadow: [
+                '0 0 10px var(--primary), inset 0 0 10px var(--primary)',
+                '0 0 20px var(--primary), inset 0 0 20px var(--primary)',
+                '0 0 10px var(--primary), inset 0 0 10px var(--primary)'
               ]
             }}
             transition={{
@@ -46,6 +52,25 @@ export default function Hero() {
               ease: "linear"
             }}
           />
+
+          {/* Moving Light Effect */}
+          <motion.div
+            className="absolute inset-0 rounded-[60px] sm:rounded-[80px] overflow-hidden"
+            style={{ clipPath: 'inset(0 0 0 0 round 60px)' }}
+          >
+            <motion.div
+              className="absolute w-[10px] h-[200%] bg-gradient-to-b from-transparent via-primary/40 to-transparent rotate-45"
+              animate={{
+                left: ['-10%', '110%'],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "linear",
+                repeatDelay: 1
+              }}
+            />
+          </motion.div>
         </motion.div>
 
         {/* Content */}
