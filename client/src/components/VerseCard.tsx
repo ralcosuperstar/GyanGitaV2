@@ -38,11 +38,13 @@ export default function VerseCard({
   const [showModal, setShowModal] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
 
-  // Get the primary translation, prioritizing Purohit's translation
-  const primaryTranslation = verse.purohit?.et || verse.tej.et || verse.siva?.et;
+  // If Tej translation is not available, don't show the card
+  if (!verse.tej?.et) return null;
 
-  // Check if we have any Sanskrit content
+  // Check what content is available
   const hasSanskrit = verse.slok && verse.transliteration;
+  const hasPurohit = Boolean(verse.purohit?.et);
+  const hasSiva = Boolean(verse.siva?.et);
 
   return (
     <motion.div
@@ -69,16 +71,14 @@ export default function VerseCard({
 
             {/* Main Content */}
             <div className="flex-grow space-y-6">
-              {/* English Translation */}
-              {primaryTranslation && (
-                <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
-                  <p className="text-lg text-white/90 leading-relaxed font-light">
-                    {primaryTranslation}
-                  </p>
-                </div>
-              )}
+              {/* Main Translation (Tej) */}
+              <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
+                <p className="text-lg text-white/90 leading-relaxed font-light">
+                  {verse.tej.et}
+                </p>
+              </div>
 
-              {/* Sanskrit Preview - Only show if we have both slok and transliteration */}
+              {/* Sanskrit Preview - Only show if available */}
               {hasSanskrit && (
                 <div className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10">
                   <p className="font-sanskrit text-base leading-relaxed line-clamp-2 mb-2 text-white/70">
@@ -87,6 +87,13 @@ export default function VerseCard({
                   <p className="text-sm italic text-white/50 line-clamp-1">
                     {verse.transliteration}
                   </p>
+                </div>
+              )}
+
+              {/* Translation Count Badge */}
+              {(hasPurohit || hasSiva) && (
+                <div className="text-sm text-primary/80">
+                  +{[hasPurohit, hasSiva].filter(Boolean).length} more translations available
                 </div>
               )}
             </div>
