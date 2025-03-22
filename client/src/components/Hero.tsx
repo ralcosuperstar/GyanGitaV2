@@ -77,8 +77,7 @@ export default function Hero() {
               <Button
                 className="w-full sm:w-auto px-8 py-6 text-lg font-normal
                         bg-primary/90 hover:bg-primary/80 border border-primary/30
-                        shadow-lg hover:shadow-xl transition-all duration-300 group
-                        backdrop-blur-sm"
+                        shadow-lg hover:shadow-xl transition-all duration-300 group"
                 onClick={handleScrollToMood}
               >
                 <Sparkles className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
