@@ -180,9 +180,9 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
         <h2 className="text-3xl sm:text-4xl font-medium mb-3 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
           Verses for when you feel {selectedMoodData?.label}
         </h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg">
+        <div className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg">
           {selectedMoodData?.description}
-        </p>
+        </div>
       </motion.div>
 
       {/* Verses Grid */}
@@ -211,20 +211,18 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
       {/* Enhanced Modal Dialog */}
       <Dialog open={!!selectedVerse} onOpenChange={() => setSelectedVerse(null)}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="space-y-3">
+          <DialogHeader>
             <DialogTitle className="text-2xl font-playfair text-foreground">
               Chapter {selectedVerse?.chapter}, Verse {selectedVerse?.verse}
             </DialogTitle>
-            <DialogDescription>
-              <div className="flex gap-2">
-                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                  English
-                </span>
-                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                  Sanskrit
-                </span>
-              </div>
-            </DialogDescription>
+            <div className="flex gap-2">
+              <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
+                English
+              </span>
+              <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
+                Sanskrit
+              </span>
+            </div>
           </DialogHeader>
 
           <div className="mt-8 space-y-8">
@@ -235,9 +233,9 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
                   <span className="w-2 h-2 rounded-full bg-primary"></span>
                   English Translation
                 </h3>
-                <p className="text-xl leading-relaxed text-foreground">
+                <div className="text-xl leading-relaxed text-foreground">
                   {selectedVerse?.tej.et}
-                </p>
+                </div>
               </div>
             </div>
 
@@ -248,12 +246,12 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
                 Sanskrit Text
               </h3>
               <div className="space-y-4">
-                <p className="text-2xl font-sanskrit leading-relaxed text-foreground">
+                <div className="text-2xl font-sanskrit leading-relaxed text-foreground">
                   {selectedVerse?.slok}
-                </p>
-                <p className="text-lg italic text-foreground/80">
+                </div>
+                <div className="text-lg italic text-foreground/80">
                   {selectedVerse?.transliteration}
-                </p>
+                </div>
               </div>
             </div>
 
@@ -265,9 +263,9 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
                   Commentary
                 </h3>
                 <div className="prose prose-lg max-w-none">
-                  <p className="text-base text-foreground whitespace-pre-wrap">
+                  <div className="text-base text-foreground whitespace-pre-wrap">
                     {selectedVerse.chinmay.hc}
-                  </p>
+                  </div>
                 </div>
               </div>
             )}
@@ -279,9 +277,9 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
                   <span className="w-2 h-2 rounded-full bg-primary"></span>
                   Hindi Translation
                 </h3>
-                <p className="text-lg text-foreground">
+                <div className="text-lg text-foreground">
                   {selectedVerse.tej.ht}
-                </p>
+                </div>
               </div>
             )}
           </div>
