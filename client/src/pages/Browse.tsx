@@ -15,35 +15,35 @@ export default function Browse() {
   const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
   const [expandedChapter, setExpandedChapter] = useState<number | null>(null);
 
-  // Reset scroll position when chapter changes
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [selectedGridChapter]);
-
-  // Load chapters with minimal data
-  const { data: chapters, isLoading: isLoadingChapters } = useQuery<Chapter[]>({
+  // Load chapters data
+  const { data: chapters } = useQuery<Chapter[]>({
     queryKey: ['/api/chapters'],
     queryFn: () => getChapters(),
-    staleTime: Infinity, // Chapters data doesn't change
+    staleTime: Infinity,
   });
 
-  // Load verse with optimized caching
-  const { data: verse, isLoading: isLoadingVerse } = useQuery<Verse | null>({
+  // Load verse data when selected
+  const { data: verse } = useQuery<Verse | null>({
     queryKey: [generateVerseKey(Number(selectedChapter), Number(selectedVerse))],
     queryFn: async () => {
       if (!selectedChapter || !selectedVerse) return null;
       return getVerseByChapterAndNumber(Number(selectedChapter), Number(selectedVerse));
     },
     enabled: !!(selectedChapter && selectedVerse),
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
+  // Handle verse selection
   const handleVerseSelect = (chapter: string, verse: string) => {
     setSelectedChapter(chapter);
     setSelectedVerse(verse);
   };
 
-  // Generate grid items for the selected chapter
+  // Reset scroll when changing chapters
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [selectedGridChapter]);
+
+  // Generate grid items for selected chapter
   const gridItems = selectedGridChapter && chapters
     ? Array.from({ length: chapters.find(c => c.chapter_number === selectedGridChapter)?.verses_count || 0 })
         .map((_, i) => ({
@@ -54,47 +54,8 @@ export default function Browse() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
-      <SEO 
-        title="Browse Bhagavad Gita Verses"
-        description="Explore all 700+ verses of the Bhagavad Gita. Navigate through 18 chapters of profound wisdom, with multiple translations and expert commentary."
-        keywords={[
-          "Bhagavad Gita verses",
-          "Gita chapters",
-          "Sanskrit verses",
-          "Krishna's teachings",
-          "Hindu scripture browse",
-          "spiritual text",
-          "verse translations",
-          "Gita commentary",
-          "chapter meanings",
-          "verse search"
-        ]}
-      />
-      <Helmet>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Chapter",
-            "name": selectedGridChapter 
-              ? `Chapter ${selectedGridChapter} - ${chapters?.find(c => c.chapter_number === selectedGridChapter)?.name}`
-              : "Bhagavad Gita Chapters",
-            "description": "Browse and explore the complete collection of Bhagavad Gita verses with translations and commentary",
-            "isPartOf": {
-              "@type": "Book",
-              "name": "The Bhagavad Gita",
-              "author": {
-                "@type": "Person",
-                "name": "Vyasa"
-              }
-            },
-            "mainEntityOfPage": {
-              "@type": "WebPage",
-              "@id": window.location.href
-            }
-          })}
-        </script>
-      </Helmet>
-
+      <SEO title="Browse Bhagavad Gita Verses" />
+      {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 to-primary/5 border-b">
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
           <div className="text-center max-w-2xl mx-auto">
@@ -119,8 +80,10 @@ export default function Browse() {
         </div>
       </div>
 
+      {/* Main Content */}
       <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
         {selectedGridChapter === null ? (
+          // Chapters Grid
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {chapters?.map((chapter) => (
               <motion.div
@@ -129,9 +92,7 @@ export default function Browse() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <Card className="relative overflow-hidden transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
-
+                <Card className="h-full">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <CardTitle className="font-playfair">Chapter {chapter.chapter_number}</CardTitle>
@@ -139,9 +100,10 @@ export default function Browse() {
                     </div>
                   </CardHeader>
 
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-6">
+                    {/* Basic Info */}
                     <div>
-                      <h3 className="font-medium text-lg mb-1 text-primary transition-colors">
+                      <h3 className="font-medium text-lg mb-2 text-primary">
                         {chapter.name}
                       </h3>
                       <p className="text-sm text-muted-foreground">
@@ -149,11 +111,11 @@ export default function Browse() {
                       </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
+                    {/* Action Buttons */}
+                    <div className="grid grid-cols-2 gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex-1 hover:bg-primary/10 hover:text-primary"
                         onClick={() => setExpandedChapter(
                           expandedChapter === chapter.chapter_number ? null : chapter.chapter_number
                         )}
@@ -168,7 +130,6 @@ export default function Browse() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex-1 hover:bg-primary/10 hover:text-primary"
                         onClick={() => setSelectedGridChapter(chapter.chapter_number)}
                       >
                         <Grid className="h-4 w-4 mr-2" />
@@ -176,6 +137,7 @@ export default function Browse() {
                       </Button>
                     </div>
 
+                    {/* Expanded Content */}
                     <AnimatePresence>
                       {expandedChapter === chapter.chapter_number && (
                         <motion.div
@@ -183,11 +145,10 @@ export default function Browse() {
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.3 }}
-                          className="space-y-4 overflow-hidden"
+                          className="space-y-4 pt-4"
                         >
-                          {/* Chapter Meaning */}
                           {chapter.meaning?.en && (
-                            <div className="pt-4 border-t border-border/50">
+                            <div className="border-t border-border/50 pt-4">
                               <h4 className="text-sm font-medium text-primary/80 uppercase tracking-wider mb-2">
                                 Meaning
                               </h4>
@@ -197,9 +158,8 @@ export default function Browse() {
                             </div>
                           )}
 
-                          {/* Chapter Summary */}
                           {chapter.summary?.en && (
-                            <div className="pt-4 border-t border-border/50">
+                            <div className="border-t border-border/50 pt-4">
                               <h4 className="text-sm font-medium text-primary/80 uppercase tracking-wider mb-2">
                                 Summary
                               </h4>
@@ -217,6 +177,7 @@ export default function Browse() {
             ))}
           </div>
         ) : (
+          // Verses Grid
           <div>
             <div className="flex items-center justify-between mb-8">
               <Button
@@ -241,17 +202,9 @@ export default function Browse() {
                   key={item.verseNumber}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 17,
-                    delay: item.verseNumber * 0.02
-                  }}
-                  className="h-12 w-12 rounded-md border border-input hover:bg-primary/5 flex items-center justify-center text-sm font-medium transition-colors hover:border-primary/50"
+                  className="h-12 w-12 rounded-md border border-input hover:bg-primary/5 hover:border-primary/50"
                   onClick={() => handleVerseSelect(
-                    item.chapterNumber.toString(), 
+                    item.chapterNumber.toString(),
                     item.verseNumber.toString()
                   )}
                 >
