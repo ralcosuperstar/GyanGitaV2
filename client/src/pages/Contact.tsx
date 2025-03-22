@@ -1,10 +1,6 @@
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { Mail, Phone, MessageSquare } from "lucide-react";
+import { Mail, Phone, AlertCircle } from "lucide-react";
 import PageLayout from "@/components/PageLayout";
 
 const cardVariants = {
@@ -20,54 +16,22 @@ const cardVariants = {
   }
 };
 
-const formVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-};
-
-const inputVariants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 25
-    }
-  }
-};
-
 export default function Contact() {
-  const { toast } = useToast();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Message Sent",
-      description: "We'll get back to you as soon as possible.",
-    });
-  };
-
   return (
     <PageLayout
       title="Contact Us"
-      subtitle="Have questions or feedback? We'd love to hear from you."
+      subtitle="Get in touch with us for any questions or concerns"
     >
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="max-w-3xl mx-auto">
+        {/* Contact Information */}
         <motion.div
           variants={cardVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
+          className="mb-12"
         >
-          <Card className="h-full transform hover:scale-105 transition-all duration-300">
+          <Card className="transform hover:scale-105 transition-all duration-300">
             <CardContent className="p-8">
               <h2 className="font-playfair text-2xl font-semibold mb-6">Get in Touch</h2>
               <div className="space-y-6">
@@ -102,90 +66,38 @@ export default function Contact() {
                     +91 9370922063
                   </a>
                 </motion.div>
-
-                <motion.div 
-                  className="flex items-center gap-4 group"
-                  whileHover={{ x: 10 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                >
-                  <div className="rounded-full bg-primary/10 p-4 group-hover:bg-primary/20 transition-colors">
-                    <MessageSquare className="h-6 w-6 text-primary" />
-                  </div>
-                  <p className="text-lg text-muted-foreground">
-                    Response within 24 hours
-                  </p>
-                </motion.div>
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
+        {/* Content Disclaimer */}
         <motion.div
           variants={cardVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
+          className="bg-muted/30 rounded-lg border border-primary/10 p-6"
         >
-          <Card className="h-full transform hover:scale-105 transition-all duration-300">
-            <CardContent className="p-8">
-              <motion.form 
-                onSubmit={handleSubmit} 
-                className="space-y-6"
-                variants={formVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <motion.div variants={inputVariants}>
-                  <label className="block text-sm font-medium mb-2">
-                    Name
-                  </label>
-                  <Input 
-                    placeholder="Your name"
-                    required 
-                    className="h-12 transition-all focus:scale-[1.02]"
-                  />
-                </motion.div>
-
-                <motion.div variants={inputVariants}>
-                  <label className="block text-sm font-medium mb-2">
-                    Email
-                  </label>
-                  <Input 
-                    type="email" 
-                    placeholder="Your email"
-                    required 
-                    className="h-12 transition-all focus:scale-[1.02]"
-                  />
-                </motion.div>
-
-                <motion.div variants={inputVariants}>
-                  <label className="block text-sm font-medium mb-2">
-                    Message
-                  </label>
-                  <Textarea 
-                    placeholder="Your message"
-                    className="min-h-[150px] resize-none transition-all focus:scale-[1.02]"
-                    required
-                  />
-                </motion.div>
-
-                <motion.div
-                  variants={inputVariants}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button 
-                    type="submit" 
-                    size="lg" 
-                    className="w-full h-12 transition-transform"
-                  >
-                    Send Message
-                  </Button>
-                </motion.div>
-              </motion.form>
-            </CardContent>
-          </Card>
+          <div className="flex items-start gap-4">
+            <div className="rounded-full bg-primary/10 p-3 mt-1">
+              <AlertCircle className="h-5 w-5 text-primary" />
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-lg font-medium">Content Disclaimer</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                While we strive to maintain accuracy in our Bhagavad Gita content, translations, and interpretations, 
+                we acknowledge that errors or inconsistencies may occur. We are not directly responsible for any 
+                misinterpretations but are committed to improving the content quality.
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                We welcome feedback and corrections from our users. If you find any discrepancies or have suggestions 
+                for improvement, please contact us using the information above. Your input helps us make this platform 
+                more accurate and valuable for everyone.
+              </p>
+            </div>
+          </div>
         </motion.div>
       </div>
     </PageLayout>
