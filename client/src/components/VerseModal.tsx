@@ -98,7 +98,7 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
 
       {/* Tabs */}
       <Tabs defaultValue="translation" className="space-y-6">
-        <TabsList className="flex w-full bg-transparent border-b border-white/10">
+        <TabsList className="flex w-full border-b border-white/10">
           {tabs.map(tab => (
             <TabsTrigger
               key={tab.id}
