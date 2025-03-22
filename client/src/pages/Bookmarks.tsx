@@ -55,9 +55,7 @@ export default function Bookmarks() {
       }
       const data = await response.json();
       return data as Favorite[];
-    },
-    refetchOnWindowFocus: true,
-    refetchOnMount: true
+    }
   });
 
   const { data: verseDetails = [], isLoading: isLoadingVerses } = useQuery({
@@ -91,23 +89,15 @@ export default function Bookmarks() {
       const results = await Promise.all(versePromises);
       return results.filter((v): v is NonNullable<typeof v> => v !== null);
     },
-    enabled: favorites.length > 0,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true
+    enabled: favorites.length > 0
   });
 
   const handleBookmarkChange = async (verseId: number, isBookmarked: boolean) => {
     if (!isBookmarked) {
-      // Remove verse from verseDetails immediately for optimistic UI update
+      // Remove verse from local cache immediately for optimistic UI update
       queryClient.setQueryData(['bookmarked-verses'], (oldData: any) => {
         if (!oldData) return [];
         return oldData.filter((v: any) => v.id !== verseId);
-      });
-
-      // Also update the favorites cache
-      queryClient.setQueryData(['/api/user/favorites'], (oldData: any) => {
-        if (!oldData) return [];
-        return oldData.filter((f: any) => f.id !== verseId);
       });
     }
   };

@@ -68,42 +68,39 @@ export default function VerseCard({
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to update bookmark');
+        throw new Error('Failed to update bookmark');
       }
 
       return response.json();
     },
     onMutate: async () => {
+      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['/api/user/favorites'] });
       await queryClient.cancelQueries({ queryKey: ['bookmarked-verses'] });
 
+      // Store the previous state
       const previousState = localIsBookmarked;
+
+      // Optimistically update UI
       setLocalIsBookmarked(!previousState);
 
+      // Return context for rollback
       return { previousState };
     },
-    onError: (error: Error, _, context) => {
+    onError: (_error, _vars, context) => {
+      // Rollback on error
       if (context) {
         setLocalIsBookmarked(context.previousState);
       }
       toast({
         title: "Error",
-        description: error.message,
+        description: "Failed to update bookmark",
         variant: "destructive",
         duration: 3000,
       });
     },
-    onSettled: () => {
-      // Always refresh the queries after any mutation
-      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
-      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
-    },
-    onSuccess: () => {
-      const newState = !localIsBookmarked;
-
-      // Update the local state
-      setLocalIsBookmarked(newState);
+    onSuccess: (_data, _vars, context) => {
+      const newState = !context!.previousState;
 
       // Notify parent component
       if (onBookmarkChange) {
@@ -115,8 +112,18 @@ export default function VerseCard({
         description: newState ? "Verse has been bookmarked" : "Bookmark removed",
         duration: 2000,
       });
+
+      // Refresh queries after successful mutation
+      queryClient.invalidateQueries({ queryKey: ['/api/user/favorites'] });
+      queryClient.invalidateQueries({ queryKey: ['bookmarked-verses'] });
     }
   });
+
+  const handleBookmarkClick = () => {
+    if (!bookmarkMutation.isPending) {
+      bookmarkMutation.mutate();
+    }
+  };
 
   return (
     <motion.div
@@ -150,7 +157,7 @@ export default function VerseCard({
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => !bookmarkMutation.isPending && bookmarkMutation.mutate()}
+                      onClick={handleBookmarkClick}
                       className="h-8 w-8 rounded-full hover:bg-white/10 transition-all duration-300"
                       disabled={bookmarkMutation.isPending}
                     >
