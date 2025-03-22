@@ -19,21 +19,19 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-[90vh] flex items-center justify-center overflow-visible"
-      style={{ isolation: 'isolate' }}
+      className="relative min-h-[90vh] flex items-center justify-center"
+      style={{ zIndex: 0 }}
     >
-      {/* Animation Layer */}
-      <div className="absolute inset-0" style={{ zIndex: 0 }}>
-        <ConsciousnessAnimation />
-      </div>
+      {/* Animation */}
+      <ConsciousnessAnimation />
 
-      {/* Content Layer */}
-      <div className="relative container mx-auto px-4" style={{ zIndex: 1 }}>
+      {/* Content */}
+      <div className="relative container mx-auto px-4" style={{ zIndex: 2 }}>
         <div className="max-w-4xl mx-auto text-center">
-          {/* Sacred Badge */}
+          {/* Badge */}
           <motion.div
             className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full 
-                      bg-primary/5 border border-primary/20 shadow-lg"
+                      bg-primary/5 border border-primary/20"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -42,7 +40,7 @@ export default function Hero() {
             <span className="text-sm text-white/90 font-medium">Ancient Wisdom for Modern Peace</span>
           </motion.div>
 
-          {/* Main Title */}
+          {/* Title */}
           <motion.div
             className="space-y-6"
             initial={{ opacity: 0 }}
@@ -62,7 +60,7 @@ export default function Hero() {
               helping you navigate life's challenges with clarity and purpose
             </p>
 
-            {/* Call to Action */}
+            {/* CTA */}
             <motion.div 
               className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto mt-8"
               initial={{ opacity: 0, y: 20 }}

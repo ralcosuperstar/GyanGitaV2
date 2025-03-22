@@ -3,36 +3,49 @@ import { motion } from 'framer-motion';
 const ConsciousnessAnimation = () => {
   return (
     <motion.div 
-      className="absolute inset-0 w-full h-full min-h-[90vh]"
-      style={{ backgroundColor: 'rgba(255, 0, 0, 0.1)' }} // Debug background
+      className="fixed inset-0 w-full h-full"
+      style={{ 
+        background: 'rgba(255, 0, 0, 0.1)',
+        border: '4px solid yellow',
+        zIndex: 1 
+      }}
     >
-      {/* Center Circle */}
+      {/* Main Circle */}
       <motion.div 
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 
-                   w-40 h-40 rounded-full bg-primary/30"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          width: '200px',
+          height: '200px',
+          background: 'linear-gradient(45deg, rgba(var(--primary), 0.8), rgba(var(--primary), 0.4))',
+          borderRadius: '50%',
+        }}
         animate={{
           scale: [1, 1.2, 1],
-          opacity: [0.3, 0.6, 0.3]
         }}
         transition={{
-          duration: 3,
+          duration: 2,
           repeat: Infinity,
           ease: "easeInOut"
         }}
       />
 
-      {/* Simple Pulse Ring */}
+      {/* Pulsing Ring */}
       <motion.div 
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 
-                   w-60 h-60 rounded-full border-2 border-primary/20"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          width: '300px',
+          height: '300px',
+          border: '8px solid var(--primary)',
+          borderRadius: '50%',
+        }}
         animate={{
           scale: [1, 1.5],
-          opacity: [0.5, 0]
+          opacity: [0.5, 0],
         }}
         transition={{
           duration: 2,
           repeat: Infinity,
-          ease: "easeOut"
+          ease: "linear"
         }}
       />
     </motion.div>
