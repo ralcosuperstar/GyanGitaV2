@@ -7,13 +7,12 @@
 import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Book, ArrowRight, Share2 } from "lucide-react";
+import { RefreshCw, Book, ArrowRight } from "lucide-react";
 import { moods } from "@/lib/moods";
 import { motion, AnimatePresence } from "framer-motion";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import VerseCard from "@/components/VerseCard";
 import { useToast } from "@/hooks/use-toast";
-import ShareDialog from "@/components/ShareDialog";
 import {
   Dialog,
   DialogContent,
@@ -76,37 +75,9 @@ interface VerseDisplayProps {
 
 export default function VerseDisplay({ verses, selectedMood, isLoading, onChangeMood }: VerseDisplayProps) {
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
-  const [showShareDialog, setShowShareDialog] = useState(false);
   const selectedMoodData = moods.find(m => m.id === selectedMood);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-
-  const handleShare = (verse: VerseResponse) => {
-    setSelectedVerse(verse);
-    setShowShareDialog(true);
-  };
-
-  const handleCopy = async (verse: VerseResponse) => {
-    const verseId = `${verse.chapter}-${verse.verse}`;
-    const textToCopy = `${verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht}\n\n${verse.slok}\n\n${verse.transliteration}`;
-
-    try {
-      await navigator.clipboard.writeText(textToCopy);
-      toast({
-        title: "Copied!",
-        description: "Verse has been copied to clipboard",
-        duration: 2000,
-      });
-    } catch (err) {
-      toast({
-        title: "Failed to copy",
-        description: "Please try again",
-        variant: "destructive",
-        duration: 2000,
-      });
-    }
-  };
-
 
   if (!selectedMood) return null;
 
@@ -237,21 +208,8 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
         ))}
       </motion.div>
 
-      {/* Share Dialog */}
-      <AnimatePresence>
-        {selectedVerse && (
-          <ShareDialog
-            verse={selectedVerse}
-            open={showShareDialog}
-            onOpenChange={setShowShareDialog}
-            handleCopy={handleCopy}
-            onClose={() => setSelectedVerse(null)}
-          />
-        )}
-      </AnimatePresence>
-
       {/* Enhanced Modal Dialog */}
-      <Dialog open={!!selectedVerse && !showShareDialog} onOpenChange={() => setSelectedVerse(null)}>
+      <Dialog open={!!selectedVerse} onOpenChange={() => setSelectedVerse(null)}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader className="space-y-3">
             <DialogTitle className="text-2xl font-playfair text-foreground">
@@ -329,15 +287,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
           </div>
         </DialogContent>
       </Dialog>
-      <Button
-        variant="outline"
-        size="lg"
-        className="h-14 w-full sm:w-auto group mt-8"
-        onClick={onChangeMood}
-      >
-        <RefreshCw className="h-4 w-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
-        Change Mood
-      </Button>
     </div>
   );
 }
