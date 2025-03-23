@@ -62,7 +62,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-3xl">
+      <DialogContent className="max-w-3xl">
         <DialogHeader className="border-b">
           <DialogClose onClick={() => onOpenChange(false)} />
           <div className="flex items-center gap-4 pr-10">

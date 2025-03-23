@@ -29,7 +29,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
       role="dialog"
     >
       <div 
-        className="fixed inset-0 bg-black/80 transition-opacity duration-200"
+        className="fixed inset-0 bg-black/80"
         aria-hidden="true"
         onClick={() => onOpenChange(false)}
       />
@@ -49,7 +49,7 @@ export function DialogContent({
     <div
       className={cn(
         "relative bg-background rounded-lg shadow-lg w-full max-w-3xl",
-        "transform transition-all duration-200 will-change-transform",
+        "dialog-content",
         className
       )}
       {...props}
@@ -112,9 +112,9 @@ export function DialogClose({
     <button
       type="button"
       className={cn(
-        "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background",
-        "transition-opacity hover:opacity-100 focus:outline-none focus:ring-2",
-        "focus:ring-ring focus:ring-offset-2",
+        "absolute right-4 top-4 rounded-sm opacity-70",
+        "hover:opacity-100",
+        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
         className
       )}
       {...props}
