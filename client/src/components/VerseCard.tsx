@@ -34,19 +34,24 @@ const VerseCard = memo(({
 }: VerseCardProps) => {
   const [showModal, setShowModal] = useState(false);
 
-  // Get Siva's translation first, fallback to other translations if not available
-  const translation = verse.siva?.et || verse.purohit?.et || verse.tej.et;
+  // Only use Siva's or Purohit's translation
+  const translation = verse.siva?.et || verse.purohit?.et;
+
+  if (!translation) return null;
 
   return (
     <motion.div
-      initial={false}
       className="h-full"
+      initial={false}
       whileHover={{ 
-        scale: 1.02,
-        transition: { duration: 0.2 }
+        scale: 1.01,
+        transition: { 
+          duration: 0.2,
+          ease: "easeOut"
+        }
       }}
     >
-      <Card className="h-full bg-card border-border overflow-hidden">
+      <Card className="h-full relative bg-card">
         <div className="flex flex-col h-full p-4 sm:p-6">
           {/* Header with Chapter/Verse Numbers */}
           <div className="flex items-center justify-between mb-4">
@@ -71,10 +76,10 @@ const VerseCard = memo(({
 
           {/* Actions */}
           {showActions && (
-            <div className="flex items-center gap-2 pt-4 mt-4 border-t border-border">
+            <div className="mt-4 pt-4 border-t border-border">
               <Button
                 onClick={() => setShowModal(true)}
-                className="flex-1 bg-primary/10 hover:bg-primary/20 text-primary"
+                className="w-full bg-primary/10 hover:bg-primary/20 text-primary"
               >
                 <Book className="h-4 w-4 mr-2" />
                 Read More

@@ -43,14 +43,14 @@ const VerseContent = memo(({ verse, onClose }: { verse: NonNullable<VerseModalPr
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
+  // Only Siva's and Purohit's translations
   const translations: Translation[] = [
     verse.siva?.et ? { author: 'Siva', text: verse.siva.et } : null,
     verse.purohit?.et ? { author: 'Purohit', text: verse.purohit.et } : null,
-    { author: 'Tej', text: verse.tej.et }
   ].filter((t): t is Translation => t !== null);
 
   const handleCopy = useCallback(async () => {
-    const textToCopy = `${verse.slok}\n\n${verse.transliteration}\n\n${translations[0].text}`;
+    const textToCopy = `${verse.slok}\n\n${verse.transliteration}\n\n${translations[0]?.text || ''}`;
     try {
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
@@ -98,10 +98,10 @@ const VerseContent = memo(({ verse, onClose }: { verse: NonNullable<VerseModalPr
           <button
             key={tab!.id}
             onClick={() => setActiveTab(tab!.id as TabId)}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors relative ${
+            className={`px-4 py-2 text-sm font-medium transition-colors relative ${
               activeTab === tab!.id 
-                ? 'text-primary bg-primary/10'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                ? 'text-primary'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {tab!.label}
@@ -119,10 +119,10 @@ const VerseContent = memo(({ verse, onClose }: { verse: NonNullable<VerseModalPr
       <div className="flex-1 overflow-y-auto min-h-0 p-6">
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.2 }}
+          className="space-y-8"
         >
           {activeTab === 'authors' && (
             <div className="space-y-8">
@@ -173,7 +173,7 @@ const VerseContent = memo(({ verse, onClose }: { verse: NonNullable<VerseModalPr
       </div>
 
       {/* Actions */}
-      <div className="flex-none p-6 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex-none p-6 border-t">
         <div className="flex gap-4">
           <Button
             size="lg"
@@ -220,7 +220,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-[95vh] w-[95vw] max-w-5xl p-4"> {/* Modified for fullscreen and padding */}
+      <DialogContent className="h-[95vh] w-[95vw] max-w-5xl p-4">
         <VerseContent verse={verse} onClose={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
