@@ -18,7 +18,6 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [onOpenChange]);
 
-  // Prevent body scroll when modal is open
   React.useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
@@ -42,13 +41,13 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
             className="fixed inset-0 z-50 bg-black/80"
             onClick={() => onOpenChange(false)}
           />
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-4">
+          <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 sm:p-6">
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
-              className="w-full max-w-3xl relative flex flex-col"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="w-full relative"
             >
               {children}
             </motion.div>
@@ -67,7 +66,9 @@ export function DialogContent({
   return (
     <div
       className={cn(
-        "flex flex-col overflow-hidden bg-background/95 backdrop-blur-xl shadow-lg sm:rounded-lg border border-border",
+        "relative w-full max-w-3xl mx-auto overflow-hidden rounded-lg sm:rounded-xl",
+        "bg-background/95 backdrop-blur-lg shadow-2xl border border-border",
+        "max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)]",
         className
       )}
       {...props}
@@ -84,7 +85,46 @@ export function DialogHeader({
   return (
     <div
       className={cn(
-        "flex flex-col space-y-1.5 text-center sm:text-left",
+        "flex flex-col space-y-1.5 p-4 sm:p-6",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+export function DialogClose({ 
+  className,
+  onClick,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "absolute right-4 top-4 z-50 rounded-full p-2",
+        "bg-background/80 backdrop-blur-sm border border-border shadow-sm",
+        "opacity-70 hover:opacity-100 transition-opacity",
+        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        className
+      )}
+      onClick={onClick}
+      {...props}
+    >
+      <X className="h-4 w-4" />
+      <span className="sr-only">Close</span>
+    </button>
+  );
+}
+
+export function DialogTitle({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h2
+      className={cn(
+        "text-lg font-semibold tracking-tight",
         className
       )}
       {...props}
@@ -107,21 +147,6 @@ export function DialogFooter({
   );
 }
 
-export function DialogTitle({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLHeadingElement>) {
-  return (
-    <h2
-      className={cn(
-        "text-lg font-semibold leading-none tracking-tight",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
 export function DialogDescription({
   className,
   ...props
@@ -134,25 +159,5 @@ export function DialogDescription({
       )}
       {...props}
     />
-  );
-}
-
-export function DialogClose({ 
-  className,
-  onClick,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      className={cn(
-        "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground",
-        className
-      )}
-      onClick={onClick}
-      {...props}
-    >
-      <X className="h-4 w-4" />
-      <span className="sr-only">Close</span>
-    </button>
   );
 }
