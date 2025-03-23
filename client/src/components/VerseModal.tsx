@@ -62,8 +62,8 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 overflow-hidden max-h-[90vh]">
-        <DialogHeader className="p-6 border-b relative">
+      <DialogContent className="w-full max-w-3xl">
+        <DialogHeader className="border-b">
           <DialogClose onClick={() => onOpenChange(false)} />
           <div className="flex items-center gap-4 pr-10">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -78,7 +78,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
           </div>
         </DialogHeader>
 
-        <div className="overflow-y-auto overscroll-contain">
+        <div className="overflow-y-auto max-h-[calc(85vh-14rem)]">
           <div className="p-6 space-y-8">
             {/* Sanskrit */}
             <div className="rounded-lg border bg-muted/30 p-6 space-y-3">
@@ -107,7 +107,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
           </div>
         </div>
 
-        <div className="p-6 border-t bg-background">
+        <div className="border-t p-6">
           <div className="flex gap-4">
             <Button
               className="flex-1"

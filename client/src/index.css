@@ -42,20 +42,29 @@
     @apply bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent;
   }
 
-  /* Animation utilities */
-  .animate-in {
-    animation: animate-in 0.2s ease-out;
+  /* Modal animations */
+  [role="dialog"][aria-modal="true"] {
+    animation: fadeIn 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .fade-in-0 {
-    opacity: 0;
+  [role="dialog"][aria-modal="true"] > div:first-child {
+    animation: fadeIn 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .zoom-in-95 {
-    transform: scale(0.95);
+  [role="dialog"][aria-modal="true"] > div:last-child > div {
+    animation: dialogIn 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  @keyframes animate-in {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes dialogIn {
     from {
       opacity: 0;
       transform: scale(0.95);
@@ -65,28 +74,13 @@
       transform: scale(1);
     }
   }
-
-  /* Smooth transitions */
-  .transition-all {
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 200ms;
-  }
-
-  .transition-transform {
-    transition-property: transform;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 200ms;
-  }
-
-  .transition-opacity {
-    transition-property: opacity;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 200ms;
-  }
 }
 
 @layer utilities {
+  .will-change-transform {
+    will-change: transform;
+  }
+
   .text-balance {
     text-wrap: balance;
   }

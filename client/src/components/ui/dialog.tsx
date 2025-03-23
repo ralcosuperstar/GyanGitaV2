@@ -23,9 +23,14 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
-      <div
+    <div 
+      className="fixed inset-0 z-50"
+      aria-modal="true"
+      role="dialog"
+    >
+      <div 
         className="fixed inset-0 bg-black/80 transition-opacity duration-200"
+        aria-hidden="true"
         onClick={() => onOpenChange(false)}
       />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -43,9 +48,8 @@ export function DialogContent({
   return (
     <div
       className={cn(
-        "relative bg-background rounded-lg shadow-lg",
-        "w-full max-w-3xl transition-all duration-200",
-        "animate-in fade-in-0 zoom-in-95",
+        "relative bg-background rounded-lg shadow-lg w-full max-w-3xl",
+        "transform transition-all duration-200 will-change-transform",
         className
       )}
       {...props}
@@ -77,7 +81,22 @@ export function DialogTitle({
   return (
     <h2
       className={cn(
-        "text-lg font-semibold tracking-tight",
+        "text-lg font-semibold leading-none tracking-tight",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+export function DialogDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cn(
+        "text-sm text-muted-foreground",
         className
       )}
       {...props}
@@ -93,9 +112,9 @@ export function DialogClose({
     <button
       type="button"
       className={cn(
-        "absolute right-4 top-4 rounded-sm opacity-70",
-        "transition-opacity hover:opacity-100",
-        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background",
+        "transition-opacity hover:opacity-100 focus:outline-none focus:ring-2",
+        "focus:ring-ring focus:ring-offset-2",
         className
       )}
       {...props}
