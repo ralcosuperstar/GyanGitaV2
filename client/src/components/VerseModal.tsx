@@ -35,12 +35,14 @@ interface VerseModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+type TabId = 'authors' | 'original' | 'commentary';
+
 const VerseContent = memo(({ verse, onClose }: { verse: NonNullable<VerseModalProps["verse"]>; onClose: () => void }) => {
+  const [activeTab, setActiveTab] = useState<TabId>('authors');
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  // Get available translations
   const translations: Translation[] = [
     verse.siva?.et ? { author: 'Siva', text: verse.siva.et } : null,
     verse.purohit?.et ? { author: 'Purohit', text: verse.purohit.et } : null,
@@ -69,124 +71,132 @@ const VerseContent = memo(({ verse, onClose }: { verse: NonNullable<VerseModalPr
   }, [verse, translations, toast]);
 
   return (
-    <div className="flex flex-col divide-y divide-border">
+    <div className="flex flex-col h-full min-h-0">
       {/* Header */}
-      <DialogHeader className="flex-none relative">
+      <DialogHeader className="relative px-6 pt-6 pb-4">
         <DialogClose onClick={onClose} />
-        <div className="flex items-center gap-3 pr-8">
-          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-            <Heart className="h-5 w-5 text-primary" />
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <Heart className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <DialogTitle>
+            <DialogTitle className="text-xl sm:text-2xl font-semibold">
               Chapter {verse.chapter}, Verse {verse.verse}
             </DialogTitle>
-            <div className="text-sm text-muted-foreground">Bhagavad Gita</div>
+            <div className="text-sm text-muted-foreground mt-1">Bhagavad Gita</div>
           </div>
         </div>
       </DialogHeader>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto overscroll-contain">
-        <div className="p-4 sm:p-6 space-y-6">
-          {/* Sanskrit Text */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-lg border bg-muted/30 p-4 space-y-3"
+      {/* Tabs */}
+      <div className="flex px-6 gap-2 border-b">
+        {[
+          { id: 'authors', label: 'Authors' },
+          { id: 'original', label: 'Original Text' },
+          verse.chinmay?.hc ? { id: 'commentary', label: 'Commentary' } : null
+        ].filter(Boolean).map((tab) => (
+          <button
+            key={tab!.id}
+            onClick={() => setActiveTab(tab!.id as TabId)}
+            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors relative ${
+              activeTab === tab!.id 
+                ? 'text-primary bg-primary/10'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            }`}
           >
-            <div className="text-sm font-medium text-muted-foreground">
-              Sanskrit
-            </div>
-            <div className="text-lg sm:text-xl font-sanskrit leading-relaxed">
-              {verse.slok}
-            </div>
-            <div className="text-sm italic text-muted-foreground">
-              {verse.transliteration}
-            </div>
-          </motion.div>
+            {tab!.label}
+            {activeTab === tab!.id && (
+              <motion.div 
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+              />
+            )}
+          </button>
+        ))}
+      </div>
 
-          {/* Translations */}
-          <div className="space-y-6">
-            {translations.map((trans, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="space-y-2"
-              >
-                <div className="text-sm font-medium text-muted-foreground">
-                  {trans.author}'s Translation
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto min-h-0 p-6">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          {activeTab === 'authors' && (
+            <div className="space-y-8">
+              {translations.map((trans, idx) => (
+                <div key={idx} className="space-y-2">
+                  <h3 className="text-lg font-medium text-primary">
+                    {trans.author}'s Translation
+                  </h3>
+                  <p className="text-lg sm:text-xl leading-relaxed">
+                    {trans.text}
+                  </p>
                 </div>
-                <div className="text-base sm:text-lg leading-relaxed">
-                  {trans.text}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Hindi Translation if available */}
-          {verse.tej.ht && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="rounded-lg border bg-muted/30 p-4 space-y-3"
-            >
-              <div className="text-sm font-medium text-muted-foreground">
-                हिंदी अनुवाद
-              </div>
-              <div className="text-base sm:text-lg leading-relaxed">
-                {verse.tej.ht}
-              </div>
-            </motion.div>
+              ))}
+            </div>
           )}
 
-          {/* Commentary if available */}
-          {verse.chinmay?.hc && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="space-y-3"
-            >
-              <div className="text-sm font-medium text-muted-foreground">
-                Commentary
-              </div>
-              <div className="prose prose-sm prose-invert max-w-none">
-                <div className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
-                  {verse.chinmay.hc}
+          {activeTab === 'original' && (
+            <div className="space-y-8">
+              <div className="rounded-xl border bg-muted/30 p-6 space-y-4">
+                <h3 className="text-lg font-medium text-primary">Sanskrit</h3>
+                <div className="text-xl sm:text-2xl font-sanskrit leading-relaxed">
+                  {verse.slok}
+                </div>
+                <div className="text-sm italic text-muted-foreground">
+                  {verse.transliteration}
                 </div>
               </div>
-            </motion.div>
+
+              {verse.tej.ht && (
+                <div className="rounded-xl border bg-muted/30 p-6 space-y-4">
+                  <h3 className="text-lg font-medium text-primary">हिंदी अनुवाद</h3>
+                  <div className="text-lg sm:text-xl leading-relaxed">
+                    {verse.tej.ht}
+                  </div>
+                </div>
+              )}
+            </div>
           )}
-        </div>
+
+          {activeTab === 'commentary' && verse.chinmay?.hc && (
+            <div className="prose prose-lg prose-invert max-w-none">
+              <div className="text-lg leading-relaxed whitespace-pre-wrap">
+                {verse.chinmay.hc}
+              </div>
+            </div>
+          )}
+        </motion.div>
       </div>
 
       {/* Actions */}
-      <div className="flex-none p-4 sm:p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex gap-3">
+      <div className="flex-none p-6 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex gap-4">
           <Button
+            size="lg"
             className="flex-1 bg-primary hover:bg-primary/90"
             onClick={() => setShowShareDialog(true)}
           >
-            <Share2 className="h-4 w-4 mr-2" />
+            <Share2 className="h-5 w-5 mr-2" />
             Share
           </Button>
           <Button
+            size="lg"
             variant="outline"
             className="flex-1"
             onClick={handleCopy}
           >
             {copied ? (
               <>
-                <Check className="h-4 w-4 mr-2" />
+                <Check className="h-5 w-5 mr-2" />
                 Copied
               </>
             ) : (
               <>
-                <Copy className="h-4 w-4 mr-2" />
+                <Copy className="h-5 w-5 mr-2" />
                 Copy
               </>
             )}
@@ -210,7 +220,7 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)]">
+      <DialogContent className="h-[95vh] w-[95vw] max-w-5xl p-4"> {/* Modified for fullscreen and padding */}
         <VerseContent verse={verse} onClose={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
