@@ -1,6 +1,5 @@
 import chaptersData from '@/assets/data/chapters/index.json';
-import type { Chapter } from '@/lib/types';
-import moodsData from '@/assets/data/moods.json';
+import moods from '@/assets/data/moods.json';
 
 // Types for verse data
 export interface Verse {
@@ -25,81 +24,183 @@ export interface Verse {
 
 // Helper function to normalize mood names
 const normalizeMoodName = (mood: string): string => {
-  return mood.toUpperCase().trim();
+  return mood.toUpperCase()
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/OF A/g, 'OF')
+    .trim();
 };
 
-// Get verse by chapter and number
-export const getVerseByChapterAndNumber = async (
-  chapter: number,
-  verse: number,
-  retries = 3
-): Promise<Verse | null> => {
-  const versePath = `/assets/data/slok/${chapter}/${verse}/index.json`;
-  console.log(`[Verse] Loading verse from path: ${versePath}`);
+// Helper function to generate verse key
+export const generateVerseKey = (chapter: number, verse: number) =>
+  `${chapter}-${verse}`;
 
-  for (let attempt = 0; attempt < retries; attempt++) {
-    try {
-      const response = await fetch(versePath);
+// Helper function to get data file path
+const getVerseDataPath = (chapter: number, verse: number): string => {
+  // In development, assets are served from /src
+  // In production, assets are served from /assets
+  const baseUrl = import.meta.env.DEV ? '/src/assets' : '/assets';
+  return `${baseUrl}/data/slok/${chapter}/${verse}/index.json`;
+};
 
-      if (response.ok) {
-        const verseData = await response.json();
-        console.log(`[Verse] Successfully loaded verse ${chapter}:${verse}`);
-        return { ...verseData, chapter, verse };
-      }
+// Get a verse by chapter and number with retries
+export const getVerseByChapterAndNumber = async (chapter: number, verse: number, retries = 2): Promise<Verse | null> => {
+  try {
+    const versePath = getVerseDataPath(chapter, verse);
+    console.log(`Attempting to load verse from: ${versePath}`);
 
-      console.log(`[Verse] Attempt ${attempt + 1} failed, status: ${response.status}`);
+    let response;
+    let attempt = 0;
 
-      if (attempt < retries - 1) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-    } catch (error) {
-      console.error(`[Verse] Error loading verse ${chapter}:${verse}, attempt ${attempt + 1}:`, error);
-      if (attempt < retries - 1) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    while (attempt <= retries) {
+      try {
+        response = await fetch(versePath, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+
+        if (response.ok) break;
+
+        attempt++;
+        if (attempt <= retries) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      } catch (fetchError) {
+        console.error(`Attempt ${attempt + 1} failed:`, fetchError);
+        if (attempt === retries) throw fetchError;
+        attempt++;
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
       }
     }
-  }
 
-  console.error(`[Verse] Failed to load verse ${chapter}:${verse} after ${retries} attempts`);
-  return null;
+    if (!response || !response.ok) {
+      console.error(`Failed to load verse ${chapter}:${verse} after ${retries + 1} attempts. Status: ${response?.status}`);
+      console.error(`Attempted path: ${versePath}`);
+      return null;
+    }
+
+    try {
+      const verseData = await response.json();
+      return {
+        ...verseData,
+        chapter,
+        verse
+      };
+    } catch (parseError) {
+      console.error(`Failed to parse JSON for verse ${chapter}:${verse}:`, parseError);
+      console.error('Response text:', await response.text());
+      return null;
+    }
+  } catch (error) {
+    console.error(`Error loading verse ${chapter}:${verse}:`, error);
+    console.error('Full error details:', error);
+    return null;
+  }
 };
 
-// Get verses for a specific mood
+// Get random verse with retries
+export const getRandomVerse = async (): Promise<Verse | null> => {
+  try {
+    const chapters = getChapters();
+    const maxAttempts = 3;
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      try {
+        const randomChapter = Math.floor(Math.random() * chapters.length) + 1;
+        const chapterData = chapters[randomChapter - 1];
+
+        if (!chapterData) {
+          console.error('Invalid chapter data when getting random verse');
+          return null;
+        }
+
+        const randomVerse = Math.floor(Math.random() * chapterData.verses_count) + 1;
+        console.log(`Getting random verse from chapter ${randomChapter}, verse ${randomVerse}`);
+
+        const verse = await getVerseByChapterAndNumber(randomChapter, randomVerse);
+        if (verse) return verse;
+
+        attempts++;
+      } catch (error) {
+        console.error(`Attempt ${attempts + 1} failed:`, error);
+        attempts++;
+        if (attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+        }
+      }
+    }
+
+    console.error(`Failed to get random verse after ${maxAttempts} attempts`);
+    return null;
+  } catch (error) {
+    console.error('Error getting random verse:', error);
+    return null;
+  }
+};
+
+// Get verses for a specific mood with better error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
     const searchMood = normalizeMoodName(mood);
-    console.log(`[Mood] Looking for verses with mood: "${searchMood}"`);
-    console.log('[Mood] Available moods:', moodsData.moods.map(m => m.name));
+    console.log(`Looking for verses for mood: "${searchMood}"`);
 
-    const moodData = moodsData.moods.find(m => 
+    const moodData = moods.moods.find(m =>
       normalizeMoodName(m.name) === searchMood
     );
 
     if (!moodData?.verses?.length) {
-      console.warn(`[Mood] No verses found for mood: "${searchMood}"`);
+      console.warn(`No verses defined for mood: "${searchMood}"`);
       return [];
     }
 
-    console.log(`[Mood] Found ${moodData.verses.length} verse references for mood: "${searchMood}"`);
-
     const verses = await Promise.all(
-      moodData.verses.map(verseRef => 
-        getVerseByChapterAndNumber(verseRef.chapter, verseRef.verse)
-      )
+      moodData.verses.map(async verseRef => {
+        try {
+          const verse = await getVerseByChapterAndNumber(
+            Number(verseRef.chapter),
+            Number(verseRef.verse)
+          );
+          if (!verse) {
+            console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${searchMood}`);
+          }
+          return verse;
+        } catch (error) {
+          console.error(`Error loading verse ${verseRef.chapter}:${verseRef.verse}:`, error);
+          return null;
+        }
+      })
     );
 
-    const validVerses = verses.filter((verse): verse is Verse => verse !== null);
-    console.log(`[Mood] Successfully loaded ${validVerses.length} verses for mood "${searchMood}"`);
-
+    const validVerses = verses.filter((v): v is Verse => v !== null);
+    console.log(`Successfully loaded ${validVerses.length} out of ${moodData.verses.length} verses for mood ${searchMood}`);
     return validVerses;
   } catch (error) {
-    console.error('[Mood] Error loading verses for mood:', error);
+    console.error('Error loading verses for mood:', error);
     return [];
   }
 };
 
 // Export helper functions
 export const getChapters = () => chaptersData;
+export const preloadVersesByMood = (mood: string) => getVersesByMood(mood).catch(console.error);
 
-// Export types
-export type { Chapter };
+// Types
+export interface Chapter {
+  chapter_number: number;
+  verses_count: number;
+  name: string;
+  name_meaning: string;
+  translation?: string;
+  transliteration?: string;
+  meaning?: {
+    en: string;
+    hi: string;
+  };
+  summary?: {
+    en: string;
+    hi: string;
+  };
+}
