@@ -167,28 +167,32 @@ export default function Home() {
 
             {/* Main Title */}
             <motion.div
-              className="space-y-6"
+              className="space-y-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight">
-                <span className="block leading-tight text-white/90">
-                  Tired of Endless Scrolling
-                </span>
-                <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                  But Still Feeling Empty?
-                </span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-light">
+                <div className="mb-6">
+                  <span className="block text-white/90 leading-[1.4]">
+                    Tired of Endless Scrolling
+                  </span>
+                </div>
+                <div>
+                  <span className="block font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent leading-[1.4]">
+                    But Still Feeling Empty?
+                  </span>
+                </div>
               </h1>
 
-              <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed">
+              <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed mt-8">
                 Discover ancient wisdom that actually helps with modern struggles - anxiety, loneliness, 
                 and the constant pressure to "have it all figured out"
               </p>
 
               {/* Call to Action */}
               <motion.div 
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto mt-8"
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto mt-12"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
