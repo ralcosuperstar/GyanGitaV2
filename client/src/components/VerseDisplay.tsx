@@ -14,10 +14,10 @@ import { SkeletonCard } from "@/components/ui/skeleton-card";
 import VerseCard from "@/components/VerseCard";
 import { useToast } from "@/hooks/use-toast";
 import ShareDialog from "@/components/ShareDialog";
+import { useLocation } from "wouter";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -80,6 +80,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
   const selectedMoodData = moods.find(m => m.id === selectedMood);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleShare = (verse: VerseResponse) => {
     setSelectedVerse(verse);
@@ -106,7 +107,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
       });
     }
   };
-
 
   if (!selectedMood) return null;
 
@@ -237,6 +237,36 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
         ))}
       </motion.div>
 
+      {/* Action Buttons */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="flex flex-col sm:flex-row justify-center gap-4 mt-12"
+      >
+        <Button
+          variant="outline"
+          size="lg"
+          className="h-14 px-8 group relative before:absolute before:inset-0 before:rounded-md before:border before:border-primary/50 before:animate-[border-glow_4s_ease-in-out_infinite]"
+          onClick={onChangeMood}
+        >
+          <RefreshCw className="h-4 w-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
+          Change Mood
+        </Button>
+        <Button
+          size="lg"
+          className="h-14 px-8 bg-primary/90 hover:bg-primary group relative
+                     before:absolute before:inset-0 before:rounded-md before:border before:border-primary/50
+                     before:animate-[border-glow_4s_ease-in-out_infinite]
+                     after:absolute after:inset-0 after:rounded-md after:border-2 after:border-primary/20
+                     after:animate-[border-glow_4s_ease-in-out_infinite_0.5s]"
+          onClick={() => setLocation("/browse")}
+        >
+          Explore More
+          <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+        </Button>
+      </motion.div>
+
       {/* Share Dialog */}
       <AnimatePresence>
         {selectedVerse && (
@@ -250,27 +280,26 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
         )}
       </AnimatePresence>
 
-      {/* Enhanced Modal Dialog */}
+      {/* Verse Detail Dialog */}
       <Dialog open={!!selectedVerse && !showShareDialog} onOpenChange={() => setSelectedVerse(null)}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="space-y-3">
+          <DialogHeader>
             <DialogTitle className="text-2xl font-playfair text-foreground">
               Chapter {selectedVerse?.chapter}, Verse {selectedVerse?.verse}
             </DialogTitle>
-            <DialogDescription>
-              <div className="flex gap-2">
-                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                  English
-                </span>
-                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                  Sanskrit
-                </span>
-              </div>
-            </DialogDescription>
+            <div className="flex gap-2">
+              <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
+                English
+              </span>
+              <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
+                Sanskrit
+              </span>
+            </div>
           </DialogHeader>
 
+          {/* Verse Content */}
           <div className="mt-8 space-y-8">
-            {/* English Translation Section */}
+            {/* English Translation */}
             <div className="space-y-6">
               <div className="bg-card rounded-lg p-6 space-y-4">
                 <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
@@ -283,7 +312,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
               </div>
             </div>
 
-            {/* Sanskrit Text Section */}
+            {/* Sanskrit Text */}
             <div className="bg-card rounded-lg p-6 space-y-4">
               <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                 <span className="w-2 h-2 rounded-full bg-primary"></span>
@@ -298,46 +327,9 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
                 </p>
               </div>
             </div>
-
-            {/* Commentary Section */}
-            {selectedVerse?.chinmay?.hc && (
-              <div className="bg-card rounded-lg p-6 space-y-4">
-                <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
-                  <span className="w-2 h-2 rounded-full bg-primary"></span>
-                  Commentary
-                </h3>
-                <div className="prose prose-lg max-w-none">
-                  <p className="text-base text-foreground whitespace-pre-wrap">
-                    {selectedVerse.chinmay.hc}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Hindi Translation */}
-            {selectedVerse?.tej.ht && (
-              <div className="bg-card rounded-lg p-6 space-y-4">
-                <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
-                  <span className="w-2 h-2 rounded-full bg-primary"></span>
-                  Hindi Translation
-                </h3>
-                <p className="text-lg text-foreground">
-                  {selectedVerse.tej.ht}
-                </p>
-              </div>
-            )}
           </div>
         </DialogContent>
       </Dialog>
-      <Button
-        variant="outline"
-        size="lg"
-        className="h-14 w-full sm:w-auto group mt-8"
-        onClick={onChangeMood}
-      >
-        <RefreshCw className="h-4 w-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
-        Change Mood
-      </Button>
     </div>
   );
 }
