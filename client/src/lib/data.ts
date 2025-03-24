@@ -145,7 +145,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
       return [];
     }
 
-    const moodData = moods.moods.find(m => 
+    const moodData = moods.moods.find(m =>
       normalizeMoodName(m.name) === searchMood
     );
 
