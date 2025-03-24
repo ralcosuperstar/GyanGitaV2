@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, RefreshCw, Heart, Sparkles, BookOpen, ChevronDown } from "lucide-react";
+import { ArrowRight, RefreshCw, Heart, Sparkles, BookOpen, ChevronDown, ArrowDown } from "lucide-react";
 import MoodSelector from "@/components/MoodSelector";
 import VerseDisplay from "@/components/VerseDisplay";
 import VerseModal from "@/components/VerseModal";
@@ -45,6 +45,8 @@ export default function Home() {
   const moodSectionRef = useRef<HTMLDivElement>(null);
   const verseSectionRef = useRef<HTMLDivElement>(null);
   const [, setLocation] = useLocation();
+  const [fadeOpacity, setFadeOpacity] = useState(0);
+
 
   // Handle deep linking and verse fetching logic
   useEffect(() => {
@@ -92,6 +94,15 @@ export default function Home() {
     }
   }, [selectedMood]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setFadeOpacity(window.scrollY > 50 ? 1 : 0);
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+
   const handleChangeMood = () => {
     setSelectedMood(null);
     if (moodSectionRef.current) {
@@ -106,7 +117,6 @@ export default function Home() {
         description="Discover personalized guidance from the Bhagavad Gita that speaks to your emotional state. Transform life's challenges into opportunities for growth with timeless wisdom."
       />
       <Helmet>
-        {/* Schema.org markup for spiritual/religious content */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -131,20 +141,20 @@ export default function Home() {
         </script>
       </Helmet>
 
-      {/* Hero Section with enhanced visuals and copy */}
+      {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16 sm:py-24">
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-40" />
         </div>
 
-        <FloatingElement className="top-20 left-10" delay={0} />
-        <FloatingElement className="bottom-40 right-20" delay={5} />
+        <FloatingElement className="top-20 -left-20 lg:left-10" delay={0} />
+        <FloatingElement className="bottom-40 -right-20 lg:right-10" delay={5} />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            {/* Emotional Badge */}
+            {/* Sacred Badge */}
             <motion.div
-              className="inline-flex items-center px-6 py-2 mb-8 rounded-full 
+              className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full 
                       backdrop-blur-xl bg-primary/5 border border-primary/20 shadow-lg
                       hover:bg-primary/10 transition-all duration-300"
               initial={{ opacity: 0, y: -20 }}
@@ -152,80 +162,59 @@ export default function Home() {
               transition={{ duration: 0.6 }}
             >
               <Heart className="h-4 w-4 mr-2 text-primary" />
-              <span className="text-white/90 font-medium">Ancient Wisdom for Modern Peace</span>
+              <span className="text-sm text-white/90 font-medium">Stop Scrolling, Start Healing</span>
             </motion.div>
 
-            {/* Main Title and Value Proposition */}
+            {/* Main Title */}
             <motion.div
               className="space-y-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight">
                 <span className="block leading-tight text-white/90">
-                  Feeling overwhelmed?
-                  <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                    Find your inner peace
-                  </span>
+                  Tired of Endless Scrolling
+                </span>
+                <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                  But Still Feeling Empty?
                 </span>
               </h1>
 
-              <p className="text-lg sm:text-xl text-white/60 max-w-2xl mx-auto font-light">
-                Let the timeless wisdom of the Bhagavad Gita guide you through life's challenges with personalized verses that resonate with your current emotional state
+              <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed">
+                Discover ancient wisdom that actually helps with modern struggles - anxiety, loneliness, 
+                and the constant pressure to "have it all figured out"
               </p>
 
-              {/* Primary CTA */}
-              <motion.div
+              {/* Call to Action */}
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto mt-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="pt-8"
+                transition={{ duration: 0.8, delay: 0.4 }}
               >
                 <Button
-                  size="lg"
-                  className="bg-primary/90 hover:bg-primary shadow-lg hover:shadow-xl transition-all duration-300 
-                           group relative overflow-hidden h-14 px-8 rounded-full
-                           before:absolute before:inset-0 before:rounded-full before:border before:border-primary/50
-                           before:animate-[border-glow_4s_ease-in-out_infinite]
-                           after:absolute after:inset-0 after:rounded-full after:border-2 after:border-primary/20
-                           after:animate-[border-glow_4s_ease-in-out_infinite_0.5s]"
-                  onClick={() => {
-                    if (moodSectionRef.current) {
-                      moodSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                  }}
+                  className="w-full sm:w-auto px-8 py-6 text-lg font-normal
+                          bg-primary/90 hover:bg-primary/80 border border-primary/30
+                          shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  onClick={handleChangeMood}
                 >
-                  <span className="relative z-10 flex items-center justify-center gap-2 text-lg">
-                    Begin Your Journey
-                    <motion.span
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.5 }}
-                    >
-                      →
-                    </motion.span>
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <Sparkles className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
+                  Begin Your Journey
                 </Button>
               </motion.div>
-
-              {/* Scroll Indicator */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-              >
-                <motion.div
-                  animate={{ y: [0, 8, 0] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="text-primary/60"
-                >
-                  <ChevronDown className="h-4 w-4" />
-                </motion.div>
-              </motion.div>
-
             </motion.div>
           </div>
+
+          {/* Scroll Indicator */}
+          <motion.div 
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/40"
+            style={{ opacity: fadeOpacity }}
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+          >
+            <ArrowDown className="h-6 w-6" />
+          </motion.div>
         </div>
       </section>
 
