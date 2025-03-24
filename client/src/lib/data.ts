@@ -1,4 +1,3 @@
-// Import necessary data
 import chaptersData from '@/assets/data/chapters/index.json';
 import moods from '@/assets/data/moods.json';
 
@@ -44,16 +43,40 @@ const getVerseDataPath = (chapter: number, verse: number): string => {
   return `${baseUrl}/data/slok/${chapter}/${verse}/index.json`;
 };
 
-// Get a verse by chapter and number
-export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
+// Get a verse by chapter and number with retries
+export const getVerseByChapterAndNumber = async (chapter: number, verse: number, retries = 2): Promise<Verse | null> => {
   try {
     const versePath = getVerseDataPath(chapter, verse);
     console.log(`Attempting to load verse from: ${versePath}`);
 
-    const response = await fetch(versePath);
+    let response;
+    let attempt = 0;
 
-    if (!response.ok) {
-      console.error(`Failed to load verse ${chapter}:${verse}. Status: ${response.status}`);
+    while (attempt <= retries) {
+      try {
+        response = await fetch(versePath, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
+
+        if (response.ok) break;
+
+        attempt++;
+        if (attempt <= retries) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      } catch (fetchError) {
+        console.error(`Attempt ${attempt + 1} failed:`, fetchError);
+        if (attempt === retries) throw fetchError;
+        attempt++;
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+
+    if (!response || !response.ok) {
+      console.error(`Failed to load verse ${chapter}:${verse} after ${retries + 1} attempts. Status: ${response?.status}`);
       console.error(`Attempted path: ${versePath}`);
       return null;
     }
@@ -77,13 +100,54 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
   }
 };
 
-// Get verses for a specific mood
+// Get random verse with retries
+export const getRandomVerse = async (): Promise<Verse | null> => {
+  try {
+    const chapters = getChapters();
+    const maxAttempts = 3;
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      try {
+        const randomChapter = Math.floor(Math.random() * chapters.length) + 1;
+        const chapterData = chapters[randomChapter - 1];
+
+        if (!chapterData) {
+          console.error('Invalid chapter data when getting random verse');
+          return null;
+        }
+
+        const randomVerse = Math.floor(Math.random() * chapterData.verses_count) + 1;
+        console.log(`Getting random verse from chapter ${randomChapter}, verse ${randomVerse}`);
+
+        const verse = await getVerseByChapterAndNumber(randomChapter, randomVerse);
+        if (verse) return verse;
+
+        attempts++;
+      } catch (error) {
+        console.error(`Attempt ${attempts + 1} failed:`, error);
+        attempts++;
+        if (attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+        }
+      }
+    }
+
+    console.error(`Failed to get random verse after ${maxAttempts} attempts`);
+    return null;
+  } catch (error) {
+    console.error('Error getting random verse:', error);
+    return null;
+  }
+};
+
+// Get verses for a specific mood with better error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
     const searchMood = normalizeMoodName(mood);
     console.log(`Looking for verses for mood: "${searchMood}"`);
 
-    const moodData = moods.moods.find(m => 
+    const moodData = moods.moods.find(m =>
       normalizeMoodName(m.name) === searchMood
     );
 
@@ -115,62 +179,6 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     return validVerses;
   } catch (error) {
     console.error('Error loading verses for mood:', error);
-    return [];
-  }
-};
-
-// Get random verse
-export const getRandomVerse = async (): Promise<Verse | null> => {
-  try {
-    const chapters = getChapters();
-    const randomChapter = Math.floor(Math.random() * chapters.length) + 1;
-    const chapterData = chapters[randomChapter - 1];
-
-    if (!chapterData) {
-      console.error('Invalid chapter data when getting random verse');
-      return null;
-    }
-
-    const randomVerse = Math.floor(Math.random() * chapterData.verses_count) + 1;
-    console.log(`Getting random verse from chapter ${randomChapter}, verse ${randomVerse}`);
-    return getVerseByChapterAndNumber(randomChapter, randomVerse);
-  } catch (error) {
-    console.error('Error getting random verse:', error);
-    return null;
-  }
-};
-
-// Get related verses
-export const getRelatedVerses = async (currentChapter: number, currentVerse: number): Promise<Verse[]> => {
-  try {
-    const chapters = getChapters();
-    const relatedVerses: Verse[] = [];
-    const maxAttempts = 6;
-    let attempts = 0;
-
-    while (relatedVerses.length < 3 && attempts < maxAttempts) {
-      attempts++;
-      const randomChapter = Math.floor(Math.random() * chapters.length) + 1;
-      const chapterData = chapters[randomChapter - 1];
-
-      if (!chapterData) continue;
-
-      const randomVerse = Math.floor(Math.random() * chapterData.verses_count) + 1;
-
-      // Skip if it's the current verse
-      if (randomChapter === currentChapter && randomVerse === currentVerse) {
-        continue;
-      }
-
-      const verseData = await getVerseByChapterAndNumber(randomChapter, randomVerse);
-      if (verseData && !relatedVerses.some(v => v.chapter === verseData.chapter && v.verse === verseData.verse)) {
-        relatedVerses.push(verseData);
-      }
-    }
-
-    return relatedVerses;
-  } catch (error) {
-    console.error('Error getting related verses:', error);
     return [];
   }
 };
