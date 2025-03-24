@@ -226,46 +226,50 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
   }
 };
 
+// Import all verses
+import verse_2_56 from '@/assets/data/slok/2/56/index.json' assert { type: 'json' };
+import verse_2_62 from '@/assets/data/slok/2/62/index.json' assert { type: 'json' };
+// ... (keep other verse imports)
+
+const verseMap = {
+  '2-56': verse_2_56,
+  '2-62': verse_2_62,
+  // ... (add all other verses)
+};
+
 // Get verses for a specific mood with improved error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
-    console.log(`Original mood input:`, mood);
-    const searchMood = normalizeMoodName(mood);
-    console.log(`Looking for verses with normalized mood: "${searchMood}"`);
+    const searchMood = mood.toUpperCase();
+    console.log(`Looking for verses for mood: "${searchMood}"`);
 
-    // Find mood data with case-insensitive comparison
-    const moodData = moods.moods.find(m => {
-      const normalizedMoodName = normalizeMoodName(m.name);
-      console.log(`Comparing "${normalizedMoodName}" with "${searchMood}"`);
-      return normalizedMoodName === searchMood;
-    });
+    // Find mood data
+    const moodData = moods.moods.find(m => m.name === searchMood);
 
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: "${searchMood}"`);
-      console.log(`Available moods:`, moods.moods.map(m => m.name));
       return [];
     }
 
     console.log(`Found ${moodData.verses.length} verses for mood "${searchMood}":`, 
       moodData.verses.map(v => `${v.chapter}:${v.verse}`).join(', '));
 
-    const verses = await Promise.all(
-      moodData.verses.map(async verseRef => {
-        try {
-          const verse = await getVerseByChapterAndNumber(
-            verseRef.chapter,
-            verseRef.verse
-          );
-          if (!verse) {
-            console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${searchMood}`);
-          }
-          return verse;
-        } catch (error) {
-          console.error(`Error loading verse ${verseRef.chapter}:${verseRef.verse}:`, error);
-          return null;
-        }
-      })
-    );
+    const verses = moodData.verses.map(verseRef => {
+      const key = `${verseRef.chapter}-${verseRef.verse}`;
+      const verse = verseMap[key];
+      
+      if (!verse) {
+        console.error(`Missing verse data for ${key}`);
+        return null;
+      }
+      
+      return {
+        ...verse,
+        chapter: verseRef.chapter,
+        verse: verseRef.verse,
+        theme: verseRef.theme
+      };
+    });
 
     const validVerses = verses.filter((v): v is Verse => v !== null);
     console.log(`Successfully loaded ${validVerses.length} out of ${moodData.verses.length} verses for mood ${searchMood}`);
