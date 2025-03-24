@@ -56,26 +56,63 @@ export default function Browse() {
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
       <SEO title="Browse Bhagavad Gita Verses" />
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 to-primary/5 border-b">
-        <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background border-b">
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,black)] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+
+        <div className="container mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 relative">
           <div className="text-center max-w-2xl mx-auto">
-            <motion.h1
-              className="text-4xl font-playfair font-bold mb-4"
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
             >
-              <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Browse Verses
-              </span>
-            </motion.h1>
-            <motion.p
-              className="text-lg text-muted-foreground mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              Explore the timeless wisdom of the Bhagavad Gita
-            </motion.p>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-playfair font-bold">
+                <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  Browse Verses
+                </span>
+              </h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-lg sm:text-xl text-muted-foreground"
+              >
+                Explore the timeless wisdom of the Bhagavad Gita through our comprehensive verse collection
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="pt-4"
+              >
+                <Button
+                  size="lg"
+                  className="bg-primary/90 hover:bg-primary shadow-lg hover:shadow-xl transition-all duration-300 
+                           group relative overflow-hidden h-12 sm:h-14 px-8 rounded-full"
+                  onClick={() => {
+                    const chaptersSection = document.querySelector('#chapters-grid');
+                    if (chaptersSection) {
+                      chaptersSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }}
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Start Exploring
+                    <motion.span
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.5 }}
+                    >
+                      →
+                    </motion.span>
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/50 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </Button>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -84,7 +121,7 @@ export default function Browse() {
       <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
         {selectedGridChapter === null ? (
           // Chapters Grid
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div id="chapters-grid" className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {chapters?.map((chapter) => (
               <motion.div
                 key={chapter.chapter_number}
