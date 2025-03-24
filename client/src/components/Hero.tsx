@@ -57,8 +57,8 @@ export default function Hero() {
           {/* Sacred Badge */}
           <motion.div
             className="inline-flex items-center px-4 py-1.5 mb-6 rounded-full 
-                      backdrop-blur-xl bg-primary/5 border border-primary/20 shadow-lg
-                      hover:bg-primary/10 transition-all duration-300"
+                    backdrop-blur-xl bg-primary/5 border border-primary/20 shadow-lg
+                    hover:bg-primary/10 transition-all duration-300"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -74,11 +74,11 @@ export default function Hero() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight">
-              <span className="block leading-tight text-white/90">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-light">
+              <span className="block leading-[1.2] text-white/90 mb-4">
                 Tired of Endless Scrolling
               </span>
-              <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+              <span className="block font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent leading-[1.2]">
                 But Still Feeling Empty?
               </span>
             </h1>
