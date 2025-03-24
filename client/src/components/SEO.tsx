@@ -1,5 +1,4 @@
 import { Helmet } from 'react-helmet-async';
-import Analytics from './Analytics';
 
 interface SEOProps {
   title?: string;
@@ -121,9 +120,6 @@ export default function SEO({
           }
         })}
       </script>
-
-      {/* Google Analytics */}
-      <Analytics />
 
       {/* Canonical URL */}
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
