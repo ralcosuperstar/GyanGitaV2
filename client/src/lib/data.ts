@@ -36,65 +36,53 @@ export const generateVerseKey = (chapter: number, verse: number) =>
   `${chapter}-${verse}`;
 
 // Get a verse by chapter and number with retries
-export const getVerseByChapterAndNumber = async (chapter: number, verse: number, retries = 2): Promise<Verse | null> => {
+export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
-    // Construct paths for both development and production
-    const paths = [
-      `/assets/data/slok/${chapter}/${verse}/index.json`,
-      `/src/assets/data/slok/${chapter}/${verse}/index.json`,
-      `/public/assets/data/slok/${chapter}/${verse}/index.json`
-    ];
+    console.log(`Loading verse ${chapter}:${verse}`);
 
-    let response = null;
-    let error = null;
-
-    // Try each path until we find one that works
-    for (const path of paths) {
-      try {
-        console.log(`Attempting to load verse from: ${path}`);
-        response = await fetch(path, {
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        });
-
-        if (response.ok) {
-          console.log(`Successfully loaded verse from: ${path}`);
-          break;
-        }
-      } catch (e) {
-        error = e;
-        console.error(`Failed to load from ${path}:`, e);
-      }
-    }
-
-    if (!response || !response.ok) {
-      console.error(`Failed to load verse ${chapter}:${verse} after trying all paths`);
-      if (error) console.error('Last error:', error);
-      return null;
-    }
-
+    // Try to dynamically import the verse data
     try {
-      const verseData = await response.json();
+      const verseModule = await import(`../../assets/data/slok/${chapter}/${verse}/index.json`);
       return {
-        ...verseData,
+        ...verseModule.default,
         chapter,
         verse
       };
-    } catch (parseError) {
-      console.error(`Failed to parse JSON for verse ${chapter}:${verse}:`, parseError);
-      console.error('Response text:', await response.text());
-      return null;
+    } catch (importError) {
+      console.error('Dynamic import failed:', importError);
+
+      // Fallback to fetch if import fails
+      const paths = [
+        `/assets/data/slok/${chapter}/${verse}/index.json`,
+        `/src/assets/data/slok/${chapter}/${verse}/index.json`
+      ];
+
+      for (const path of paths) {
+        try {
+          const response = await fetch(path);
+          if (response.ok) {
+            const data = await response.json();
+            return {
+              ...data,
+              chapter,
+              verse
+            };
+          }
+        } catch (fetchError) {
+          console.error(`Fetch failed for path ${path}:`, fetchError);
+        }
+      }
     }
+
+    console.error(`All attempts to load verse ${chapter}:${verse} failed`);
+    return null;
   } catch (error) {
     console.error(`Error loading verse ${chapter}:${verse}:`, error);
-    console.error('Full error details:', error);
     return null;
   }
 };
 
-// Get verses for a specific mood with better error handling
+// Get verses for a specific mood
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
     const searchMood = normalizeMoodName(mood);
