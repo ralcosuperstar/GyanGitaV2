@@ -25,11 +25,10 @@ export interface Verse {
 
 // Helper function to normalize mood names
 const normalizeMoodName = (mood: string): string => {
-  // Convert to uppercase and handle special characters
   return mood.toUpperCase()
     .replace(/_/g, ' ')
-    .replace(/\s+/g, ' ')  // Handle multiple spaces
-    .replace(/OF A/g, 'OF') // Normalize "of a" to "of"
+    .replace(/\s+/g, ' ')
+    .replace(/OF A/g, 'OF')
     .trim();
 };
 
@@ -37,16 +36,25 @@ const normalizeMoodName = (mood: string): string => {
 export const generateVerseKey = (chapter: number, verse: number) =>
   `${chapter}-${verse}`;
 
+// Helper function to get data file path
+const getVerseDataPath = (chapter: number, verse: number): string => {
+  // In development, assets are served from /src
+  // In production, assets are served from /assets
+  const baseUrl = import.meta.env.DEV ? '/src/assets' : '/assets';
+  return `${baseUrl}/data/slok/${chapter}/${verse}/index.json`;
+};
+
 // Get a verse by chapter and number
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
-    console.log(`Loading verse ${chapter}:${verse} from local data`);
+    const versePath = getVerseDataPath(chapter, verse);
+    console.log(`Attempting to load verse from: ${versePath}`);
 
-    // Construct proper path for verse data
-    const response = await fetch(`/src/assets/data/slok/${chapter}/${verse}/index.json`);
+    const response = await fetch(versePath);
 
     if (!response.ok) {
       console.error(`Failed to load verse ${chapter}:${verse}. Status: ${response.status}`);
+      console.error(`Attempted path: ${versePath}`);
       return null;
     }
 
@@ -59,10 +67,12 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
       };
     } catch (parseError) {
       console.error(`Failed to parse JSON for verse ${chapter}:${verse}:`, parseError);
+      console.error('Response text:', await response.text());
       return null;
     }
   } catch (error) {
     console.error(`Error loading verse ${chapter}:${verse}:`, error);
+    console.error('Full error details:', error);
     return null;
   }
 };
@@ -73,7 +83,6 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     const searchMood = normalizeMoodName(mood);
     console.log(`Looking for verses for mood: "${searchMood}"`);
 
-    // Find mood data using normalized comparison
     const moodData = moods.moods.find(m => 
       normalizeMoodName(m.name) === searchMood
     );
@@ -83,10 +92,6 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
       return [];
     }
 
-    console.log(`Found ${moodData.verses.length} verses to load for mood: ${searchMood}`);
-    console.log('Loading verses:', moodData.verses);
-
-    // Load verses
     const verses = await Promise.all(
       moodData.verses.map(async verseRef => {
         try {
@@ -108,7 +113,6 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     const validVerses = verses.filter((v): v is Verse => v !== null);
     console.log(`Successfully loaded ${validVerses.length} out of ${moodData.verses.length} verses for mood ${searchMood}`);
     return validVerses;
-
   } catch (error) {
     console.error('Error loading verses for mood:', error);
     return [];
