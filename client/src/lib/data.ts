@@ -101,47 +101,6 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number,
   }
 };
 
-// Get random verse with retries
-export const getRandomVerse = async (): Promise<Verse | null> => {
-  try {
-    const chapters = getChapters();
-    const maxAttempts = 3;
-    let attempts = 0;
-
-    while (attempts < maxAttempts) {
-      try {
-        const randomChapter = Math.floor(Math.random() * chapters.length) + 1;
-        const chapterData = chapters[randomChapter - 1];
-
-        if (!chapterData) {
-          console.error('Invalid chapter data when getting random verse');
-          return null;
-        }
-
-        const randomVerse = Math.floor(Math.random() * chapterData.verses_count) + 1;
-        console.log(`Getting random verse from chapter ${randomChapter}, verse ${randomVerse}`);
-
-        const verse = await getVerseByChapterAndNumber(randomChapter, randomVerse);
-        if (verse) return verse;
-
-        attempts++;
-      } catch (error) {
-        console.error(`Attempt ${attempts + 1} failed:`, error);
-        attempts++;
-        if (attempts < maxAttempts) {
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
-        }
-      }
-    }
-
-    console.error(`Failed to get random verse after ${maxAttempts} attempts`);
-    return null;
-  } catch (error) {
-    console.error('Error getting random verse:', error);
-    return null;
-  }
-};
-
 // Get verses for a specific mood with better error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
@@ -188,6 +147,47 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   } catch (error) {
     console.error('Error loading verses for mood:', error);
     return [];
+  }
+};
+
+// Get random verse with retries
+export const getRandomVerse = async (): Promise<Verse | null> => {
+  try {
+    const chapters = getChapters();
+    const maxAttempts = 3;
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      try {
+        const randomChapter = Math.floor(Math.random() * chapters.length) + 1;
+        const chapterData = chapters[randomChapter - 1];
+
+        if (!chapterData) {
+          console.error('Invalid chapter data when getting random verse');
+          return null;
+        }
+
+        const randomVerse = Math.floor(Math.random() * chapterData.verses_count) + 1;
+        console.log(`Getting random verse from chapter ${randomChapter}, verse ${randomVerse}`);
+
+        const verse = await getVerseByChapterAndNumber(randomChapter, randomVerse);
+        if (verse) return verse;
+
+        attempts++;
+      } catch (error) {
+        console.error(`Attempt ${attempts + 1} failed:`, error);
+        attempts++;
+        if (attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+        }
+      }
+    }
+
+    console.error(`Failed to get random verse after ${maxAttempts} attempts`);
+    return null;
+  } catch (error) {
+    console.error('Error getting random verse:', error);
+    return null;
   }
 };
 
