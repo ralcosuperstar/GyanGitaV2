@@ -65,7 +65,7 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             <Heart className="h-4 w-4 mr-2 text-primary" />
-            <span className="text-sm text-white/90 font-medium">Ancient Wisdom for Modern Peace</span>
+            <span className="text-sm text-white/90 font-medium">Stop Scrolling, Start Healing</span>
           </motion.div>
 
           {/* Main Title */}
@@ -76,16 +76,16 @@ export default function Hero() {
           >
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight">
               <span className="block leading-tight text-white/90">
-                Find Your Inner Peace in
+                Tired of Endless Scrolling
                 <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                  Today's World
+                  But Still Feeling Empty?
                 </span>
               </span>
             </h1>
 
             <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed">
-              Discover timeless Gita wisdom tailored to your emotional needs, 
-              helping you navigate life's challenges with clarity and purpose
+              Discover ancient wisdom that actually helps with modern struggles - anxiety, loneliness, 
+              and the constant pressure to "have it all figured out"
             </p>
 
             {/* Call to Action */}
