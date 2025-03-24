@@ -73,19 +73,19 @@ export default function Home() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  const { data: verses = [], isLoading, error } = useQuery<Verse[]>({
+  const { data: verses = null, isLoading, error } = useQuery<Verse[]>({
     queryKey: ['mood-verses', selectedMood],
     queryFn: async () => {
       if (!selectedMood) return [];
+      console.log('Loading verses for mood:', selectedMood);
       const results = await getVersesByMood(selectedMood);
       if (!results.length) {
-        throw new Error(`No verses found for mood: ${selectedMood}`);
+        console.error('No verses found for mood:', selectedMood);
       }
       return results;
     },
     enabled: !!selectedMood,
-    retry: 1,
-    staleTime: 60000
+    retry: false
   });
 
   useEffect(() => {
