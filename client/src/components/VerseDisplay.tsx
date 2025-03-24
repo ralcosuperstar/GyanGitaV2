@@ -1,7 +1,6 @@
 /**
  * VerseDisplay Component
- * Displays Bhagavad Gita verses based on selected mood with optimized animations,
- * loading states, and accessibility features.
+ * Displays Bhagavad Gita verses based on selected mood with optimized animations
  */
 
 import { useState, useRef } from "react";
@@ -169,12 +168,12 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
         </div>
         <h3 className="text-xl font-medium mb-2">No verses found for this mood</h3>
         <p className="text-muted-foreground mb-6">
-          We couldn't find any verses that match "{selectedMoodData?.label}". Please try another mood or check back later.
+          We couldn't find any verses that match "{selectedMoodData?.label}". Please try another mood.
         </p>
         <Button 
+          onClick={onChangeMood}
           variant="outline" 
           className="border-primary/20 hover:bg-primary/5"
-          onClick={() => window.location.reload()}
         >
           <RefreshCw className="w-4 h-4 mr-2" aria-hidden="true" />
           Try Another Mood
@@ -190,29 +189,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: "1s" }}></div>
       </div>
-
-      {/* Header Section */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center mb-12"
-      >
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-          className="inline-flex items-center px-4 py-1.5 border border-primary/20 rounded-full text-sm font-medium text-primary/80 bg-primary/5 mb-4"
-        >
-          {selectedMoodData?.icon} Guidance for {selectedMoodData?.label}
-        </motion.div>
-        <h2 className="text-3xl sm:text-4xl font-medium mb-3 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-          Verses for when you feel {selectedMoodData?.label}
-        </h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg">
-          {selectedMoodData?.description}
-        </p>
-      </motion.div>
 
       {/* Verses Grid */}
       <motion.div 
@@ -231,13 +207,12 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
             <VerseCard
               verse={verse}
               showActions={true}
-              variant="compact"
             />
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Action Buttons */}
+      {/* Action Buttons - Single location */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -267,20 +242,17 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
         </Button>
       </motion.div>
 
-      {/* Share Dialog */}
+      {/* Dialogs */}
       <AnimatePresence>
         {selectedVerse && (
           <ShareDialog
             verse={selectedVerse}
             open={showShareDialog}
             onOpenChange={setShowShareDialog}
-            handleCopy={handleCopy}
-            onClose={() => setSelectedVerse(null)}
           />
         )}
       </AnimatePresence>
 
-      {/* Verse Detail Dialog */}
       <Dialog open={!!selectedVerse && !showShareDialog} onOpenChange={() => setSelectedVerse(null)}>
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -297,9 +269,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
             </div>
           </DialogHeader>
 
-          {/* Verse Content */}
           <div className="mt-8 space-y-8">
-            {/* English Translation */}
             <div className="space-y-6">
               <div className="bg-card rounded-lg p-6 space-y-4">
                 <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
@@ -312,7 +282,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
               </div>
             </div>
 
-            {/* Sanskrit Text */}
             <div className="bg-card rounded-lg p-6 space-y-4">
               <h3 className="text-lg font-medium flex items-center gap-2 text-foreground">
                 <span className="w-2 h-2 rounded-full bg-primary"></span>
