@@ -268,7 +268,6 @@ export default function Home() {
                 verses={verses} 
                 selectedMood={selectedMood} 
                 isLoading={isLoading} 
-                onChangeMood={handleChangeMood}
               />
             )}
 
@@ -281,7 +280,7 @@ export default function Home() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="h-14 w-full sm:w-auto group"
+                  className="h-14 px-8 group relative before:absolute before:inset-0 before:rounded-md before:border before:border-primary/50 before:animate-[border-glow_4s_ease-in-out_infinite]"
                   onClick={handleChangeMood}
                 >
                   <RefreshCw className="h-4 w-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
@@ -289,7 +288,11 @@ export default function Home() {
                 </Button>
                 <Button
                   size="lg"
-                  className="h-14 w-full sm:w-auto group"
+                  className="h-14 px-8 bg-primary/90 hover:bg-primary group relative
+                           before:absolute before:inset-0 before:rounded-md before:border before:border-primary/50
+                           before:animate-[border-glow_4s_ease-in-out_infinite]
+                           after:absolute after:inset-0 after:rounded-md after:border-2 after:border-primary/20
+                           after:animate-[border-glow_4s_ease-in-out_infinite_0.5s]"
                   onClick={() => setLocation("/browse")}
                 >
                   Explore More

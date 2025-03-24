@@ -5,15 +5,13 @@
 
 import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { RefreshCw, Book, ArrowRight, Share2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { RefreshCw } from "lucide-react";
 import { moods } from "@/lib/moods";
-import { motion, AnimatePresence } from "framer-motion";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import VerseCard from "@/components/VerseCard";
 import { useToast } from "@/hooks/use-toast";
 import ShareDialog from "@/components/ShareDialog";
-import { useLocation } from "wouter";
 import {
   Dialog,
   DialogContent,
@@ -45,16 +43,14 @@ interface VerseDisplayProps {
   verses: VerseResponse[] | null;
   selectedMood: string | null;
   isLoading: boolean;
-  onChangeMood: () => void;
 }
 
-export default function VerseDisplay({ verses, selectedMood, isLoading, onChangeMood }: VerseDisplayProps) {
+export default function VerseDisplay({ verses, selectedMood, isLoading }: VerseDisplayProps) {
   const [selectedVerse, setSelectedVerse] = useState<VerseResponse | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const selectedMoodData = moods.find(m => m.id === selectedMood);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
 
   const handleShare = (verse: VerseResponse) => {
     setSelectedVerse(verse);
@@ -175,36 +171,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
             />
           </motion.div>
         ))}
-      </motion.div>
-
-      {/* Single Action Buttons Section */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="flex flex-col sm:flex-row justify-center gap-4 mt-12"
-      >
-        <Button
-          variant="outline"
-          size="lg"
-          className="h-14 px-8 group relative before:absolute before:inset-0 before:rounded-md before:border before:border-primary/50 before:animate-[border-glow_4s_ease-in-out_infinite]"
-          onClick={onChangeMood}
-        >
-          <RefreshCw className="h-4 w-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
-          Change Mood
-        </Button>
-        <Button
-          size="lg"
-          className="h-14 px-8 bg-primary/90 hover:bg-primary group relative
-                     before:absolute before:inset-0 before:rounded-md before:border before:border-primary/50
-                     before:animate-[border-glow_4s_ease-in-out_infinite]
-                     after:absolute after:inset-0 after:rounded-md after:border-2 after:border-primary/20
-                     after:animate-[border-glow_4s_ease-in-out_infinite_0.5s]"
-          onClick={() => setLocation("/browse")}
-        >
-          Explore More
-          <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-        </Button>
       </motion.div>
 
       {/* Dialogs */}
