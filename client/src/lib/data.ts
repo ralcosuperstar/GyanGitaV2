@@ -141,38 +141,37 @@ export const getRandomVerse = async (): Promise<Verse | null> => {
   }
 };
 
-// Get verses for a specific mood with better error handling
+// Get verses for a specific mood with improved error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
-    const searchMood = normalizeMoodName(mood);
+    const searchMood = mood.toUpperCase();
     console.log(`Looking for verses for mood: "${searchMood}"`);
 
-    const moodData = moods.moods.find(m =>
-      normalizeMoodName(m.name) === searchMood
-    );
+    // Find mood data
+    const moodData = moods.moods.find(m => m.name === searchMood);
 
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: "${searchMood}"`);
       return [];
     }
 
-    const verses = await Promise.all(
-      moodData.verses.map(async verseRef => {
-        try {
-          const verse = await getVerseByChapterAndNumber(
-            Number(verseRef.chapter),
-            Number(verseRef.verse)
-          );
-          if (!verse) {
-            console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${searchMood}`);
-          }
-          return verse;
-        } catch (error) {
-          console.error(`Error loading verse ${verseRef.chapter}:${verseRef.verse}:`, error);
-          return null;
-        }
-      })
-    );
+    console.log(`Found ${moodData.verses.length} verses for mood "${searchMood}":`, 
+      moodData.verses.map(v => `${v.chapter}:${v.verse}`).join(', '));
+
+    const verses = await Promise.all(moodData.verses.map(async verseRef => {
+      try {
+        const verseModule = await import(`../assets/data/slok/${verseRef.chapter}/${verseRef.verse}/index.json`);
+        return {
+          ...verseModule.default,
+          chapter: verseRef.chapter,
+          verse: verseRef.verse,
+          theme: verseRef.theme
+        };
+      } catch (error) {
+        console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse}:`, error);
+        return null;
+      }
+    }));
 
     const validVerses = verses.filter((v): v is Verse => v !== null);
     console.log(`Successfully loaded ${validVerses.length} out of ${moodData.verses.length} verses for mood ${searchMood}`);
