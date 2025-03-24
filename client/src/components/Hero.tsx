@@ -3,7 +3,6 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Heart, ArrowDown } from "lucide-react";
 
-// Floating Mandala pattern component
 const FloatingMandala = ({ className = "", delay = 0 }) => (
   <motion.div
     className={`absolute pointer-events-none ${className}`}
