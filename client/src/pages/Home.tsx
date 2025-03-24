@@ -184,7 +184,11 @@ export default function Home() {
                 <Button
                   size="lg"
                   className="bg-primary/90 hover:bg-primary shadow-lg hover:shadow-xl transition-all duration-300 
-                           group relative overflow-hidden h-14 px-8 rounded-full"
+                           group relative overflow-hidden h-14 px-8 rounded-full
+                           before:absolute before:inset-0 before:rounded-full before:border before:border-primary/50
+                           before:animate-[border-glow_4s_ease-in-out_infinite]
+                           after:absolute after:inset-0 after:rounded-full after:border-2 after:border-primary/20
+                           after:animate-[border-glow_4s_ease-in-out_infinite_0.5s]"
                   onClick={() => {
                     if (moodSectionRef.current) {
                       moodSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -214,12 +218,12 @@ export default function Home() {
                 <motion.div
                   animate={{ y: [0, 8, 0] }}
                   transition={{ repeat: Infinity, duration: 2 }}
-                  className="text-primary/60 flex flex-col items-center gap-2"
+                  className="text-primary/60"
                 >
-                  <span className="text-sm">Explore More</span>
                   <ChevronDown className="h-4 w-4" />
                 </motion.div>
               </motion.div>
+
             </motion.div>
           </div>
         </div>
