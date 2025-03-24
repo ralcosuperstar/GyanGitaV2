@@ -14,6 +14,7 @@ import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 import AnimatedLayout from "@/components/AnimatedLayout";
 import SmoothScroll from "@/components/SmoothScroll";
+import Analytics from "@/components/Analytics";
 
 function Router() {
   const [location] = useLocation();
@@ -43,6 +44,7 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider storageKey="gyangita-theme">
+          <Analytics />
           <SmoothScroll className="bg-background">
             <div className="min-h-screen flex flex-col relative">
               <Header />
