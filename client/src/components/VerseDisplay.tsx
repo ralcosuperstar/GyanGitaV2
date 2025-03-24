@@ -21,31 +21,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// Animation variants for smoother transitions
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 300,
-      damping: 25
-    }
-  }
-};
-
 interface VerseResponse {
   slok: string;
   transliteration: string;
@@ -192,7 +167,16 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
 
       {/* Verses Grid */}
       <motion.div 
-        variants={containerVariants}
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.15,
+              delayChildren: 0.2
+            }
+          }
+        }}
         initial="hidden"
         animate="visible"
         className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto"
@@ -200,19 +184,31 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
         {verses.map((verse, index) => (
           <motion.div
             key={`${verse.chapter}-${verse.verse}`}
-            variants={itemVariants}
-            custom={index}
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: {
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 25
+                }
+              }
+            }}
             className="h-full"
           >
             <VerseCard
               verse={verse}
               showActions={true}
+              onShare={() => handleShare(verse)}
+              onCopy={() => handleCopy(verse)}
             />
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Action Buttons - Single location */}
+      {/* Single Action Buttons Section */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
