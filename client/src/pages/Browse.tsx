@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,13 +7,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { generateVerseKey, getChapters, getVerseByChapterAndNumber, type Chapter, type Verse } from "@/lib/data";
 import VerseModal from "@/components/VerseModal";
 import SEO from '@/components/SEO';
-import { Helmet } from 'react-helmet-async';
 
 export default function Browse() {
   const [selectedChapter, setSelectedChapter] = useState<string>("");
   const [selectedVerse, setSelectedVerse] = useState<string>("");
   const [selectedGridChapter, setSelectedGridChapter] = useState<number | null>(null);
   const [expandedChapter, setExpandedChapter] = useState<number | null>(null);
+  const versesGridRef = useRef<HTMLDivElement>(null);
 
   // Load chapters data
   const { data: chapters } = useQuery<Chapter[]>({
@@ -38,10 +38,18 @@ export default function Browse() {
     setSelectedVerse(verse);
   };
 
-  // Reset scroll when changing chapters
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [selectedGridChapter]);
+  // Handle chapter selection and scroll to grid
+  const handleChapterSelect = (chapterNumber: number) => {
+    setSelectedGridChapter(chapterNumber);
+    // Use requestAnimationFrame to ensure the grid is rendered before scrolling
+    requestAnimationFrame(() => {
+      versesGridRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start',
+        inline: 'nearest'
+      });
+    });
+  };
 
   // Generate grid items for selected chapter
   const gridItems = selectedGridChapter && chapters
@@ -167,7 +175,7 @@ export default function Browse() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setSelectedGridChapter(chapter.chapter_number)}
+                        onClick={() => handleChapterSelect(chapter.chapter_number)}
                       >
                         <Grid className="h-4 w-4 mr-2" />
                         View Verses
@@ -215,7 +223,7 @@ export default function Browse() {
           </div>
         ) : (
           // Verses Grid
-          <div>
+          <div ref={versesGridRef}>
             <div className="flex items-center justify-between mb-8">
               <Button
                 variant="outline"
