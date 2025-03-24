@@ -9,14 +9,6 @@ import VerseModal from "@/components/VerseModal";
 import SEO from '@/components/SEO';
 import { Helmet } from 'react-helmet-async';
 
-// Memoized and optimized animations
-const gridItemVariants = {
-  initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -10 },
-  transition: { duration: 0.2 }
-};
-
 export default function Browse() {
   const [selectedChapter, setSelectedChapter] = useState<string>("");
   const [selectedVerse, setSelectedVerse] = useState<string>("");
@@ -26,7 +18,7 @@ export default function Browse() {
   // Load chapters data
   const { data: chapters } = useQuery<Chapter[]>({
     queryKey: ['/api/chapters'],
-    queryFn: getChapters,
+    queryFn: () => getChapters(),
     staleTime: Infinity,
   });
 
@@ -48,7 +40,7 @@ export default function Browse() {
 
   // Reset scroll when changing chapters
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
   }, [selectedGridChapter]);
 
   // Generate grid items for selected chapter
@@ -63,7 +55,6 @@ export default function Browse() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background">
       <SEO title="Browse Bhagavad Gita Verses" />
-
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 to-primary/5 border-b">
         <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -91,153 +82,138 @@ export default function Browse() {
 
       {/* Main Content */}
       <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6">
-        <AnimatePresence mode="wait">
-          {selectedGridChapter === null ? (
-            // Chapters Grid
-            <motion.div 
-              key="chapters"
-              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {chapters?.map((chapter) => (
-                <motion.div
-                  key={chapter.chapter_number}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  layout
-                >
-                  <Card className="h-full bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="font-playfair">Chapter {chapter.chapter_number}</CardTitle>
-                        <span className="text-sm text-primary/70">{chapter.verses_count} verses</span>
-                      </div>
-                    </CardHeader>
+        {selectedGridChapter === null ? (
+          // Chapters Grid
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {chapters?.map((chapter) => (
+              <motion.div
+                key={chapter.chapter_number}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="h-full">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="font-playfair">Chapter {chapter.chapter_number}</CardTitle>
+                      <span className="text-sm text-primary/70">{chapter.verses_count} verses</span>
+                    </div>
+                  </CardHeader>
 
-                    <CardContent className="space-y-6">
-                      {/* Basic Info */}
-                      <div>
-                        <h3 className="font-medium text-lg mb-2 text-primary">
-                          {chapter.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {chapter.translation}
-                        </p>
-                      </div>
+                  <CardContent className="space-y-6">
+                    {/* Basic Info */}
+                    <div>
+                      <h3 className="font-medium text-lg mb-2 text-primary">
+                        {chapter.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {chapter.translation}
+                      </p>
+                    </div>
 
-                      {/* Action Buttons */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setExpandedChapter(
-                            expandedChapter === chapter.chapter_number ? null : chapter.chapter_number
-                          )}
-                        >
-                          {expandedChapter === chapter.chapter_number ? (
-                            <>Show Less <ChevronUp className="ml-2 h-4 w-4" /></>
-                          ) : (
-                            <>Show More <ChevronDown className="ml-2 h-4 w-4" /></>
-                          )}
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedGridChapter(chapter.chapter_number)}
-                        >
-                          <Grid className="h-4 w-4 mr-2" />
-                          View Verses
-                        </Button>
-                      </div>
-
-                      {/* Expanded Content */}
-                      <AnimatePresence>
-                        {expandedChapter === chapter.chapter_number && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="space-y-4 pt-4"
-                          >
-                            {chapter.meaning?.en && (
-                              <div className="border-t border-border/50 pt-4">
-                                <h4 className="text-sm font-medium text-primary/80 uppercase tracking-wider mb-2">
-                                  Meaning
-                                </h4>
-                                <p className="text-sm text-muted-foreground">
-                                  {chapter.meaning.en}
-                                </p>
-                              </div>
-                            )}
-
-                            {chapter.summary?.en && (
-                              <div className="border-t border-border/50 pt-4">
-                                <h4 className="text-sm font-medium text-primary/80 uppercase tracking-wider mb-2">
-                                  Summary
-                                </h4>
-                                <p className="text-sm text-muted-foreground">
-                                  {chapter.summary.en}
-                                </p>
-                              </div>
-                            )}
-                          </motion.div>
+                    {/* Action Buttons */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setExpandedChapter(
+                          expandedChapter === chapter.chapter_number ? null : chapter.chapter_number
                         )}
-                      </AnimatePresence>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </motion.div>
-          ) : (
-            // Verses Grid
-            <motion.div
-              key="verses"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className="flex items-center justify-between mb-8">
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  onClick={() => setSelectedGridChapter(null)}
+                      >
+                        {expandedChapter === chapter.chapter_number ? (
+                          <>Show Less <ChevronUp className="ml-2 h-4 w-4" /></>
+                        ) : (
+                          <>Show More <ChevronDown className="ml-2 h-4 w-4" /></>
+                        )}
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedGridChapter(chapter.chapter_number)}
+                      >
+                        <Grid className="h-4 w-4 mr-2" />
+                        View Verses
+                      </Button>
+                    </div>
+
+                    {/* Expanded Content */}
+                    <AnimatePresence>
+                      {expandedChapter === chapter.chapter_number && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="space-y-4 pt-4"
+                        >
+                          {chapter.meaning?.en && (
+                            <div className="border-t border-border/50 pt-4">
+                              <h4 className="text-sm font-medium text-primary/80 uppercase tracking-wider mb-2">
+                                Meaning
+                              </h4>
+                              <p className="text-sm text-muted-foreground">
+                                {chapter.meaning.en}
+                              </p>
+                            </div>
+                          )}
+
+                          {chapter.summary?.en && (
+                            <div className="border-t border-border/50 pt-4">
+                              <h4 className="text-sm font-medium text-primary/80 uppercase tracking-wider mb-2">
+                                Summary
+                              </h4>
+                              <p className="text-sm text-muted-foreground">
+                                {chapter.summary.en}
+                              </p>
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          // Verses Grid
+          <div>
+            <div className="flex items-center justify-between mb-8">
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => setSelectedGridChapter(null)}
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Chapters
+              </Button>
+
+              <div className="text-sm text-muted-foreground">
+                Chapter {selectedGridChapter} • {
+                  chapters?.find(c => c.chapter_number === selectedGridChapter)?.verses_count
+                } verses
+              </div>
+            </div>
+
+            <div className="grid gap-4 grid-cols-4 sm:grid-cols-8 md:grid-cols-10">
+              {gridItems.map((item) => (
+                <motion.button
+                  key={item.verseNumber}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="h-12 w-12 rounded-md border border-input hover:bg-primary/5 hover:border-primary/50"
+                  onClick={() => handleVerseSelect(
+                    item.chapterNumber.toString(),
+                    item.verseNumber.toString()
+                  )}
                 >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back to Chapters
-                </Button>
-
-                <div className="text-sm text-muted-foreground">
-                  Chapter {selectedGridChapter} • {
-                    chapters?.find(c => c.chapter_number === selectedGridChapter)?.verses_count
-                  } verses
-                </div>
-              </div>
-
-              <div className="grid gap-3 grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12">
-                {gridItems.map((item) => (
-                  <motion.button
-                    key={item.verseNumber}
-                    {...gridItemVariants}
-                    className="aspect-square rounded-md border border-border hover:border-primary/50 hover:bg-primary/5
-                             flex items-center justify-center text-sm font-medium
-                             transition-colors duration-200"
-                    onClick={() => handleVerseSelect(
-                      item.chapterNumber.toString(),
-                      item.verseNumber.toString()
-                    )}
-                  >
-                    {item.verseNumber}
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  {item.verseNumber}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Verse Modal */}
         <VerseModal
