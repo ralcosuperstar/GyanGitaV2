@@ -8,19 +8,19 @@ export interface Mood {
 export const moods: Mood[] = [
   {
     id: "anger",
-    label: "Anger",
+    label: "ANGER",
     description: "Verses to help control and overcome anger",
     icon: "😠"
   },
   {
     id: "feeling_sinful",
-    label: "Feeling Sinful",
+    label: "FEELING SINFUL",
     description: "Verses offering guidance for guilt and redemption",
     icon: "😔"
   },
   {
     id: "practicing_forgiveness",
-    label: "Practicing Forgiveness",
+    label: "PRACTICING FORGIVENESS",
     description: "Verses about forgiveness and compassion",
     icon: "🙏"
   },
@@ -32,13 +32,13 @@ export const moods: Mood[] = [
   },
   {
     id: "death_of_loved_one",
-    label: "Death of a Loved One",
+    label: "DEATH OF A LOVED ONE",
     description: "Verses offering solace in times of loss",
     icon: "💔"
   },
   {
     id: "seeking_peace",
-    label: "Seeking Peace",
+    label: "SEEKING PEACE",
     description: "Verses for finding inner peace and tranquility",
     icon: "😌"
   },

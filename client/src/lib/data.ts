@@ -185,10 +185,12 @@ const verseMap: { [key: string]: any } = {
 
 // Helper function to normalize mood names with more robust handling
 const normalizeMoodName = (mood: string): string => {
-  return mood.toLowerCase()
+  const normalized = mood.toLowerCase()
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '')
     .trim();
+  console.log(`Normalizing mood name: "${mood}" -> "${normalized}"`);
+  return normalized;
 };
 
 // Helper function to generate verse key
@@ -199,10 +201,10 @@ export const generateVerseKey = (chapter: number, verse: number) =>
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
     const verseKey = generateVerseKey(chapter, verse);
-    console.log(`Loading verse ${verseKey}`);
+    console.log(`Loading verse ${verseKey} from verseMap`);
 
     if (!verseMap[verseKey]) {
-      console.error(`Verse ${verseKey} not found in verse map. Available verses:`, Object.keys(verseMap).join(', '));
+      console.error(`Verse ${verseKey} not found in verseMap. Available verses:`, Object.keys(verseMap).join(', '));
       return null;
     }
 
@@ -212,6 +214,7 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
       return null;
     }
 
+    console.log(`Successfully loaded verse ${verseKey}`);
     return {
       ...verseData,
       chapter,
@@ -226,16 +229,20 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number)
 // Get verses for a specific mood with improved error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
+    console.log(`Original mood input:`, mood);
     const searchMood = normalizeMoodName(mood);
-    console.log(`Looking for verses for mood: "${searchMood}"`);
+    console.log(`Looking for verses with normalized mood: "${searchMood}"`);
 
     // Find mood data with case-insensitive comparison
-    const moodData = moods.moods.find(m => 
-      normalizeMoodName(m.name) === searchMood
-    );
+    const moodData = moods.moods.find(m => {
+      const normalizedMoodName = normalizeMoodName(m.name);
+      console.log(`Comparing "${normalizedMoodName}" with "${searchMood}"`);
+      return normalizedMoodName === searchMood;
+    });
 
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: "${searchMood}"`);
+      console.log(`Available moods:`, moods.moods.map(m => m.name));
       return [];
     }
 
@@ -266,6 +273,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     if (validVerses.length === 0) {
       console.error('No verses were loaded successfully for mood:', searchMood);
       console.error('Available verses in verseMap:', Object.keys(verseMap).join(', '));
+      console.error('Available moods:', moods.moods.map(m => `${m.name} (${m.verses.length} verses)`));
     }
 
     return validVerses;
