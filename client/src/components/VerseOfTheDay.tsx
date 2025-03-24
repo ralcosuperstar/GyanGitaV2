@@ -33,13 +33,12 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
   const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Fetch one random verse for Today's Verse
+  // Fetch verse data
   const { data: todayVerse, isLoading: isTodayLoading } = useQuery<Verse>({
     queryKey: ['verse-of-day'],
     queryFn: getRandomVerse
   });
 
-  // Fetch three random verses for Popular Verses
   const { data: popularVerses, isLoading: isPopularLoading } = useQuery<Verse[]>({
     queryKey: ['popular-verses'],
     queryFn: async () => {
@@ -64,7 +63,6 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
 
   const handleCopy = async (verse: Verse) => {
     const verseId = `${verse.chapter}-${verse.verse}`;
-    // Prioritize English translations
     const textToCopy = `${verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht}\n\n${verse.slok}\n\n${verse.transliteration}`;
 
     try {
@@ -92,7 +90,6 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
   const renderVerse = (verse: Verse) => {
     const verseId = `${verse.chapter}-${verse.verse}`;
     const isCopied = copiedVerseId === verseId;
-    // Prioritize English translations
     const englishTranslation = verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht;
 
     return (
@@ -114,6 +111,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
                 size="sm"
                 onClick={() => handleCopy(verse)}
                 className="h-9 w-9 p-0 rounded-full hover:bg-primary/10"
+                aria-label={isCopied ? "Copied!" : "Copy verse"}
               >
                 {isCopied ? (
                   <Check className="h-4 w-4 text-green-500" />
@@ -126,6 +124,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
                 size="sm"
                 onClick={() => handleShare(verse)}
                 className="h-9 w-9 p-0 rounded-full hover:bg-primary/10"
+                aria-label="Share verse"
               >
                 <Share2 className="h-4 w-4" />
               </Button>
@@ -134,7 +133,7 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
 
           {/* Main Content */}
           <div className="flex-grow space-y-6">
-            {/* English Translation - Primary Focus */}
+            {/* English Translation */}
             <div>
               <p className="text-xl sm:text-2xl leading-relaxed text-foreground">
                 {englishTranslation}
@@ -251,16 +250,11 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
         <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-playfair text-foreground">
-              Chapter {activeVerse?.chapter}, Verse {activeVerse?.verse}
+              Bhagavad Gita - Chapter {activeVerse?.chapter}, Verse {activeVerse?.verse}
             </DialogTitle>
-            <div className="flex gap-2">
-              <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                English
-              </span>
-              <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                Sanskrit
-              </span>
-            </div>
+            <DialogDescription>
+              Explore the complete verse with multiple translations
+            </DialogDescription>
           </DialogHeader>
 
           <div className="mt-8 space-y-8">
