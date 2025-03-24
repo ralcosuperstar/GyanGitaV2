@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Copy, Check, Share2 } from "lucide-react";
@@ -34,17 +34,13 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
   };
 
   const handleShare = async (platform?: string) => {
-    // Generate a shareable URL hash that includes verse info
     const baseUrl = window.location.origin;
     const verseHash = `#/verse/${verse.chapter}/${verse.verse}`;
     const shareUrl = `${baseUrl}${verseHash}`;
-
-    // Create share text with different formats for different platforms
     const shareTitle = `Bhagavad Gita - Chapter ${verse.chapter}, Verse ${verse.verse}`;
     const shareQuote = verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht;
     let platformUrl = '';
 
-    // Try native share if available and no platform specified
     if (!platform && navigator.share) {
       try {
         await navigator.share({
@@ -58,15 +54,12 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
       }
     }
 
-    // Platform-specific sharing logic
     switch (platform) {
       case 'whatsapp':
-        // WhatsApp: Keep it concise with quote and link
         const whatsappText = `"${shareQuote}"\n\n- Bhagavad Gita ${verse.chapter}.${verse.verse}\n\nRead more: ${shareUrl}`;
         platformUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
         break;
       case 'twitter':
-        // Twitter: Short quote with hashtags
         const twitterText = `"${shareQuote.substring(0, 180)}..."\n\n- Bhagavad Gita ${verse.chapter}.${verse.verse}\n#BhagavadGita #Spirituality`;
         platformUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(shareUrl)}`;
         break;
@@ -96,7 +89,9 @@ export default function ShareDialog({ verse, open, onOpenChange }: ShareDialogPr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] w-[calc(100%-2rem)] h-[90vh] flex flex-col p-0 gap-0 rounded-lg sm:rounded-xl">
         <DialogHeader className="p-4 sm:p-6 border-b">
-          <DialogTitle className="text-xl font-medium">Share Verse</DialogTitle>
+          <DialogTitle className="text-xl font-medium">
+            Share Verse {verse.chapter}.{verse.verse}
+          </DialogTitle>
         </DialogHeader>
 
         <Tabs 

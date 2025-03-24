@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Share2, Copy, Check, ArrowRight, Heart } from "lucide-react";
 import { useState, useCallback, memo } from "react";
@@ -46,14 +46,12 @@ const VerseContent = memo(({ verse }: { verse: NonNullable<VerseModalProps["vers
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  // Get available translations
   const translations: Translation[] = [
     verse.siva?.et ? { author: 'Siva', text: verse.siva.et } : null,
     verse.purohit?.et ? { author: 'Purohit', text: verse.purohit.et } : null,
     { author: 'Tej', text: verse.tej.et }
   ].filter((t): t is Translation => t !== null);
 
-  // Create available tabs
   const tabs: Tab[] = [
     { id: 'translations', label: 'Translations' },
     { id: 'original', label: 'Original Text' },
@@ -259,6 +257,11 @@ export default function VerseModal({ verse, open, onOpenChange }: VerseModalProp
                  border border-white/10 rounded-lg sm:rounded-xl shadow-2xl
                  p-4 sm:p-6 md:p-8"
       >
+        <DialogHeader>
+          <DialogTitle className="sr-only">
+            Verse Details - Chapter {verse.chapter}, Verse {verse.verse}
+          </DialogTitle>
+        </DialogHeader>
         <VerseContent verse={verse} />
       </DialogContent>
     </Dialog>
