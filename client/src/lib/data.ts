@@ -37,37 +37,43 @@ export const generateVerseKey = (chapter: number, verse: number) =>
 
 // Helper function to get data file path
 const getVerseDataPath = (chapter: number, verse: number): string => {
-  // In development, assets are served from /src
-  // In production, assets are served from /assets
-  const baseUrl = import.meta.env.DEV ? '/src/assets' : '/assets';
-  return `${baseUrl}/data/slok/${chapter}/${verse}/index.json`;
+  // In production, assets are served from the root public directory
+  const baseUrl = import.meta.env.DEV ? '/src/assets/data' : '/assets/data';
+  return `${baseUrl}/slok/${chapter}/${verse}/index.json`;
 };
 
 // Get a verse by chapter and number with retries
-export const getVerseByChapterAndNumber = async (chapter: number, verse: number, retries = 2): Promise<Verse | null> => {
+export const getVerseByChapterAndNumber = async (chapter: number, verse: number, retries = 3): Promise<Verse | null> => {
   try {
     const versePath = getVerseDataPath(chapter, verse);
     console.log(`Attempting to load verse from: ${versePath}`);
 
     let response;
     let attempt = 0;
+    let lastError;
 
     while (attempt <= retries) {
       try {
-        response = await fetch(versePath, {
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        });
+        response = await fetch(versePath);
 
-        if (response.ok) break;
+        if (response.ok) {
+          const verseData = await response.json();
+          return {
+            ...verseData,
+            chapter,
+            verse
+          };
+        }
 
+        lastError = `HTTP ${response.status} - ${response.statusText}`;
         attempt++;
+
         if (attempt <= retries) {
+          console.log(`Attempt ${attempt} failed (${lastError}), retrying in ${attempt} second(s)...`);
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
         }
       } catch (fetchError) {
+        lastError = fetchError.message;
         console.error(`Attempt ${attempt + 1} failed:`, fetchError);
         if (attempt === retries) throw fetchError;
         attempt++;
@@ -75,24 +81,11 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number,
       }
     }
 
-    if (!response || !response.ok) {
-      console.error(`Failed to load verse ${chapter}:${verse} after ${retries + 1} attempts. Status: ${response?.status}`);
-      console.error(`Attempted path: ${versePath}`);
-      return null;
-    }
+    console.error(`Failed to load verse ${chapter}:${verse} after ${retries + 1} attempts.`);
+    console.error(`Last error: ${lastError}`);
+    console.error(`Attempted path: ${versePath}`);
+    return null;
 
-    try {
-      const verseData = await response.json();
-      return {
-        ...verseData,
-        chapter,
-        verse
-      };
-    } catch (parseError) {
-      console.error(`Failed to parse JSON for verse ${chapter}:${verse}:`, parseError);
-      console.error('Response text:', await response.text());
-      return null;
-    }
   } catch (error) {
     console.error(`Error loading verse ${chapter}:${verse}:`, error);
     console.error('Full error details:', error);
@@ -147,21 +140,30 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     const searchMood = normalizeMoodName(mood);
     console.log(`Looking for verses for mood: "${searchMood}"`);
 
-    const moodData = moods.moods.find(m =>
+    if (!moods?.moods) {
+      console.error('Moods data structure is invalid:', moods);
+      return [];
+    }
+
+    const moodData = moods.moods.find(m => 
       normalizeMoodName(m.name) === searchMood
     );
 
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: "${searchMood}"`);
+      console.log('Available moods:', moods.moods.map(m => m.name));
       return [];
     }
+
+    console.log(`Found ${moodData.verses.length} verse references for mood: ${searchMood}`);
 
     const verses = await Promise.all(
       moodData.verses.map(async verseRef => {
         try {
           const verse = await getVerseByChapterAndNumber(
             Number(verseRef.chapter),
-            Number(verseRef.verse)
+            Number(verseRef.verse),
+            2 // Limit retries for parallel requests
           );
           if (!verse) {
             console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${searchMood}`);
@@ -176,9 +178,16 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
 
     const validVerses = verses.filter((v): v is Verse => v !== null);
     console.log(`Successfully loaded ${validVerses.length} out of ${moodData.verses.length} verses for mood ${searchMood}`);
+
+    if (validVerses.length === 0) {
+      console.error('No verses could be loaded for mood:', searchMood);
+      console.log('Mood data:', moodData);
+    }
+
     return validVerses;
   } catch (error) {
     console.error('Error loading verses for mood:', error);
+    console.error('Full error details:', error);
     return [];
   }
 };
