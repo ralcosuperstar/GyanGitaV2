@@ -35,50 +35,43 @@ const normalizeMoodName = (mood: string): string => {
 export const generateVerseKey = (chapter: number, verse: number) =>
   `${chapter}-${verse}`;
 
-// Helper function to get data file path
-const getVerseDataPath = (chapter: number, verse: number): string => {
-  // In development, assets are served from /src
-  // In production, assets are served from /assets
-  const baseUrl = import.meta.env.DEV ? '/src/assets' : '/assets';
-  return `${baseUrl}/data/slok/${chapter}/${verse}/index.json`;
-};
-
 // Get a verse by chapter and number with retries
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number, retries = 2): Promise<Verse | null> => {
   try {
-    const versePath = getVerseDataPath(chapter, verse);
-    console.log(`Attempting to load verse from: ${versePath}`);
+    // Construct paths for both development and production
+    const paths = [
+      `/assets/data/slok/${chapter}/${verse}/index.json`,
+      `/src/assets/data/slok/${chapter}/${verse}/index.json`,
+      `/public/assets/data/slok/${chapter}/${verse}/index.json`
+    ];
 
-    let response;
-    let attempt = 0;
+    let response = null;
+    let error = null;
 
-    while (attempt <= retries) {
+    // Try each path until we find one that works
+    for (const path of paths) {
       try {
-        response = await fetch(versePath, {
+        console.log(`Attempting to load verse from: ${path}`);
+        response = await fetch(path, {
           headers: {
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache'
           }
         });
 
-        if (response.ok) break;
-
-        attempt++;
-        if (attempt <= retries) {
-          console.log(`Retry ${attempt} after ${attempt} second(s)`);
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        if (response.ok) {
+          console.log(`Successfully loaded verse from: ${path}`);
+          break;
         }
-      } catch (fetchError) {
-        console.error(`Attempt ${attempt + 1} failed:`, fetchError);
-        if (attempt === retries) throw fetchError;
-        attempt++;
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      } catch (e) {
+        error = e;
+        console.error(`Failed to load from ${path}:`, e);
       }
     }
 
     if (!response || !response.ok) {
-      console.error(`Failed to load verse ${chapter}:${verse} after ${retries + 1} attempts. Status: ${response?.status}`);
-      console.error(`Attempted path: ${versePath}`);
+      console.error(`Failed to load verse ${chapter}:${verse} after trying all paths`);
+      if (error) console.error('Last error:', error);
       return null;
     }
 
