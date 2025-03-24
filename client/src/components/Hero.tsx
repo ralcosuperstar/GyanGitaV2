@@ -74,16 +74,28 @@ export default function Hero() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight">
               <span className="block leading-tight text-white/90">
-                Tired of Endless Scrolling
+                <span className="relative inline-block">
+                  Tired
+                  <svg className="absolute -bottom-1 left-0 w-full" viewBox="0 0 100 15" preserveAspectRatio="none">
+                    <path 
+                      d="M0,10 Q50,0 100,10" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2"
+                      className="text-primary/60"
+                    />
+                  </svg>
+                </span>
+                {" "}of Endless Scrolling
               </span>
-              <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+              <span className="block mt-2 sm:mt-3 md:mt-4 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
                 But Still Feeling Empty?
               </span>
             </h1>
 
-            <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-white/60 max-w-xl mx-auto font-light leading-relaxed">
               Discover ancient wisdom that actually helps with modern struggles - anxiety, loneliness, 
               and the constant pressure to "have it all figured out"
             </p>
@@ -96,12 +108,12 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               <Button
-                className="w-full sm:w-auto px-8 py-6 text-lg font-normal
+                className="w-full sm:w-auto px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-normal
                         bg-primary/90 hover:bg-primary/80 border border-primary/30
                         shadow-lg hover:shadow-xl transition-all duration-300 group"
                 onClick={handleScrollToMood}
               >
-                <Sparkles className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 group-hover:scale-110 transition-transform" />
                 Begin Your Journey
               </Button>
             </motion.div>
