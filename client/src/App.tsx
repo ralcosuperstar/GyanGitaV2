@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { HelmetProvider } from 'react-helmet-async';
 import { useEffect } from "react";
-import { loadMoodsData } from "@/lib/moods";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
@@ -41,24 +40,6 @@ function Router() {
 }
 
 function App() {
-  // Preload moods data when the app starts
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        const moodsData = await loadMoodsData();
-        if (!moodsData) {
-          console.error('Failed to load moods data during initialization');
-        } else {
-          console.log('Successfully loaded moods data during initialization');
-        }
-      } catch (error) {
-        console.error('Error during app initialization:', error);
-      }
-    };
-
-    initialize();
-  }, []);
-
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>

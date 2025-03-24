@@ -1,9 +1,6 @@
 import chaptersData from '@/assets/data/chapters/index.json';
-import type { MoodData } from './moods';
-import { loadMoodsData, validateMoodData } from './moods';
-
-// Cache for moods data
-let cachedMoodsData: MoodData | null = null;
+import type { Chapter } from '@/lib/types';
+import moodsData from '@/assets/data/moods.json';
 
 // Types for verse data
 export interface Verse {
@@ -28,107 +25,81 @@ export interface Verse {
 
 // Helper function to normalize mood names
 const normalizeMoodName = (mood: string): string => {
-  return mood.toUpperCase()
-    .replace(/_/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return mood.toUpperCase().trim();
 };
 
-// Helper function to get data file path
-const getVerseDataPath = (chapter: number, verse: number): string => {
-  return `/assets/data/slok/${chapter}/${verse}/index.json`;
-};
-
-// Get verse by chapter and number with retries
+// Get verse by chapter and number
 export const getVerseByChapterAndNumber = async (
   chapter: number,
   verse: number,
   retries = 3
 ): Promise<Verse | null> => {
-  try {
-    const versePath = getVerseDataPath(chapter, verse);
-    let lastError: string | undefined;
+  const versePath = `/assets/data/slok/${chapter}/${verse}/index.json`;
+  console.log(`[Verse] Loading verse from path: ${versePath}`);
 
-    for (let attempt = 0; attempt <= retries; attempt++) {
-      try {
-        const response = await fetch(versePath);
-        if (response.ok) {
-          const verseData = await response.json();
-          return { ...verseData, chapter, verse };
-        }
-        lastError = `HTTP ${response.status} - ${response.statusText}`;
-      } catch (error: any) {
-        lastError = error.message;
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const response = await fetch(versePath);
+
+      if (response.ok) {
+        const verseData = await response.json();
+        console.log(`[Verse] Successfully loaded verse ${chapter}:${verse}`);
+        return { ...verseData, chapter, verse };
       }
 
-      if (attempt < retries) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+      console.log(`[Verse] Attempt ${attempt + 1} failed, status: ${response.status}`);
+
+      if (attempt < retries - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    } catch (error) {
+      console.error(`[Verse] Error loading verse ${chapter}:${verse}, attempt ${attempt + 1}:`, error);
+      if (attempt < retries - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
-
-    console.error(`Failed to load verse ${chapter}:${verse} after ${retries + 1} attempts`);
-    console.error(`Last error: ${lastError}`);
-    return null;
-  } catch (error) {
-    console.error(`Error loading verse ${chapter}:${verse}:`, error);
-    return null;
   }
+
+  console.error(`[Verse] Failed to load verse ${chapter}:${verse} after ${retries} attempts`);
+  return null;
 };
 
-// Get verses for a specific mood with better error handling
+// Get verses for a specific mood
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
     const searchMood = normalizeMoodName(mood);
-    console.log(`Looking for verses for mood: "${searchMood}"`);
+    console.log(`[Mood] Looking for verses with mood: "${searchMood}"`);
+    console.log('[Mood] Available moods:', moodsData.moods.map(m => m.name));
 
-    // Load moods data if not cached
-    if (!cachedMoodsData) {
-      cachedMoodsData = await loadMoodsData();
-    }
-
-    if (!cachedMoodsData) {
-      console.error('Failed to load moods data');
-      return [];
-    }
-
-    const moodData = cachedMoodsData.moods.find(m => 
+    const moodData = moodsData.moods.find(m => 
       normalizeMoodName(m.name) === searchMood
     );
 
     if (!moodData?.verses?.length) {
-      console.warn(`No verses defined for mood: "${searchMood}"`);
-      console.log('Available moods:', cachedMoodsData.moods.map(m => m.name));
+      console.warn(`[Mood] No verses found for mood: "${searchMood}"`);
       return [];
     }
 
-    console.log(`Found ${moodData.verses.length} verse references for mood: ${searchMood}`);
+    console.log(`[Mood] Found ${moodData.verses.length} verse references for mood: "${searchMood}"`);
 
-    const versePromises = moodData.verses.map(async verseRef => {
-      try {
-        return await getVerseByChapterAndNumber(verseRef.chapter, verseRef.verse, 2);
-      } catch (error) {
-        console.error(`Error loading verse ${verseRef.chapter}:${verseRef.verse}:`, error);
-        return null;
-      }
-    });
+    const verses = await Promise.all(
+      moodData.verses.map(verseRef => 
+        getVerseByChapterAndNumber(verseRef.chapter, verseRef.verse)
+      )
+    );
 
-    const verses = await Promise.all(versePromises);
-    const validVerses = verses.filter((v): v is Verse => v !== null);
-
-    if (validVerses.length === 0) {
-      console.error('No verses could be loaded for mood:', searchMood);
-    }
+    const validVerses = verses.filter((verse): verse is Verse => verse !== null);
+    console.log(`[Mood] Successfully loaded ${validVerses.length} verses for mood "${searchMood}"`);
 
     return validVerses;
   } catch (error) {
-    console.error('Error loading verses for mood:', error);
+    console.error('[Mood] Error loading verses for mood:', error);
     return [];
   }
 };
 
 // Export helper functions
 export const getChapters = () => chaptersData;
-export const preloadVersesByMood = (mood: string) => getVersesByMood(mood).catch(console.error);
 
 // Export types
-export type { Chapter } from '@/lib/types';
+export type { Chapter };
