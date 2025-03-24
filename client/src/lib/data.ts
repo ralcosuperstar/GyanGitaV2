@@ -38,46 +38,40 @@ export const generateVerseKey = (chapter: number, verse: number) =>
 // Get a verse by chapter and number with retries
 export const getVerseByChapterAndNumber = async (chapter: number, verse: number): Promise<Verse | null> => {
   try {
-    console.log(`Loading verse ${chapter}:${verse}`);
+    console.log(`Attempting to load verse ${chapter}:${verse}`);
 
-    // Try to dynamically import the verse data
+    // Construct the correct path based on the environment
+    const path = `/assets/data/slok/${chapter}/${verse}/index.json`;
+    console.log('Attempting to fetch from:', path);
+
     try {
-      const verseModule = await import(`../../assets/data/slok/${chapter}/${verse}/index.json`);
+      const response = await fetch(path, {
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
+
+      if (!response.ok) {
+        console.error(`Failed to fetch verse data. Status: ${response.status}`);
+        const text = await response.text();
+        console.error('Response:', text);
+        return null;
+      }
+
+      const data = await response.json();
+      console.log('Successfully loaded verse data:', data);
+
       return {
-        ...verseModule.default,
+        ...data,
         chapter,
         verse
       };
-    } catch (importError) {
-      console.error('Dynamic import failed:', importError);
-
-      // Fallback to fetch if import fails
-      const paths = [
-        `/assets/data/slok/${chapter}/${verse}/index.json`,
-        `/src/assets/data/slok/${chapter}/${verse}/index.json`
-      ];
-
-      for (const path of paths) {
-        try {
-          const response = await fetch(path);
-          if (response.ok) {
-            const data = await response.json();
-            return {
-              ...data,
-              chapter,
-              verse
-            };
-          }
-        } catch (fetchError) {
-          console.error(`Fetch failed for path ${path}:`, fetchError);
-        }
-      }
+    } catch (error) {
+      console.error('Error fetching verse data:', error);
+      return null;
     }
-
-    console.error(`All attempts to load verse ${chapter}:${verse} failed`);
-    return null;
   } catch (error) {
-    console.error(`Error loading verse ${chapter}:${verse}:`, error);
+    console.error(`Error in getVerseByChapterAndNumber for ${chapter}:${verse}:`, error);
     return null;
   }
 };
@@ -97,17 +91,19 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
       return [];
     }
 
-    console.log(`Found mood data:`, moodData);
+    console.log('Found mood data:', moodData);
 
     const verses = await Promise.all(
       moodData.verses.map(async verseRef => {
         try {
+          console.log(`Loading verse ${verseRef.chapter}:${verseRef.verse} for mood ${searchMood}`);
           const verse = await getVerseByChapterAndNumber(
             Number(verseRef.chapter),
             Number(verseRef.verse)
           );
+
           if (!verse) {
-            console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse} for mood ${searchMood}`);
+            console.error(`Failed to load verse ${verseRef.chapter}:${verseRef.verse}`);
           }
           return verse;
         } catch (error) {
@@ -118,7 +114,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
     );
 
     const validVerses = verses.filter((v): v is Verse => v !== null);
-    console.log(`Successfully loaded ${validVerses.length} out of ${moodData.verses.length} verses for mood ${searchMood}`);
+    console.log(`Successfully loaded ${validVerses.length} verses for mood ${searchMood}`);
 
     if (validVerses.length === 0) {
       console.error('No valid verses were loaded for mood:', searchMood);
@@ -126,7 +122,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
 
     return validVerses;
   } catch (error) {
-    console.error('Error loading verses for mood:', error);
+    console.error('Error in getVersesByMood:', error);
     return [];
   }
 };
@@ -167,7 +163,7 @@ export const getRandomVerse = async (): Promise<Verse | null> => {
     console.error(`Failed to get random verse after ${maxAttempts} attempts`);
     return null;
   } catch (error) {
-    console.error('Error getting random verse:', error);
+    console.error('Error in getRandomVerse:', error);
     return null;
   }
 };
