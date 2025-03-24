@@ -186,8 +186,7 @@ export default function Home() {
               </h1>
 
               <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed mt-8">
-                Discover ancient wisdom that actually helps with modern struggles - anxiety, loneliness, <br></br>
-                and the constant pressure to "have it all figured out"
+                Discover ancient wisdom that actually helps with modern struggles - anxiety, loneliness,                and the constant pressure to <br></br>"have it all figured out"
               </p>
 
               {/* Call to Action */}
