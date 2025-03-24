@@ -62,7 +62,6 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
   };
 
   const handleCopy = async (verse: VerseResponse) => {
-    const verseId = `${verse.chapter}-${verse.verse}`;
     const textToCopy = `${verse.purohit?.et || verse.tej.et || verse.siva?.et || verse.tej.ht}\n\n${verse.slok}\n\n${verse.transliteration}`;
 
     try {
@@ -87,33 +86,11 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
   if (isLoading) {
     return (
       <div className="relative" role="status" aria-label="Loading verses">
-        {/* Background Gradients */}
         <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
           <div className="absolute top-40 left-10 w-72 h-72 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow"></div>
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: "1s" }}></div>
         </div>
 
-        {/* Loading Header */}
-        <div className="text-center mb-12">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center px-4 py-1.5 border border-primary/20 rounded-full text-sm font-medium text-primary/80 bg-primary/5 mb-4"
-          >
-            {selectedMoodData?.icon} Finding verses for {selectedMoodData?.label}
-          </motion.div>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="text-muted-foreground max-w-2xl mx-auto"
-          >
-            Searching ancient wisdom for guidance on your current emotional state...
-          </motion.p>
-        </div>
-
-        {/* Loading Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array(3).fill(null).map((_, i) => (
             <motion.div 
@@ -145,21 +122,13 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
         <p className="text-muted-foreground mb-6">
           We couldn't find any verses that match "{selectedMoodData?.label}". Please try another mood.
         </p>
-        <Button 
-          onClick={onChangeMood}
-          variant="outline" 
-          className="border-primary/20 hover:bg-primary/5"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" aria-hidden="true" />
-          Try Another Mood
-        </Button>
       </motion.div>
     );
   }
 
   return (
-    <div ref={containerRef} className="verses-container relative px-4 sm:px-6 max-w-[1920px] mx-auto" role="region" aria-label="Verse recommendations">
-      {/* Background Gradients */}
+    <div ref={containerRef} className="verses-container relative px-4 sm:px-6 max-w-[1920px] mx-auto">
+      {/* Background Effects */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: "1s" }}></div>
@@ -273,7 +242,7 @@ export default function VerseDisplay({ verses, selectedMood, isLoading, onChange
                   English Translation
                 </h3>
                 <p className="text-xl leading-relaxed text-foreground">
-                  {selectedVerse?.tej.et}
+                  {selectedVerse?.purohit?.et || selectedVerse?.tej.et || selectedVerse?.siva?.et || selectedVerse?.tej.ht}
                 </p>
               </div>
             </div>
