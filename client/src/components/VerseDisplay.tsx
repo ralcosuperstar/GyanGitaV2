@@ -5,7 +5,7 @@
 
 import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw } from "lucide-react";
 import { moods } from "@/lib/moods";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
