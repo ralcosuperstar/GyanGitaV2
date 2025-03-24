@@ -1,0 +1,34 @@
+[TAILING] Tailing last 15 lines for [gyangita] process (change the value with --lines option)
+/root/.pm2/logs/gyangita-error.log last 15 lines:
+0|gyangita | Error fetching verse: Error: Failed to fetch verse: Not Found
+0|gyangita |     at fetchVerse (file:///var/www/html/GyanGitaV2/dist/index.js:261:13)
+0|gyangita |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+0|gyangita |     at async file:///var/www/html/GyanGitaV2/dist/index.js:303:20
+0|gyangita | Error creating favorite: Error: Verse is already in favorites
+0|gyangita |     at MemStorage.createFavorite (file:///var/www/html/GyanGitaV2/dist/index.js:157:13)
+0|gyangita |     at file:///var/www/html/GyanGitaV2/dist/index.js:201:38
+0|gyangita |     at Layer.handle [as handle_request] (/var/www/html/GyanGitaV2/node_modules/express/lib/router/layer.js:95:5)
+0|gyangita |     at next (/var/www/html/GyanGitaV2/node_modules/express/lib/router/route.js:149:13)
+0|gyangita |     at requireAuth (file:///var/www/html/GyanGitaV2/dist/index.js:191:5)
+0|gyangita |     at Layer.handle [as handle_request] (/var/www/html/GyanGitaV2/node_modules/express/lib/router/layer.js:95:5)
+0|gyangita |     at next (/var/www/html/GyanGitaV2/node_modules/express/lib/router/route.js:149:13)
+0|gyangita |     at Route.dispatch (/var/www/html/GyanGitaV2/node_modules/express/lib/router/route.js:119:3)
+0|gyangita |     at Layer.handle [as handle_request] (/var/www/html/GyanGitaV2/node_modules/express/lib/router/layer.js:95:5)
+0|gyangita |     at /var/www/html/GyanGitaV2/node_modules/express/lib/router/index.js:284:15
+
+/root/.pm2/logs/gyangita-out.log last 15 lines:
+0|gyangita | 
+0|gyangita | > rest-express@1.0.0 start
+0|gyangita | > NODE_ENV=production node dist/index.js
+0|gyangita | 
+0|gyangita | 8:34:16 PM [express] serving on port 5000
+0|gyangita | 
+0|gyangita | > rest-express@1.0.0 start
+0|gyangita | > NODE_ENV=production node dist/index.js
+0|gyangita | 
+0|gyangita | 8:34:40 PM [express] serving on port 5000
+0|gyangita | 
+0|gyangita | > rest-express@1.0.0 start
+0|gyangita | > NODE_ENV=production node dist/index.js
+0|gyangita | 
+0|gyangita | 8:40:25 PM [express] serving on port 5000

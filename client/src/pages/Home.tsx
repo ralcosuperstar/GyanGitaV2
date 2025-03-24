@@ -179,14 +179,14 @@ export default function Home() {
                   </span>
                 </div>
                 <div>
-                  <span className="block font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent leading-[1.4]">
+                  <span className="block font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent leading-[1.2]">
                     But Still Feeling Empty?
                   </span>
                 </div>
               </h1>
 
               <p className="text-lg text-white/60 max-w-xl mx-auto font-light leading-relaxed mt-8">
-                Discover ancient wisdom that actually helps with modern struggles - anxiety, loneliness, 
+                Discover ancient wisdom that actually helps with modern struggles - anxiety, loneliness, <br></br>
                 and the constant pressure to "have it all figured out"
               </p>
 
