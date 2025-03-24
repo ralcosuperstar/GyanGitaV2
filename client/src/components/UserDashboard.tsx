@@ -1,17 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Book, Heart, History, Bookmark } from "lucide-react";
-import type { ReadingProgress, Favorite } from "@shared/schema";
+import { Book, History } from "lucide-react";
+import type { ReadingProgress } from "@shared/schema";
 
 export default function UserDashboard() {
   const { data: readingProgress } = useQuery<ReadingProgress[]>({
     queryKey: ['/api/user/progress'],
-    enabled: false, // Enable after auth is implemented
-  });
-
-  const { data: favorites } = useQuery<Favorite[]>({
-    queryKey: ['/api/user/favorites'],
     enabled: false, // Enable after auth is implemented
   });
 
