@@ -187,13 +187,13 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
     <div className={className}>
       <Tabs defaultValue="daily" className="w-full">
         <TabsList className="w-full grid grid-cols-2 h-12 items-center bg-muted/50 backdrop-blur-sm rounded-lg p-1">
-          <TabsTrigger 
+          <TabsTrigger
             value="daily"
             className="flex-1 h-10 data-[state=active]:bg-background data-[state=active]:text-foreground"
           >
             Today's Verse
           </TabsTrigger>
-          <TabsTrigger 
+          <TabsTrigger
             value="popular"
             className="flex-1 h-10 data-[state=active]:bg-background data-[state=active]:text-foreground"
           >
@@ -253,16 +253,14 @@ export default function VerseOfTheDay({ className }: VerseOfTheDayProps) {
             <DialogTitle className="text-2xl font-playfair text-foreground">
               Chapter {activeVerse?.chapter}, Verse {activeVerse?.verse}
             </DialogTitle>
-            <DialogDescription>
-              <div className="flex gap-2">
-                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                  English
-                </span>
-                <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
-                  Sanskrit
-                </span>
-              </div>
-            </DialogDescription>
+            <div className="flex gap-2">
+              <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
+                English
+              </span>
+              <span className="px-3 py-1.5 rounded-full bg-primary/10 text-sm font-medium text-primary">
+                Sanskrit
+              </span>
+            </div>
           </DialogHeader>
 
           <div className="mt-8 space-y-8">
