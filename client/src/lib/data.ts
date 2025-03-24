@@ -65,6 +65,7 @@ export const getVerseByChapterAndNumber = async (chapter: number, verse: number,
 
         attempt++;
         if (attempt <= retries) {
+          console.log(`Retry ${attempt} after ${attempt} second(s)`);
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
         }
       } catch (fetchError) {
@@ -156,6 +157,8 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
       return [];
     }
 
+    console.log(`Found mood data:`, moodData);
+
     const verses = await Promise.all(
       moodData.verses.map(async verseRef => {
         try {
@@ -176,6 +179,11 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
 
     const validVerses = verses.filter((v): v is Verse => v !== null);
     console.log(`Successfully loaded ${validVerses.length} out of ${moodData.verses.length} verses for mood ${searchMood}`);
+
+    if (validVerses.length === 0) {
+      console.error('No valid verses were loaded for mood:', searchMood);
+    }
+
     return validVerses;
   } catch (error) {
     console.error('Error loading verses for mood:', error);
