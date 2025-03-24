@@ -77,9 +77,9 @@ export default function Hero() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight">
               <span className="block leading-tight text-white/90">
                 Tired of Endless Scrolling
-                <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-                  But Still Feeling Empty?
-                </span>
+              </span>
+              <span className="block mt-2 font-normal bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                But Still Feeling Empty?
               </span>
             </h1>
 
