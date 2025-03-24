@@ -162,7 +162,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
 
     const verses = await Promise.all(moodData.verses.map(async verseRef => {
       try {
-        const verseModule = await import(`/src/assets/data/slok/${verseRef.chapter}/${verseRef.verse}/index.json`);
+        const verseModule = await import(`../assets/data/slok/${verseRef.chapter}/${verseRef.verse}/index.json`);
         return {
           ...verseModule.default,
           chapter: verseRef.chapter,
