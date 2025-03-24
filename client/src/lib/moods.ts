@@ -1,3 +1,9 @@
+import type { Verse } from './data';
+import moodsJson from '@/assets/data/moods.json';
+
+// Re-export the static moods data
+export const moods = moodsJson;
+
 export interface Mood {
   id: string;
   label: string;
@@ -5,125 +11,56 @@ export interface Mood {
   icon: string;
 }
 
-export const moods: Mood[] = [
-  {
-    id: "anger",
-    label: "Anger",
-    description: "Verses to help control and overcome anger",
-    icon: "😠"
-  },
-  {
-    id: "feeling_sinful",
-    label: "Feeling Sinful",
-    description: "Verses offering guidance for guilt and redemption",
-    icon: "😔"
-  },
-  {
-    id: "practicing_forgiveness",
-    label: "Practicing Forgiveness",
-    description: "Verses about forgiveness and compassion",
-    icon: "🙏"
-  },
-  {
-    id: "pride",
-    label: "Pride",
-    description: "Verses about humility and overcoming ego",
-    icon: "😤"
-  },
-  {
-    id: "death_of_loved_one",
-    label: "Death of a Loved One",
-    description: "Verses offering solace in times of loss",
-    icon: "💔"
-  },
-  {
-    id: "seeking_peace",
-    label: "Seeking Peace",
-    description: "Verses for finding inner peace and tranquility",
-    icon: "😌"
-  },
-  {
-    id: "lust",
-    label: "Lust",
-    description: "Verses about transcending physical desires",
-    icon: "💖"
-  },
-  {
-    id: "uncontrolled_mind",
-    label: "Uncontrolled Mind",
-    description: "Verses about mental discipline and control",
-    icon: "🧠"
-  },
-  {
-    id: "dealing_with_envy",
-    label: "Dealing with Envy",
-    description: "Verses about overcoming jealousy",
-    icon: "😒"
-  },
-  {
-    id: "discriminated",
-    label: "Discriminated",
-    description: "Verses about equality and universal vision",
-    icon: "🤝"
-  },
-  {
-    id: "laziness",
-    label: "Laziness",
-    description: "Verses for overcoming inertia and procrastination",
-    icon: "😴"
-  },
-  {
-    id: "loneliness",
-    label: "Loneliness",
-    description: "Verses for finding divine companionship",
-    icon: "🫂"
-  },
-  {
-    id: "depression",
-    label: "Depression",
-    description: "Verses offering solace and hope during difficult times",
-    icon: "😢"
-  },
-  {
-    id: "confusion",
-    label: "Confusion",
-    description: "Verses providing clarity and direction",
-    icon: "😕"
-  },
-  {
-    id: "fear",
-    label: "Fear",
-    description: "Verses for overcoming fear and anxiety",
-    icon: "😨"
-  },
-  {
-    id: "greed",
-    label: "Greed",
-    description: "Verses about overcoming material attachment",
-    icon: "🤑"
-  },
-  {
-    id: "demotivated",
-    label: "Demotivated",
-    description: "Verses for inspiration and motivation",
-    icon: "😩"
-  },
-  {
-    id: "temptation",
-    label: "Temptation",
-    description: "Verses about controlling senses and desires",
-    icon: "😈"
-  },
-  {
-    id: "forgetfulness",
-    label: "Forgetfulness",
-    description: "Verses about mindfulness and remembrance",
-    icon: "🤔"
-  },
-  {
-    id: "losing_hope",
-    label: "Losing Hope",
-    description: "Verses offering encouragement and assurance",
-    icon: "😞"
+export interface MoodData {
+  moods: Array<{
+    name: string;
+    description: string;
+    verses: Array<{
+      chapter: number;
+      verse: number;
+      theme: string;
+    }>;
+  }>;
+}
+
+// Load and validate moods data
+export const loadMoodsData = async (): Promise<MoodData | null> => {
+  try {
+    const response = await fetch('/assets/data/moods.json');
+    if (!response.ok) {
+      throw new Error(`Failed to load moods data: ${response.status} ${response.statusText}`);
+    }
+    const data = await response.json();
+
+    if (validateMoodData(data)) {
+      return data;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error loading moods data:', error);
+    return null;
   }
-];
+};
+
+export const validateMoodData = (data: any): data is MoodData => {
+  if (!data || !Array.isArray(data.moods)) {
+    console.error('Invalid moods data structure:', data);
+    return false;
+  }
+
+  for (const mood of data.moods) {
+    if (!mood.name || !mood.description || !Array.isArray(mood.verses)) {
+      console.error('Invalid mood structure:', mood);
+      return false;
+    }
+
+    for (const verse of mood.verses) {
+      if (!Number.isInteger(verse.chapter) || !Number.isInteger(verse.verse)) {
+        console.error('Invalid verse reference:', verse);
+        return false;
+      }
+    }
+  }
+
+  return true;
+};

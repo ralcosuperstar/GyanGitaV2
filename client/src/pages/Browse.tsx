@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Grid, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateVerseKey, getChapters, getVerseByChapterAndNumber, type Chapter, type Verse } from "@/lib/data";
+import { getChapters, getVerseByChapterAndNumber, type Chapter, type Verse } from "@/lib/data";
 import VerseModal from "@/components/VerseModal";
 import SEO from '@/components/SEO';
 
@@ -24,7 +24,7 @@ export default function Browse() {
 
   // Load verse data when selected
   const { data: verse } = useQuery<Verse | null>({
-    queryKey: [generateVerseKey(Number(selectedChapter), Number(selectedVerse))],
+    queryKey: [`verse-${selectedChapter}-${selectedVerse}`],
     queryFn: async () => {
       if (!selectedChapter || !selectedVerse) return null;
       return getVerseByChapterAndNumber(Number(selectedChapter), Number(selectedVerse));
@@ -261,14 +261,16 @@ export default function Browse() {
         )}
 
         {/* Verse Modal */}
-        <VerseModal
-          verse={verse}
-          open={!!verse}
-          onOpenChange={() => {
-            setSelectedChapter("");
-            setSelectedVerse("");
-          }}
-        />
+        {verse && (
+          <VerseModal
+            verse={verse}
+            open={!!verse}
+            onOpenChange={() => {
+              setSelectedChapter("");
+              setSelectedVerse("");
+            }}
+          />
+        )}
       </div>
     </div>
   );
