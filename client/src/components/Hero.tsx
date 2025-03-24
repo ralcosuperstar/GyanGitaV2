@@ -72,6 +72,7 @@ export default function Hero() {
             className="space-y-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-light tracking-tight">
               <span className="block leading-tight text-white/90">
@@ -92,6 +93,7 @@ export default function Hero() {
               className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-lg mx-auto mt-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
             >
               <Button
                 className="w-full sm:w-auto px-8 py-6 text-lg font-normal
