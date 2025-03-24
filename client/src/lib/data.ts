@@ -144,11 +144,13 @@ export const getRandomVerse = async (): Promise<Verse | null> => {
 // Get verses for a specific mood with improved error handling
 export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
   try {
-    const searchMood = mood.toUpperCase();
+    const searchMood = mood.toLowerCase().replace(/_/g, ' ');
     console.log(`Looking for verses for mood: "${searchMood}"`);
 
-    // Find mood data
-    const moodData = moods.moods.find(m => m.name === searchMood);
+    // Find mood data case-insensitively
+    const moodData = moods.moods.find(m => 
+      m.name.toLowerCase() === searchMood
+    );
 
     if (!moodData?.verses?.length) {
       console.warn(`No verses defined for mood: "${searchMood}"`);
@@ -160,7 +162,7 @@ export const getVersesByMood = async (mood: string): Promise<Verse[]> => {
 
     const verses = await Promise.all(moodData.verses.map(async verseRef => {
       try {
-        const verseModule = await import(`../assets/data/slok/${verseRef.chapter}/${verseRef.verse}/index.json`);
+        const verseModule = await import(`/src/assets/data/slok/${verseRef.chapter}/${verseRef.verse}/index.json`);
         return {
           ...verseModule.default,
           chapter: verseRef.chapter,
